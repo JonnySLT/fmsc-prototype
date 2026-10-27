@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whitfield Thanksgiving Crew · FMSC</title>
+<meta name="description" content="Whitfield Thanksgiving Crew on FMSC: the group’s upcoming packing shifts, your spot on each, who’s in the group and what the group has packed.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js.
+     Figma: Desktop/Account/People & Groups/Group - Member view (4656:51819) · Mobile (4656:86494). Prefix gp- (group pages). */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .gp-muted { color: var(--content-secondary); }
+  /* Figma breadcrumb and mobile back link use Body/Small Regular (the DS header sets them in Label/Small). */
+  .fm-account-header__crumb, .fm-account-header__back { font-weight: 400; }
+
+  /* Card headers: Figma sets the header bottom padding per card (0 on most, space-sm on the invite and packed cards). */
+  .ac-card__header.gp-head { padding-bottom: var(--space-0); }
+  .ac-card__header.gp-head--pad { padding-bottom: var(--space-sm); }
+
+  /* Tables: Figma wraps the DS table in a border-default frame (radius-lg desktop, radius-xl mobile records). */
+  .gp-table { width: 100%; overflow: hidden; border: 1px solid var(--border-default); border-radius: var(--radius-lg); }
+  .gp-table .fm-dtable { width: 100%; }
+  .gp-table .fm-dtable__table { width: 100%; table-layout: fixed; }
+  .gp-table .fm-table-header:first-child, .gp-table .fm-table-cell:first-child { padding-left: var(--space-lg); }
+  .gp-table .fm-pagination { border-top: 0; }
+  /* Figma draws the sort chevron at the right edge of its column. */
+  .gp-table .fm-table-header__sort { width: 100%; justify-content: space-between; min-height: 44px; margin: calc(-1 * var(--space-sm)) 0; }
+  /* Row links: 44px hit area without moving the text. */
+  .gp-table .fm-table-cell__link, .gp-table .fm-dtable__link { display: inline-block; padding: var(--space-sm) 0; margin: calc(-1 * var(--space-sm)) 0; }
+  .gp-table .fm-table-cell a { color: var(--content-link); text-decoration: none; }
+  .gp-table .fm-table-cell__secondary a { display: inline-block; padding: var(--space-md) 0; margin: calc(-1 * var(--space-md)) 0; }
+  .gp-table .fm-table-cell a:hover { text-decoration: underline; }
+  /* Mobile records (page-built, same classes as the DS Data table Mobile): the Figma record rule sits in the layout. */
+  .gp-table .fm-dtable__record { box-shadow: none; border-bottom: 1px solid var(--border-subtle); }
+  .gp-table .fm-dtable__record .fm-btn { margin-top: var(--space-0); }
+
+  .gp-foot { display: flex; align-items: center; gap: var(--space-md); }
+  .gp-foot .fm-btn { flex: none; }
+  .gp-foot--end { justify-content: flex-end; }
+  /* Figma table Button cell: the button sits in a 68px cell. */
+  .gp-table .fm-table-cell--button { padding-right: var(--space-lg); }
+
+  /* What your group has packed: two lists side by side with a 1px divider. */
+  .gp-two { display: grid; grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr); gap: var(--space-lg); }
+  .gp-two__rule { background: var(--border-subtle); }
+  .gp-list { display: flex; flex-direction: column; gap: var(--space-xs); min-width: 0; }
+  .gp-rows { display: flex; flex-direction: column; gap: var(--space-md); margin: 0; }
+  .gp-row { display: flex; justify-content: space-between; gap: var(--space-md); }
+  .gp-row dt { color: var(--content-secondary); }
+  .gp-row dd { margin: 0; text-align: right; color: var(--content-primary); }
+  .gp-actions { display: flex; }
+
+  @container ac-content (max-width: 639.98px) {
+    .gp-two { grid-template-columns: minmax(0, 1fr); }
+    .gp-two__rule { display: none; }
+  }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .ac-card.gp-card { gap: var(--space-sm); }
+    .gp-table { border-radius: var(--radius-xl); }
+    .gp-foot .fm-btn, .gp-actions .fm-btn { width: 100%; }
+    .gp-foot { flex-direction: column; align-items: stretch; gap: var(--space-md); }
+    .gp-two { gap: var(--space-lg); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement, D = window.FMSCData;
+
+
+  /* SAMPLE DATA (Figma, Oct. 27, 2026): the Whitfield Thanksgiving Crew as Sarah (a member) sees it; Tom Whitfield runs it. */
+  var GROUP = 'Whitfield Thanksgiving Crew';
+  var shifts = [
+    { date: 'Nov. 27, 2026', day: 'Friday, 9:30 a.m.', long: 'Friday, Nov. 27, 2026', time: '9:30 a.m.', site: 'FMSC Eagan', city: 'Eagan, MN', open: '3 open', of: 'of 10', you: 'You have a spot', action: 'Give up my spot' },
+    { date: 'Dec. 26, 2026', day: 'Saturday, 10 a.m.', long: 'Saturday, Dec. 26, 2026', time: '10 a.m.', site: 'FMSC Coon Rapids', city: 'Coon Rapids, MN', open: '6 open', of: 'of 10', you: 'You have a spot', action: 'Give up my spot' },
+    { date: 'Nov. 26, 2027', day: 'Friday, 9:30 a.m.', long: 'Friday, Nov. 26, 2027', time: '9:30 a.m.', site: 'FMSC Eagan', city: 'Eagan, MN', open: '9 open', of: 'of 10', you: 'No spot yet', claim: true }
+  ];
+  var roster = [
+    { name: 'Tom Whitfield', role: 'Admin', next: 'Nov. 27' },
+    { name: D.profile.display('Sarah Whitfield'), role: 'Member · you', next: 'Nov. 27' },
+    { name: 'Maya Whitfield', role: 'Member', next: 'Nov. 27' },
+    { name: 'Luis M.', role: 'Member', next: 'Dec. 26' },
+    { name: 'Carol Whitfield', role: 'Guest', next: 'Nov. 27' }
+  ];
+  var totals = [['Meals packed together', '15,120'], ['Hours on the line', '6'], ['Shifts since 2023', '3'], ['Countries the food reached', '4']];
+  var where = [['Haiti', '5,400 meals'], ['Philippines', '4,320 meals'], ['Nicaragua', '3,240 meals'], ['Guatemala', '2,160 meals']];
+
+  /* True when the element is narrower than px: the tables switch to stacked records rather than squeezing columns. */
+  function useNarrow(ref, px) {
+    var st = React.useState(false), narrow = st[0], setNarrow = st[1];
+    React.useLayoutEffect(function () {
+      var el = ref.current; if (!el || !window.ResizeObserver) return undefined;
+      var ro = new ResizeObserver(function (en) { setNarrow(en[0].contentRect.width < px); });
+      ro.observe(el); return function () { ro.disconnect(); };
+    }, [px]);
+    return narrow;
+  }
+
+  /* Stacked records — the DS Data table Mobile layout (same classes and roles), built here because Figma gives some
+     records a link and one a button, and the DS sets the action type per column. */
+  function Records(p) {
+    return h('div', { className: 'fm-dtable fm-dtable--mobile fm-mobile' },
+      h('div', { role: 'table', 'aria-label': p.caption, className: 'fm-dtable__records' },
+        h('div', { role: 'rowgroup', className: 'fm-visually-hidden' },
+          h('div', { role: 'row' }, p.labels.map(function (l, i) { return h('span', { key: i, role: 'columnheader' }, l); }))),
+        h('div', { role: 'rowgroup' }, p.records.map(function (r, ri) {
+          return h('div', { key: ri, role: 'row', className: 'fm-dtable__record' },
+            r.lines.map(function (t, li) {
+              return h('div', { key: li, className: 'fm-dtable__line ' + (li ? 'fm-dtable__detail body-small' : 'fm-dtable__primary label-small') }, h('span', { role: 'cell' }, t));
+            }),
+            r.link ? h('div', { role: 'cell', className: 'fm-dtable__link-wrap' }, h('a', { className: 'fm-dtable__link body-small fm-focusable', href: r.link.href || '#' }, r.link.label)) : null,
+            r.button ? h('div', { role: 'cell' }, h(F.Button, { variant: 'secondary', size: 'medium', type: 'button' }, r.button)) : null);
+        }))),
+      h(F.Pagination, { count: p.count, ariaLabel: p.pagerLabel }));
+  }
+
+  function Head(p) {
+    var mobile = F.useIsMobile();
+    return h('div', { className: 'ac-card__header gp-head' + (p.pad ? ' gp-head--pad' : '') },
+      h(UI.Badge, { icon: p.icon }),
+      h('h2', { className: 'ac-card__title ' + (mobile ? 'heading-h4-mobile' : 'heading-h4'), id: p.id }, p.title));
+  }
+
+  function Rows(p) {
+    return h('dl', { className: 'gp-rows' }, p.rows.map(function (r) {
+      return h('div', { key: r[0], className: 'gp-row' }, h('dt', { className: 'body-small' }, r[0]), h('dd', { className: 'label-small' }, r[1]));
+    }));
+  }
+
+  function GroupMember() {
+    var mobile = F.useIsMobile();
+    var shiftsRef = React.useRef(null), rosterRef = React.useRef(null);
+    var shiftsStacked = useNarrow(shiftsRef, 880) || mobile;
+    var rosterStacked = useNarrow(rosterRef, 480) || mobile;
+
+    var shiftsTable = shiftsStacked
+      ? h(Records, { caption: 'Your group’s upcoming shifts', labels: ['Date', 'Time and site', 'Spots', 'You', 'Action'], count: '1–3 of 3 shifts', pagerLabel: 'Shift pages',
+          records: shifts.map(function (s) {
+            return { lines: [s.long, s.time + ' · ' + s.site + ' · ' + s.city, s.open + ' ' + s.of, s.you],
+              link: s.claim ? null : { label: s.action, href: '#' }, button: s.claim ? 'Claim a spot' : null };
+          }) })
+      : h(F.DataTable, {
+          breakpoint: 'desktop', caption: 'Your group’s upcoming shifts', count: '1–3 of 3 shifts', pagination: { ariaLabel: 'Shift pages' },
+          /* Figma column widths 180/344/110/140/170 of the 944px table, as shares. */
+          columns: [
+            { key: 'date', label: 'Date', cells: 'stacked', width: '19.07%', sort: 'ascending', onSort: function () {} },
+            { key: 'site', label: 'Site', cells: 'stacked', width: '36.44%' },
+            { key: 'spots', label: 'Spots', cells: 'stacked', width: '11.65%' },
+            { key: 'you', label: 'You', width: '14.83%' },
+            { key: 'action', label: 'Action', cells: 'link', width: '18.01%', header: { showLabel: false } }
+          ],
+          rows: shifts.map(function (s) {
+            return { date: { value: s.date, secondary: s.day }, site: { value: s.site, secondary: s.city }, spots: { value: s.open, secondary: s.of }, you: s.you,
+              action: s.claim ? { type: 'button', buttonLabel: 'Claim a spot' }
+                : { value: h(React.Fragment, null, s.action, h('span', { className: 'fm-visually-hidden' }, ' on ' + s.date)), href: '#' } };
+          })
+        });
+
+    var rosterTable = rosterStacked
+      ? h(Records, { caption: 'Who’s in your group', labels: ['Name', 'Role', 'Next shift'], count: '1–5 of 7 people', pagerLabel: 'Group member pages',
+          records: roster.map(function (r) { return { lines: [r.name, r.role, 'Next shift ' + r.next] }; }) })
+      : h(F.DataTable, {
+          breakpoint: 'desktop', caption: 'Who’s in your group', count: '1–5 of 7 people', pagination: { ariaLabel: 'Group member pages' },
+          /* Figma column widths 300/644 of the 944px table, as shares. */
+          columns: [
+            { key: 'name', label: 'Name', cells: 'stacked', width: '31.78%', sort: 'unsorted', onSort: function () {} },
+            { key: 'next', label: 'Next shift', width: '68.22%' }
+          ],
+          rows: roster.map(function (r) { return { name: { value: r.name, secondary: r.role }, next: r.next }; })
+        });
+
+    return h(window.AccountShell, { current: 'people' },
+
+      h(F.AccountPageHeader, {
+        breakpoint: 'auto', title: GROUP, showBreadcrumb: true,
+        breadcrumb: [{ label: 'My account', href: 'account-dashboard.html' }, { label: 'People & groups', href: 'account-people.html' }, { label: GROUP }],
+        backTo: { label: 'People & groups', href: 'account-people.html' },
+        showDescription: true, description: 'Family: All ages · 7 people · Run by Tom Whitfield'
+      }),
+
+      /* 1 · Your group's upcoming shifts */
+      h('section', { className: 'ac-card gp-card', 'aria-labelledby': 'gp-shifts-title' },
+        h(Head, { icon: 'calendar', title: 'Your group’s upcoming shifts', id: 'gp-shifts-title' }),
+        h('div', { className: 'gp-table', ref: shiftsRef }, shiftsTable)),
+
+      /* 2 · Who's in your group */
+      h('section', { className: 'ac-card gp-card', 'aria-labelledby': 'gp-roster-title' },
+        h(Head, { icon: 'users-group', title: 'Who’s in your group', id: 'gp-roster-title' }),
+        h('div', null, h(F.ArrowLink, { label: 'See what admins can see about you', href: '#' })),
+        h('div', { className: 'gp-table', ref: rosterRef }, rosterTable),
+        h('div', { className: 'gp-foot gp-foot--end' },
+          h(F.Button, { variant: 'secondary', size: 'medium', type: 'button' }, 'Leave this group'))),
+
+      /* 3 · What your group has packed */
+      h('section', { className: 'ac-card gp-card', 'aria-labelledby': 'gp-packed-title' },
+        h(Head, { icon: 'bowl', title: 'What your group has packed', id: 'gp-packed-title', pad: true }),
+        h('div', { className: 'gp-two' },
+          h('div', { className: 'gp-list' }, h('h3', { className: 'label-small' }, 'Your group’s totals'), h(Rows, { rows: totals })),
+          h('div', { className: 'gp-two__rule', 'aria-hidden': 'true' }),
+          h('div', { className: 'gp-list' }, h('h3', { className: 'label-small' }, 'Where your group’s food went'), h(Rows, { rows: where }))),
+        h('div', { className: 'gp-actions' }, h(F.Button, { variant: 'secondary', size: 'medium', type: 'button' }, 'Share these numbers'))));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(GroupMember));
+</script>
+</body>
+</html>

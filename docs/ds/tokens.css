@@ -1,0 +1,157 @@
+/* FMSC Design System tokens, compiled from the DS artifact's tokens.json */
+:root {
+  --blue-50: #eef3f8;
+  --blue-100: #dde5ed;
+  --blue-200: #cbd3eb;
+  --blue-300: #9dbad3;
+  --blue-400: #5e8cb4;
+  --blue-500: #236192;
+  --blue-600: #1d5079;
+  --blue-700: #173f60;
+  --blue-800: #112e47;
+  --blue-900: #0b1d2e;
+  --sky-500: #0072ce;
+  --sky-600: #005ca6;
+  --cyan-400: #68d2df;
+  --gold-400: #ffc600;
+  --gold-500: #e0ae00;
+  --gray-0: #ffffff;
+  --gray-50: #f6f7f8;
+  --gray-100: #eceef0;
+  --gray-200: #dbdee2;
+  --gray-300: #c0c5cb;
+  --gray-400: #949ba3;
+  --gray-450: #888f98;
+  --gray-500: #646c75;
+  --gray-600: #434b54;
+  --gray-700: #2a323b;
+  --gray-800: #1a2129;
+  --gray-900: #101820;
+  --green-100: #e3f3eb;
+  --green-500: #278a5b;
+  --green-700: #1b5c3c;
+  --amber-100: #fbefd6;
+  --amber-500: #c77700;
+  --amber-700: #8a5300;
+  --red-100: #f8e3e0;
+  --red-500: #c0392b;
+  --red-700: #8a251a;
+  --scrim-a25: #00000040;
+  --scrim-a40: #00000066;
+  --scrim-a70: #000000b2;
+  --scrim-a80: #000000cc;
+  --background-canvas: var(--gray-0);
+  --background-surface: var(--gray-0);
+  --background-subtle: var(--gray-50);
+  --background-inverse: var(--gray-900);
+  --background-brand: var(--blue-500);
+  --background-brand-dark: var(--blue-900);
+  --background-brand-subtle: var(--blue-100);
+  --content-primary: var(--gray-900);
+  --content-secondary: var(--gray-600);
+  --content-muted: var(--gray-400);
+  --content-placeholder: var(--gray-500);
+  --content-link: var(--sky-600);
+  --content-on-brand: var(--gray-0);
+  --content-inverse: var(--gray-0);
+  --border-subtle: var(--gray-100);
+  --border-default: var(--gray-200);
+  --border-strong: var(--gray-300);
+  --border-control: var(--gray-450);
+  --border-focus: var(--sky-500);
+  --brand-primary: var(--blue-500);
+  --brand-primary-hover: var(--blue-600);
+  --brand-subtle: var(--blue-100);
+  --brand-on-primary: var(--gray-0);
+  --accent-interactive: var(--sky-500);
+  --accent-highlight: var(--gold-400);
+  --accent-on-highlight: var(--gray-900);
+  --accent-cyan: var(--cyan-400);
+  --feedback-success: var(--green-500);
+  --feedback-success-subtle: var(--green-100);
+  --feedback-warning: var(--amber-500);
+  --feedback-warning-subtle: var(--amber-100);
+  --feedback-error: var(--red-500);
+  --feedback-error-subtle: var(--red-100);
+  --feedback-info: var(--sky-500);
+  --feedback-info-subtle: var(--blue-100);
+  --scrim-subtle: var(--scrim-a25);
+  --scrim-default: var(--scrim-a40);
+  --scrim-strong: var(--scrim-a70);
+  --scrim-dark: var(--scrim-a80);
+  --graphic-ink: var(--content-primary);
+  --graphic-ink-muted: var(--content-secondary);
+  --graphic-ink-inverse: var(--content-on-brand);
+  --space-0: 0px;
+  --space-3xs: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-10: 10px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  --space-container-x: 120px;
+  --margin-x: 120px;
+  --section-y: 64px;
+  --section-gap: 48px;
+  --card-pad: 24px;
+  --grid-gap: 24px;
+  --item-y: 24px;
+  --hero-pad: 48px;
+  --margin-x-mobile: 16px;
+  --section-y-mobile: 32px;
+  --section-gap-mobile: 24px;
+  --card-pad-mobile: 16px;
+  --grid-gap-mobile: 16px;
+  --item-y-mobile: 8px;
+  --hero-pad-mobile: 24px;
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 32, 0.06), 0 1px 3px rgba(16, 24, 32, 0.08);
+  --shadow-md: 0 2px 4px rgba(16, 24, 32, 0.06), 0 4px 8px rgba(16, 24, 32, 0.08);
+  --shadow-lg: 0 4px 8px rgba(16, 24, 32, 0.06), 0 12px 24px rgba(16, 24, 32, 0.12);
+  --size-sm: 16px;
+  --size-md: 20px;
+  --size-lg: 24px;
+  --size-xl: 32px;
+  --size-2xl: 40px;
+  --size-3xl: 48px;
+  --size-4xl: 56px;
+  --grid-columns-desktop: 12;
+  --grid-columns-mobile: 4;
+  --content-width: 1200px;
+  --baseline: 8px;
+  --measure: 80ch;
+  --font-display: "Plus Jakarta Sans", "Myriad Pro", system-ui, sans-serif;
+  --font-sans: "Inter", "Myriad Pro", system-ui, sans-serif;
+}
+.display-2xl { font-family: var(--font-display); font-size: 60px; line-height: 66px; font-weight: 800; letter-spacing: -0.02em; }
+.display-xl { font-family: var(--font-display); font-size: 48px; line-height: 54px; font-weight: 800; letter-spacing: -0.02em; }
+.heading-h1 { font-family: var(--font-display); font-size: 36px; line-height: 44px; font-weight: 700; letter-spacing: -0.015em; }
+.heading-h2 { font-family: var(--font-display); font-size: 30px; line-height: 38px; font-weight: 700; letter-spacing: -0.01em; }
+.heading-h3 { font-family: var(--font-display); font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.005em; }
+.heading-h4 { font-family: var(--font-display); font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: 0; }
+.body-large { font-family: var(--font-sans); font-size: 18px; line-height: 28px; font-weight: 400; letter-spacing: 0; }
+.body-base { font-family: var(--font-sans); font-size: 16px; line-height: 24px; font-weight: 400; letter-spacing: 0; }
+.body-small { font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0; }
+.caption { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 400; letter-spacing: 0; }
+.label-large { font-family: var(--font-sans); font-size: 18px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
+.label-base { font-family: var(--font-sans); font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: 0; }
+.label-small { font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0; }
+.overline { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.08em; }
+.display-2xl-mobile { font-family: var(--font-display); font-size: 36px; line-height: 40px; font-weight: 800; letter-spacing: -0.02em; }
+.display-xl-mobile { font-family: var(--font-display); font-size: 32px; line-height: 38px; font-weight: 800; letter-spacing: -0.02em; }
+.heading-h1-mobile { font-family: var(--font-display); font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.015em; }
+.heading-h2-mobile { font-family: var(--font-display); font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: -0.01em; }
+.heading-h3-mobile { font-family: var(--font-display); font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.005em; }
+.heading-h4-mobile { font-family: var(--font-display); font-size: 18px; line-height: 24px; font-weight: 600; letter-spacing: 0; }
+.body-large-mobile { font-family: var(--font-sans); font-size: 17px; line-height: 26px; font-weight: 400; letter-spacing: 0; }

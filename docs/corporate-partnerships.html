@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corporate partnerships · FMSC</title>
+<meta name="description" content="Partner with Feed My Starving Children: send a team to pack MannaPack® meals, match what employees give and sponsor FMSC events.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+  html { scroll-behavior: smooth; }
+  [id] { scroll-margin-top: var(--space-4xl); }
+
+  .cp-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .cp-section--subtle { background: var(--background-subtle); }
+  .cp-inner { width: 100%; max-width: var(--content-width); }
+  .cp-stack { display: flex; flex-direction: column; gap: var(--section-gap); }
+
+  /* Copy column: body paragraphs (16) then the button (24) */
+  .cp-copy { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-lg); }
+  .cp-body { display: flex; flex-direction: column; gap: var(--space-md); color: var(--content-secondary); }
+
+  /* Photos: fill the row height beside the copy; keep the Figma ratio once the row stacks */
+  .cp-photo { position: relative; overflow: hidden; border-radius: var(--radius-lg); width: 100%; }
+  .cp-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .cp-photo--team { aspect-ratio: 576 / 272; }
+  .cp-photo--team img { object-position: top; }
+  .cp-photo--gala { aspect-ratio: 576 / 400; }
+  /* Figma splits these rows 600/576 rather than 50/50; same stacking point as LayoutSplit. */
+  @container (min-width: 840px) {
+    .cp-split--wide-left .fm-split__inner { grid-template-columns: minmax(0, 600fr) minmax(0, 576fr); }
+    .cp-split--wide-right .fm-split__inner { grid-template-columns: minmax(0, 576fr) minmax(0, 600fr); }
+    .cp-split--wide-left .cp-photo--team { aspect-ratio: auto; height: 100%; min-height: 272px; }
+  }
+
+  /* Ways to partner */
+  .cp-ways .fm-badge-card { height: 100%; }
+  .cp-ways .fm-badge-card__link { margin-top: auto; }
+  .cp-note { color: var(--content-secondary); max-width: 730px; }
+  /* Figma: the email is content/link with no underline (underline on hover/focus only) */
+  .cp-note a { color: var(--content-link); text-decoration: none; }
+  .cp-note a:hover { text-decoration: underline; }
+
+  /* Plan a partnership */
+  .cp-contacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .cp-contact { display: flex; flex-direction: column; gap: var(--space-sm); min-width: 0; }
+  .cp-contact .fm-contact-card { width: 100%; }
+  @media (max-width: 839.98px) { .cp-contacts { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Stat row: the frame shows outline stars (the DS fills them) */
+  .cp-page .fm-section-stat-row__rating path { fill: none; stroke: currentColor; }
+  /* …and its 54px (38px mobile) star outlines fill their box with a ~3px ring; the DS icon glyph is ~85% of the box with a 2-unit stroke */
+  .cp-page .fm-section-stat-row__rating .fm-icon { transform: scale(1.15); }
+  .cp-page .fm-section-stat-row__rating path { stroke-width: 1.35; }
+  /* Stat row: the four-star rating needs ~260px, so step the four stats to 2 × 2 before they collide */
+  @media (min-width: 600px) and (max-width: 1099.98px) {
+    .cp-page .fm-section-stat-row__stats { flex-wrap: wrap; row-gap: var(--section-gap); }
+    .cp-page .fm-section-stat-row.fm-section-stat-row--desktop .fm-section-stat-row__stats > .fm-section-stat-row__slot { flex: 1 1 calc(50% - var(--grid-gap)); }
+  }
+  .cp-page .fm-section-header__supporting { max-width: 730px; }
+  .cp-page .fm-section-faq__answer { max-width: 607px; }
+  /* Footer: the frame's legal line runs wider than the DS cap */
+  .cp-page .fm-footer--desktop .fm-footer__legal-copy { max-width: 968px; }
+
+  /* ---------- Mobile (< 600px): the "Mobile/How to Help/Corporate partnerships" frame ---------- */
+  @media (max-width: 599.98px) {
+    .cp-photo--m { aspect-ratio: 361 / 240; }
+    /* Figma mobile stat row stacks the four stats 24 apart (DS Mobile uses 16) */
+    .cp-page .fm-section-stat-row--mobile .fm-section-stat-row__stats { gap: var(--space-lg); }
+    .cp-copy .fm-btn { width: 100%; }
+    .cp-ways .fm-grid { gap: var(--space-md); }
+    .cp-note { max-width: none; }
+    .cp-contacts { gap: var(--space-md); }
+    .cp-page .fm-section-header__supporting, .cp-page .fm-section-faq__answer { max-width: none; }
+    /* DS fix: Footer Mobile keeps the desktop flex-basis (140px) on its stacked columns, which becomes height. */
+    .cp-page .fm-footer--mobile .fm-footer__col, .cp-page .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; }
+  }
+</style>
+</head>
+<body class="cp-page">
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+
+  var ways = [
+    { title: 'Matching gifts', illustration: 'donations-cash-gift.svg', body: 'Matching gifts are donations a company makes to match what its employees give. Some double or triple it.', link: 'Check your employer’s match', href: 'donate.html#matching' },
+    { title: 'Volunteer grants', illustration: 'volunteers-team-raise.svg', body: 'Volunteer grants are company donations based on the hours employees volunteer, including time packing meals at FMSC.', link: 'Check for volunteer grants', href: 'donate.html#matching' },
+    { title: 'Payroll giving', illustration: 'donations-recurring.svg', body: 'Employees give a little from each paycheck and choose FMSC in their United Way or Global Impact campaign.', link: 'Ask about payroll giving', href: '#contact' },
+    { title: 'Host an FMSC MobilePack™ event', illustration: 'mobilepack-usa-map.svg', body: 'Bring the packing line to your own building. You fund 100,000 meals and bring the venue. FMSC brings the rest.', link: 'Host an event', href: 'host-mobilepack.html' }
+  ];
+  var faqs = [
+    { question: 'Can our company deduct its gift?', expanded: true, answer: 'FMSC is a 501(c)(3) charitable nonprofit, tax ID 41-1601449. Gifts are tax deductible to the full extent the law allows. Your tax advisor can confirm the details for your company.' },
+    { question: 'What if our company isn’t in the matching search?', answer: 'It still might. Ask HR whether your company matches employee gifts to FMSC.' },
+    { question: 'Can employees request a match for a gift they made earlier?', answer: 'Often, yes. Many companies accept match requests up to a year after the gift. HR will know your company’s exact deadline.' },
+    { question: 'Can a match count toward an FMSC MobilePack™ event?', answer: 'Yes, when possible. Your company needs to send complete donation information and instructions to FMSC along with the gift.' },
+    { question: 'Does everyone on our team have to share FMSC’s faith?', answer: 'No. FMSC is a Christian nonprofit. People of all beliefs pack and give with us.' },
+    { question: 'Where do the meals go?', answer: 'FMSC donates MannaPack® meals to faith-based and humanitarian partners in more than 100 countries. Partners handle shipping, storage and distribution.' }
+  ];
+  /* SAMPLE DATA (Figma): Dana Lindqvist is a fictional placeholder contact; phone numbers are masked in the frame. */
+  var contacts = [
+    { group: 'Partnership questions', name: 'Dana Lindqvist', initials: 'DL', title: 'Corporate Partnerships Manager', emailLabel: 'Email Dana' },
+    { group: 'Sponsorship questions', name: 'Barb Shimshock', initials: 'BS', title: 'Vice President of Development', emailLabel: 'Email Barb', email: 'bshimshock@fmsc.org' }
+  ];
+
+  function Header(p) {
+    return h(F.SectionHeader, { breakpoint: 'auto', align: 'left', showEyebrow: false, showSupporting: false,
+      heading: h('span', { id: p.id + '-h' }, p.heading) });
+  }
+
+  /* DS BadgeCard has no Mobile variant: below 600px render the same markup with the mobile H4 (18/24) title. */
+  function WayCard(p) {
+    var mobile = F.useIsMobile();
+    var w = p.way;
+    if (!mobile) return h(F.BadgeCard, { container: 'card', align: 'left', illustration: img(w.illustration), title: w.title, body: w.body, linkLabel: w.link, linkHref: w.href });
+    return h('div', { className: 'fm-badge-card fm-badge-card--left fm-badge-card--card' },
+      h('span', { className: 'fm-badge-card__badge' }, h('img', { className: 'fm-badge-card__art', src: img(w.illustration), alt: '' })),
+      h('h3', { className: 'fm-badge-card__title heading-h4-mobile' }, w.title),
+      h('p', { className: 'fm-badge-card__body body-base' }, w.body),
+      h('a', { className: 'fm-badge-card__link label-base fm-focusable', href: w.href },
+        h('span', null, w.link), h('span', { 'aria-hidden': 'true' }, '→')));
+  }
+
+  function Page() {
+    var mobile = F.useIsMobile();
+    var hx = function (d) { return mobile ? d + '-mobile' : d; };
+
+    var teamPhoto = h('div', { className: 'cp-photo cp-photo--team' + (mobile ? ' cp-photo--m' : '') },
+      h('img', { src: img(mobile ? 'cp-m-team.jpg' : 'cp-team.jpg'), alt: 'Rows of volunteers in hairnets and matching blue T-shirts sit on folding chairs, seen from behind, at an FMSC MobilePack™ event.' }));
+    var teamCopy = h('div', { className: 'cp-copy' },
+      h('div', { className: 'cp-body body-base' },
+        h('p', null, 'A packing shift runs two hours, orientation included. Your team wears hairnets, scoops rice, soy, dried vegetables and a vitamin blend into bags, then seals and boxes them. By the end, you’ll know how many meals you packed.'),
+        h('p', null, 'FMSC has eight permanent packing sites in Minnesota, Illinois, Arizona and Texas. Everyone is welcome, whatever they believe.'),
+        h('p', null, 'Whoever books the shift needs an FMSC account. It keeps your team’s reservation and everyone’s volunteer hours in one place.')),
+      h(F.Button, { variant: 'gold', size: 'large', href: 'volunteer.html' }, 'Book a team shift'));
+
+    var galaPhoto = h('div', { className: 'cp-photo cp-photo--gala' + (mobile ? ' cp-photo--m' : '') },
+      h('img', { src: img('cp-gala.jpg'), alt: 'Guests seated at round tables in a ballroom at an FMSC Gala in Minneapolis.' }));
+    var galaCopy = h('div', { className: 'cp-copy' },
+      h('div', { className: 'cp-body body-base' },
+        h('p', null, 'FMSC galas and luncheons bring supporters together for dinner, a program and a giving moment. When your company sponsors one, it pays for meals and seats your guests, from 4 to 50 tickets. Each event sets its own levels.'),
+        h('p', null, 'Every $1,000 provides 3,448 meals.')),
+      h(F.Button, { variant: 'gold', size: 'large', href: 'fundraising-events.html' }, 'See events to sponsor'));
+
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'how-to-help' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: 'auto',
+          type: 'standard',
+          eyebrow: 'CORPORATE PARTNERSHIPS',
+          h1: 'Partner with FMSC',
+          body: 'Feed My Starving Children (FMSC) is a Christian nonprofit. Companies send teams to pack MannaPack® meals, match what their employees give and sponsor FMSC events.',
+          primaryLabel: 'Plan a partnership', primaryHref: '#contact',
+          secondaryLabel: 'Book a team shift', secondaryHref: '#team',
+          image: img(mobile ? 'cp-m-hero.jpg' : 'cp-hero.jpg'),
+          imageAlt: 'Volunteers in red FMSC T-shirts and hairnets smile as they pack meals together at a packing table.'
+        }),
+
+        /* 2 · How FMSC accounts for every meal */
+        h('div', { id: 'proof' },
+          h(F.SectionStatRow, {
+            breakpoint: 'auto',
+            stats: 4,
+            header: { align: 'left', heading: 'How FMSC accounts for every meal', showEyebrow: false,
+              supporting: 'More than 99% of FMSC meals have safely reached their intended destination, in more than 100 countries. FMSC is a 501(c)(3) nonprofit, tax ID 41-1601449.' },
+            showLink: false,
+            headerButton: true, headerButtonLabel: 'See FMSC’s financial accountability', headerButtonHref: '#',
+            items: [
+              { value: '88%', label: 'of donations go to meal production' },
+              { value: '29¢', label: 'the cost of one meal' },
+              { rating: true, label: 'Charity Navigator four-star rating' },
+              { value: 'Platinum', label: 'Candid Seal of Transparency' }
+            ]
+          })),
+
+        /* 3 · Pack meals with your team */
+        h('section', { className: 'cp-section cp-section--subtle', id: 'team', 'aria-labelledby': 'team-h' },
+          h('div', { className: 'cp-inner cp-stack' },
+            h(Header, { id: 'team', heading: 'Pack meals as a team' }),
+            mobile ? h(Fragment, null, teamPhoto, teamCopy)
+              : h(F.LayoutSplit, { align: 'stretch', className: 'cp-split--wide-left' }, teamCopy, teamPhoto))),
+
+        /* 4 · Ways to partner with FMSC */
+        h('section', { className: 'cp-section', id: 'ways', 'aria-labelledby': 'ways-h' },
+          h('div', { className: 'cp-inner cp-stack' },
+            h(Header, { id: 'ways', heading: 'Ways to partner with FMSC' }),
+            h('div', { className: 'cp-ways' },
+              h(F.LayoutGrid, { columns: 2 }, ways.map(function (w) { return h(WayCard, { key: w.title, way: w }); }))),
+            h('p', { className: 'cp-note body-base' }, 'For help submitting a match or volunteer grant, email ',
+              h('a', { className: 'fm-focusable', href: 'mailto:matchinggifts@fmsc.org' }, 'matchinggifts@fmsc.org'), '.'))),
+
+        /* 5 · Sponsor a fundraising event */
+        h('section', { className: 'cp-section cp-section--subtle', id: 'sponsor', 'aria-labelledby': 'sponsor-h' },
+          h('div', { className: 'cp-inner cp-stack' },
+            h(Header, { id: 'sponsor', heading: 'Sponsor a fundraising event' }),
+            mobile ? h(Fragment, null, galaPhoto, galaCopy)
+              : h(F.LayoutSplit, { align: 'center', className: 'cp-split--wide-right' }, galaPhoto, galaCopy))),
+
+        /* 6 · Common questions */
+        h('div', { id: 'questions' },
+          h(F.SectionFAQ, {
+            breakpoint: 'auto',
+            header: { align: 'left', heading: 'Common questions', showEyebrow: false, showSupporting: false },
+            items: faqs, showLink: false
+          })),
+
+        /* 7 · Plan a partnership */
+        h('section', { className: 'cp-section cp-section--subtle', id: 'contact', 'aria-labelledby': 'contact-h' },
+          h('div', { className: 'cp-inner cp-stack' },
+            h(Header, { id: 'contact', heading: 'Contact us to plan a partnership' }),
+            h('div', { className: 'cp-contacts' }, contacts.map(function (c) {
+              return h('div', { key: c.name, className: 'cp-contact' },
+                h('h3', { className: hx('heading-h4') }, c.group),
+                h(F.ContactCard, { breakpoint: 'auto', name: c.name, initials: c.initials, title: c.title,
+                  phone: '763-XXX-XXXX', email: c.email, emailLabel: c.emailLabel, headingLevel: 4 }));
+            })))),
+
+        /* 8 · CTA band */
+        h(F.CTABand, {
+          breakpoint: 'auto',
+          showEyebrow: false, eyebrow: '',
+          headline: 'Start with one team shift',
+          subtext: 'Most companies start with a two-hour team shift, and many match what their employees give.',
+          primaryLabel: 'Book a team shift', primaryHref: 'volunteer.html',
+          showSecondaryButton: false,
+          showTrustStrip: false, showStatsStrip: false
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        /* Figma footer copy differs from the DS defaults ("Our finances", "Host an FMSC MobilePack™ event"). */
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'impact.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

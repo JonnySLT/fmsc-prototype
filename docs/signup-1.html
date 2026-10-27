@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pick a packing time · Sign up to pack meals · FMSC</title>
+<meta name="description" content="Pick a two-hour packing time at FMSC Coon Rapids, tell us who’s coming and reserve your spots.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (su-) come from signup-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Step 1 · Date and time: calendar column (336) | 1px rule | times, space-lg apart. The times stack under the calendar
+     with a horizontal rule when the step card is narrow (Figma mobile frame), which also covers 600–939 and 1024. */
+  .sa-dt { display: flex; align-items: stretch; gap: var(--space-lg); container: sa-dt / inline-size; }
+  .sa-cal { flex: none; width: 336px; display: flex; flex-direction: column; gap: var(--space-sm); }
+  .sa-cal__key { color: var(--content-secondary); }
+  .sa-dt__rule { flex: none; width: 1px; background: var(--border-subtle); }
+  .sa-times { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--space-md); }
+  .sa-times__date { color: var(--content-primary); }
+  /* Groups: Morning · Afternoon · Evening as equal columns (239 at 1440); fewer columns as the times column narrows. */
+  .sa-groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-md) var(--space-lg); align-items: start; }
+  .sa-group { display: flex; flex-direction: column; gap: var(--space-xs); min-width: 0; }
+  .sa-group__label { color: var(--content-secondary); }
+  .sa-group .fm-time-slot { width: 100%; }
+  @container su-content (max-width: 799.98px) {
+    .sa-dt { flex-direction: column; }
+    .sa-cal { width: 100%; max-width: 336px; }
+    .sa-dt__rule { width: 100%; height: 1px; }
+  }
+  @media (max-width: 599.98px) {
+    .sa-cal { max-width: none; }
+    /* DS Calendar fill keeps min-width 336; Figma's mobile calendar is 327 (seven 44px days fit). */
+    .sa-cal .fm-calendar--fill { min-width: 0; }
+    .sa-groups { grid-template-columns: minmax(0, 1fr); }
+  }
+  /* Under 393 the card is narrower than seven 44px days plus the calendar padding: let the calendar use the card padding. */
+  @media (max-width: 392.98px) {
+    .sa-cal .fm-calendar--fill { width: calc(100% + 2 * var(--space-sm)); margin-inline: calc(-1 * var(--space-sm)); }
+  }
+
+  /* "Sign in to reserve" dialogs (Figma "Dialog · Sign in to reserve — 1 Sign in / 2 Create account", Desktop 528 wide,
+     Mobile 361): the DS Dialog panel centered over a scrim; the page behind is inert and does not scroll. Tall dialogs
+     scroll inside the layer. */
+  html.sa-lock { overflow: hidden; }
+  .sa-layer { position: fixed; inset: 0; z-index: 100; display: flex; padding: var(--space-md) var(--margin-x); background: var(--scrim-strong); overflow-y: auto; overscroll-behavior: contain; }
+  .sa-auth.fm-dialog { width: 528px; max-width: 100%; margin: auto; outline: none; }
+  .sa-auth.fm-dialog.fm-mobile { width: 361px; }
+  .sa-auth .fm-dialog__close { color: var(--graphic-ink); }
+  .sa-auth__intro { color: var(--content-secondary); }
+  .sa-auth__fields { display: flex; flex-direction: column; gap: var(--space-md); width: 100%; }
+  .sa-auth__names { display: flex; gap: var(--space-md); }
+  .sa-auth__names > * { flex: 1 1 0; min-width: 0; }
+  .sa-auth.fm-mobile .sa-auth__names { flex-direction: column; }
+  .sa-auth__age { display: flex; flex-direction: column; gap: var(--space-sm); margin: 0; padding: 0; border: 0; min-width: 0; }
+  .sa-auth__age legend { padding: 0; margin-bottom: var(--space-sm); color: var(--content-primary); }
+  .sa-auth__options { display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); }
+  .sa-auth__remember { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: var(--space-sm); width: 100%; }
+  .sa-auth__social { display: flex; gap: var(--space-sm); width: 100%; }
+  .sa-auth__social > * { flex: 1 1 0; min-width: 0; }
+  .sa-auth.fm-mobile .sa-auth__social { flex-direction: column; }
+  .sa-auth.fm-mobile .sa-auth__social > * { flex: none; }
+  .sa-auth.fm-mobile .sa-auth__submit { width: 100%; }
+  .sa-auth__line, .sa-auth__terms { margin: 0; color: var(--content-secondary); }
+  .sa-auth__link { color: var(--content-link); text-decoration: none; cursor: pointer; }
+  button.sa-auth__link { padding: 0; margin: 0; border: 0; background: none; font: inherit; }
+  .sa-auth__link:hover { text-decoration: underline; }
+  /* 44px hit area for the inline links without moving the line (Figma draws 20-tall text links). */
+  .sa-auth__line .sa-auth__link, .sa-auth__remember > .sa-auth__link { position: relative; }
+  .sa-auth__line .sa-auth__link::after, .sa-auth__remember > .sa-auth__link::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+  /* Figma's label-only radios and checkbox are 20 tall: extend the hit area to 44 without moving the layout. */
+  .sa-auth .fm-radio::after, .sa-auth__remember .fm-check::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="signup-shell.js"></script>
+<script>
+  /* Step 1 is shared by every path: Continue goes to step 2 of the path picked for this visit
+     (signup-1.html?path=a|b|c|d, default a; see build/SIGNUP_BRIEF.md). The picked date and time are kept in the
+     sign-up flow store (SignupShell.flow) and repeated on every later step. */
+  var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
+  var WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var MONTHS_AP = ['Jan.', 'Feb.', 'March', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+  /* The calendar shows the picked site's month (SignupShell.site()): October 2026 for permanent sites (days without a
+     dot match the Figma calendar) and Rochester; September 2026 for the Jordan and St. Croix Valley events. */
+  var GROUPS = [
+    { label: 'Morning', slots: [{ time: '9–11 a.m.', spots: '18 spots left', state: 'available' }, { time: '11:30 a.m.–1:30 p.m.', spots: 'Full', state: 'full' }] },
+    { label: 'Afternoon', slots: [{ time: '2–4 p.m.', spots: '26 spots left', state: 'available' }, { time: '4:30–6:30 p.m.', spots: 'Closed', state: 'closed' }] },
+    { label: 'Evening', slots: [{ time: '7–9 p.m.', spots: '41 spots left', state: 'available' }] }
+  ];
+
+  /* ---- "Sign in to reserve" (Jonny, Oct. 27, 2026) ----
+     Signed out, "Continue to who’s coming" opens the Sign in dialog instead of moving on. Sign in and continue, Google and
+     Facebook sign in (FMSCAuth.signIn()); Create account and continue creates the account (FMSCAuth.createAccount()); both
+     then continue to step 2 exactly as Continue does. Fields start empty and nothing is validated. "New to FMSC? Create an
+     account" / "Already have an account? Sign in" swap the two dialogs. Close, Escape and the scrim close it; focus
+     returns to Continue. */
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  /* Google mark: the Figma Social sign-in button draws the outlined "brand-google" glyph, which the DS icon set lacks
+     (same mark as sign-in.html). */
+  var GOOGLE_MARK = h('svg', { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', 'aria-hidden': 'true' },
+    h('path', { d: 'M20.945 11a9 9 0 1 1 -3.284 -5.997l-2.655 2.392a5.5 5.5 0 1 0 2.119 6.605h-4.125v-3h7.945z', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }));
+  function inert(e) { e.preventDefault(); }
+
+  function AuthLayer(p) {
+    var ref = React.useRef(null), closeRef = React.useRef(p.onClose);
+    closeRef.current = p.onClose;
+    React.useLayoutEffect(function () {
+      var el = ref.current, root = document.getElementById('root');
+      root.inert = true; document.documentElement.classList.add('sa-lock');
+      function onKey(e) {
+        if (e.key === 'Escape') { e.preventDefault(); closeRef.current(); return; }
+        if (e.key !== 'Tab') return;
+        var list = Array.prototype.filter.call(el.querySelectorAll(FOCUSABLE), function (n) { return n.offsetParent !== null; });
+        if (!list.length) return;
+        var a = list[0], b = list[list.length - 1];
+        if (e.shiftKey && (document.activeElement === a || !el.contains(document.activeElement) || document.activeElement.getAttribute('role') === 'dialog')) { e.preventDefault(); b.focus(); }
+        else if (!e.shiftKey && (document.activeElement === b || !el.contains(document.activeElement))) { e.preventDefault(); a.focus(); }
+      }
+      document.addEventListener('keydown', onKey);
+      return function () {
+        document.removeEventListener('keydown', onKey);
+        root.inert = false; document.documentElement.classList.remove('sa-lock');
+        if (p.returnFocus) p.returnFocus();
+      };
+    }, []);
+    return ReactDOM.createPortal(
+      h('div', { ref: ref, className: 'sa-layer', onMouseDown: function (e) { if (e.target === e.currentTarget) closeRef.current(); } }, p.children),
+      document.body);
+  }
+
+  function AuthDialog(p) {
+    var mobile = F.useIsMobile();
+    var signIn = p.view !== 'create';
+    var age = React.useState(null), adult = age[0], setAdult = age[1];
+    var box = React.useRef(null);
+    /* Each dialog takes focus when it opens or swaps in (the panel itself, so the title is announced first). */
+    React.useEffect(function () { var d = box.current && box.current.querySelector('[role="dialog"]'); if (d) { d.setAttribute('tabindex', '-1'); d.focus(); } }, [p.view]);
+    function go(e, create) { if (e) e.preventDefault(); if (create) window.FMSCAuth.createAccount(); else window.FMSCAuth.signIn(); p.onDone(); }
+    var body = signIn
+      ? h('form', { className: 'sa-auth__fields', noValidate: true, onSubmit: function (e) { go(e, false); } },
+          h('p', { className: 'sa-auth__intro body-small' }, 'You’ll need an FMSC account to reserve a packing time. It keeps your reservations, volunteer hours and receipts in one place.'),
+          h('div', { className: 'sa-auth__fields' },
+            h(F.Input, { id: 'sa-si-email', name: 'email', label: 'Email', type: 'email', autoComplete: 'email' }),
+            h(F.Input, { id: 'sa-si-password', name: 'password', label: 'Password', type: 'password', autoComplete: 'current-password' })),
+          h('div', { className: 'sa-auth__remember' },
+            h(F.Checkbox, { name: 'remember', label: 'Keep me signed in' }),
+            h('a', { className: 'sa-auth__link body-small', href: '#', onClick: inert }, 'Forgot password?')),
+          h('div', null, h(F.Button, { variant: 'primary', size: 'large', type: 'submit', className: 'sa-auth__submit', fullWidth: mobile }, 'Sign in and continue')),
+          h(F.Divider, { label: 'or' }),
+          h('div', { className: 'sa-auth__social' },
+            h(F.SocialSignInButton, { provider: 'google', mark: GOOGLE_MARK, fullWidth: true, label: mobile ? 'Continue with Google' : 'Google', onClick: function (e) { go(e, false); } }),
+            h(F.SocialSignInButton, { provider: 'facebook', fullWidth: true, label: mobile ? 'Continue with Facebook' : 'Facebook', onClick: function (e) { go(e, false); } })),
+          h('p', { className: 'sa-auth__line body-small' }, 'New to FMSC? ',
+            h('button', { type: 'button', className: 'sa-auth__link fm-focusable', onClick: function () { p.onSwap('create'); } }, 'Create an account')))
+      : h('form', { className: 'sa-auth__fields', noValidate: true, onSubmit: function (e) { go(e, true); } },
+          h('p', { className: 'sa-auth__intro body-small' }, 'Add a few details, and you’ll come right back to finish reserving your spots.'),
+          h('div', { className: 'sa-auth__fields' },
+            h('div', { className: 'sa-auth__names' },
+              h(F.Input, { id: 'sa-ca-first', name: 'given-name', label: 'First name', autoComplete: 'given-name' }),
+              h(F.Input, { id: 'sa-ca-last', name: 'family-name', label: 'Last name', autoComplete: 'family-name' })),
+            h('fieldset', { className: 'sa-auth__age' },
+              h('legend', { className: 'label-small' }, 'Are you 18 or older?'),
+              h('div', { className: 'sa-auth__options' },
+                h(F.Radio, { name: 'sa-ca-adult', value: 'yes', label: 'Yes', checked: adult === 'yes', onChange: function () { setAdult('yes'); } }),
+                h(F.Radio, { name: 'sa-ca-adult', value: 'no', label: 'No', checked: adult === 'no', onChange: function () { setAdult('no'); } }))),
+            h(F.Input, { id: 'sa-ca-email', name: 'email', label: 'Email', type: 'email', autoComplete: 'email' }),
+            h(F.Input, { id: 'sa-ca-password', name: 'new-password', label: 'Password', type: 'password', autoComplete: 'new-password',
+              description: 'Use at least 8 characters, with a capital letter, a number and a special character.' })),
+          h(F.Checkbox, { name: 'news', label: 'Send me impact stories and FMSC news', description: 'We’ll still send the essentials, like reservation reminders and receipts.' }),
+          h('p', { className: 'sa-auth__terms caption' }, 'By creating an account, you agree to FMSC’s ',
+            h('a', { className: 'sa-auth__link', href: '#', onClick: inert }, 'terms of use'), ' and ',
+            h('a', { className: 'sa-auth__link', href: '#', onClick: inert }, 'privacy policy'), '.'),
+          h('div', null, h(F.Button, { variant: 'primary', size: 'large', type: 'submit', className: 'sa-auth__submit', fullWidth: mobile }, 'Create account and continue')),
+          h('p', { className: 'sa-auth__line body-small' }, 'Already have an account? ',
+            h('button', { type: 'button', className: 'sa-auth__link fm-focusable', onClick: function () { p.onSwap('signin'); } }, 'Sign in')));
+    return h('div', { ref: box, style: { display: 'contents' } },
+      h(F.Dialog, { key: p.view, breakpoint: mobile ? 'mobile' : 'desktop', modal: true, className: 'sa-auth', actions: null, closeLabel: 'Close',
+        title: signIn ? 'Sign in to reserve your spots' : 'Create your FMSC account', onClose: p.onClose }, body));
+  }
+
+  function Page() {
+    var mobile = F.useIsMobile();
+    var dlg = React.useState(null), auth = dlg[0], setAuth = dlg[1];
+    var path = React.useState(Shell.currentPath)[0];
+    /* Date and time live in the flow store, so "Change packing time" reopens with the user's pick. */
+    var flow = Shell.useFlow(), setFlow = flow[1], picked = Shell.flow.resolve(path);
+    var site = picked.site, day = picked.day, time = picked.time;
+    if (!GROUPS.some(function (g) { return g.slots.some(function (s) { return s.state === 'available' && s.time === time; }); })) time = '9–11 a.m.';
+    function setDay(v) { setFlow({ day: v }); }
+    function setTime(v, left) { setFlow({ time: v, spotsLeft: left }); }
+    var first = new Date(site.year, site.month, 1).getDay(), count = new Date(site.year, site.month + 1, 0).getDate();
+    var days = [];
+    for (var b = 0; b < first; b++) days.push({ state: 'outside-month' });
+    for (var i = 1; i <= count; i++) {
+      days.push({ day: i, state: i === day ? 'selected' : (Shell.isOpen(site, i) ? 'available' : 'no-times'),
+        ariaLabel: WEEKDAYS[(first + i - 1) % 7] + ', ' + MONTHS_AP[site.month] + ' ' + i });
+    }
+    var dateLabel = picked.dateLabel;
+    /* Continue: signed in → step 2 as before; signed out → the Sign in to reserve dialog. */
+    var next = Shell.href(path, 2);
+    function onContinue(e) {
+      if (window.FMSCAuth && window.FMSCAuth.signedIn()) return;
+      e.preventDefault(); setAuth('signin');
+    }
+    function close() { setAuth(null); }
+    function focusContinue() { var b = document.querySelector('.su-actions .fm-btn'); if (b) b.focus(); }
+
+    return h(Shell, { path: path, step: 1 },
+      h('div', { className: 'sa-dt' },
+        h('div', { className: 'sa-cal' },
+          h(F.Calendar, { month: MONTHS[site.month] + ' ' + site.year, days: days, selectedIndex: day + first - 1, fill: mobile,
+            onSelect: function (idx, cell) { setDay(cell.day); } }),
+          h('p', { className: 'sa-cal__key body-small' }, 'Days with a dot have open times.')),
+        h('div', { className: 'sa-dt__rule', role: 'presentation' }),
+        h('div', { className: 'sa-times' },
+          h('p', { className: 'sa-times__date label-base', id: 'sa-date', 'aria-live': 'polite' }, dateLabel),
+          h('div', { className: 'sa-groups' },
+            GROUPS.map(function (g) {
+              var gid = 'sa-group-' + g.label.toLowerCase();
+              return h('div', { key: g.label, className: 'sa-group', role: 'radiogroup', 'aria-labelledby': gid + ' sa-date' },
+                h('p', { className: 'sa-group__label overline', id: gid }, g.label),
+                g.slots.map(function (s) {
+                  var on = s.state === 'available' && s.time === time;
+                  return h(F.TimeSlotOption, { key: s.time, name: 'sa-time', value: s.time, time: s.time, spots: s.spots, fill: true,
+                    state: s.state === 'available' ? (on ? 'selected' : 'available') : s.state,
+                    checked: s.state === 'available' ? on : undefined,
+                    onChange: function () { setTime(s.time, s.spots); } });
+                }));
+            })))),
+      h(UI.Actions, { label: 'Continue to who’s coming', href: next, onClick: onContinue }),
+      auth ? h(AuthLayer, { onClose: close, returnFocus: focusContinue },
+        h(AuthDialog, { view: auth, onSwap: setAuth, onClose: close, onDone: function () { Shell.go(next); } })) : null);
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

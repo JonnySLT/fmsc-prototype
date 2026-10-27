@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Group settings · Grace Church Youth Group · FMSC</title>
+<meta name="description" content="Settings for Grace Church Youth Group on FMSC: group details, who can find and join, who runs the group and the emails you get about it.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js.
+     Figma: Desktop/Account/People & Groups/Group Settings (4656:51888) · Mobile (4656:86551). Prefix gp- (group pages). */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .gp-muted { color: var(--content-secondary); }
+  /* Figma breadcrumb and mobile back link use Body/Small Regular (the DS header sets them in Label/Small). */
+  .fm-account-header__crumb, .fm-account-header__back { font-weight: 400; }
+
+  /* Settings cards: Figma spaces everything space-lg apart; headers have no bottom padding. */
+  .ac-card.gp-set { gap: var(--space-lg); align-items: stretch; }
+  .ac-card__header.gp-head { padding-bottom: var(--space-0); }
+  .gp-head .fm-btn { flex: none; }
+  .gp-set > .fm-btn, .gp-set > .fm-arrow-link { align-self: flex-start; }
+
+  /* Questions: legend (Label/Small) then the choices, space-xs apart. */
+  .gp-q { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-xs); margin: 0; padding: 0; border: 0; min-width: 0; }
+  .gp-q > legend { float: left; width: 100%; padding: 0; color: var(--content-primary); }
+  .gp-q > legend + * { clear: both; }
+  /* Figma Radio Disabled keeps its description in content/secondary (the DS mutes it). */
+  .gp-set .fm-radio--disabled .fm-radio__desc { color: var(--content-secondary); }
+  .gp-alert { display: flex; align-items: center; gap: var(--space-sm); }
+  .gp-alert .fm-dropdown { width: 200px; }
+  .gp-alert .fm-dropdown__anchor { width: 100%; }
+
+  /* Join link and code panel */
+  .gp-join { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); border-radius: var(--radius-md); background: var(--background-subtle); }
+  .gp-join__code { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--space-3xs); }
+  .gp-join .fm-btn { flex: none; }
+
+  /* Admins list */
+  .gp-admins { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
+  .gp-admin { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); }
+  .gp-admin + .gp-admin { border-top: 1px solid var(--border-subtle); }
+  .gp-admin__who { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--space-3xs); }
+  .gp-admin .fm-btn { flex: none; }
+  .gp-note { max-width: 607px; }
+
+  @container ac-content (max-width: 699.98px) {
+    .gp-join { flex-direction: column; align-items: stretch; }
+  }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .gp-set > .fm-btn, .gp-join .fm-btn { align-self: stretch; width: 100%; }
+    .gp-alert { align-self: stretch; flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .gp-alert .fm-check { align-self: flex-start; }
+    .gp-alert .fm-dropdown { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement, D = window.FMSCData;
+  var GROUP = 'Grace Church Youth Group';
+  /* Group types from the sign-up flow (path d asks for one). */
+  var TYPES = ['Church: Youth Over 12', 'Church: Youth Under 12', 'Church: Adults', 'Family', 'Friends', 'School', 'Team or club', 'Company', 'Other'];
+
+  function Head(p) {
+    var mobile = F.useIsMobile();
+    return h('div', { className: 'ac-card__header gp-head' },
+      h(UI.Badge, { icon: p.icon }),
+      h('h2', { className: 'ac-card__title ' + (mobile ? 'heading-h4-mobile' : 'heading-h4'), id: p.id }, p.title),
+      mobile ? null : p.action);
+  }
+  /* A question: legend + radios (choices: [label, description?, disabled?]). Selection is page state. */
+  function Choice(p) {
+    var s = React.useState(p.initial), v = s[0], setV = s[1];
+    return h('fieldset', { className: 'gp-q' },
+      h('legend', { className: 'label-small' }, p.legend),
+      p.choices.map(function (c, i) {
+        return h(F.Radio, { key: c[0], name: p.name, value: String(i), label: c[0], description: c[1] || undefined, disabled: !!c[2],
+          checked: v === i, onChange: function () { setV(i); } });
+      }));
+  }
+  function copy(text) { try { navigator.clipboard.writeText(text); } catch (e) { /* clipboard blocked: nothing to do */ } }
+
+  function GroupSettings() {
+    var mobile = F.useIsMobile();
+    var n = React.useState(GROUP), name = n[0], setName = n[1];
+    var o = React.useState('Grace Church, Coon Rapids, MN'), org = o[0], setOrg = o[1];
+    var a1 = React.useState(true), fills = a1[0], setFills = a1[1];
+    var a2 = React.useState(true), open = a2[0], setOpen = a2[1];
+    var you = D.profile.display('Sarah Whitfield');
+    var addAdmin = h(F.Button, { variant: 'secondary', size: 'medium', type: 'button' }, 'Add an admin');
+
+    return h(window.AccountShell, { current: 'people' },
+
+      h(F.AccountPageHeader, {
+        breakpoint: 'auto', title: 'Group settings', showBreadcrumb: true,
+        breadcrumb: [{ label: 'My account', href: 'account-dashboard.html' }, { label: 'People & groups', href: 'account-people.html' }, { label: GROUP, href: 'account-group-admin.html' }, { label: 'Group settings' }],
+        backTo: { label: GROUP, href: 'account-group-admin.html' },
+        showDescription: true, description: 'Changes here apply to everyone in the group.'
+      }),
+
+      /* 1 · About this group */
+      h('form', { className: 'ac-card gp-set', 'aria-labelledby': 'gp-about-title', onSubmit: function (e) { e.preventDefault(); } },
+        h(Head, { icon: 'info-circle', title: 'About this group', id: 'gp-about-title' }),
+        h(F.Input, { label: 'Group name', value: name, onChange: function (e) { setName(e.target.value); }, name: 'group-name', autoComplete: 'off' }),
+        h(F.Dropdown, { label: 'Group type', showLabel: true, options: TYPES, defaultValue: 'Church: Youth Over 12', name: 'group-type' }),
+        h(Choice, { legend: 'Will anyone under 18 pack with this group?', name: 'gp-under18', initial: 0,
+          choices: [['Yes', 'We’ll ask each volunteer’s guardian for consent.'], ['No']] }),
+        h(Choice, { legend: 'Does this group pack on behalf of an organization?', name: 'gp-org', initial: 0, choices: [['Yes'], ['No']] }),
+        h(F.Input, { label: 'Organization', icon: 'search', value: org, onChange: function (e) { setOrg(e.target.value); }, description: 'Choose from the list, or type the name.', name: 'organization', autoComplete: 'off' }),
+        h(F.Button, { variant: 'primary', size: 'medium', type: 'submit' }, 'Save group details')),
+
+      /* 2 · Who can find and join */
+      h('form', { className: 'ac-card gp-set', 'aria-labelledby': 'gp-join-title', onSubmit: function (e) { e.preventDefault(); } },
+        h(Head, { icon: 'search', title: 'Who can find and join', id: 'gp-join-title' }),
+        h(Choice, { legend: 'Who can find this group?', name: 'gp-find', initial: 0,
+          choices: [['Only people you invite or send the code to'], ['Anyone searching for a group to pack with', 'Not available while anyone under 18 is in the group.', true]] }),
+        h(Choice, { legend: 'How do people join?', name: 'gp-how', initial: 0,
+          choices: [['Straight from the invitation link or code'], ['An admin approves each person first']] }),
+        h('div', { className: 'gp-join' },
+          h('div', { className: 'gp-join__code' },
+            h('p', { className: 'caption gp-muted' }, 'Join code'),
+            h('p', { className: mobile ? 'heading-h4-mobile' : 'heading-h4' }, 'GRACE-4821'),
+            h('p', { className: 'body-small gp-muted' }, 'fmsc.org/join/grace-4821')),
+          h(F.Button, { variant: 'secondary', size: 'medium', icon: 'link', type: 'button', onClick: function () { copy('https://fmsc.org/join/grace-4821'); } }, 'Copy the link'),
+          h(F.Button, { variant: 'secondary', size: 'medium', type: 'button' }, 'Make a new code')),
+        h('p', { className: 'caption gp-muted' }, 'The old link and code stop working. No one is removed from the group.'),
+        h(F.Button, { variant: 'primary', size: 'medium', type: 'submit' }, 'Save who can join')),
+
+      /* 3 · Who runs this group */
+      h('section', { className: 'ac-card gp-set', 'aria-labelledby': 'gp-admins-title' },
+        h(Head, { icon: 'users-group', title: 'Who runs this group', id: 'gp-admins-title', action: addAdmin }),
+        mobile ? addAdmin : null,
+        h('p', { className: 'body-base gp-muted gp-note' }, 'Every admin has the same rights. A group always needs at least one admin.'),
+        h('ul', { className: 'gp-admins', role: 'list', style: { listStyle: 'none', margin: 0, padding: 0 } },
+          h('li', { className: 'gp-admin' },
+            h(F.Avatar, { size: 'small', type: 'initials', initials: D.profile.initials(), name: you }),
+            h('div', { className: 'gp-admin__who' }, h('p', { className: 'label-small' }, you), h('p', { className: 'body-small gp-muted' }, 'You')),
+            h(F.Button, { variant: 'secondary', size: 'medium', type: 'button', 'aria-label': 'Transfer your admin role' }, 'Transfer')),
+          h('li', { className: 'gp-admin' },
+            h(F.Avatar, { size: 'small', type: 'initials', initials: 'DR', name: 'Dana Reyes' }),
+            h('div', { className: 'gp-admin__who' }, h('p', { className: 'label-small' }, 'Dana Reyes'), h('p', { className: 'body-small gp-muted' }, 'Admin since January 2024'))))),
+
+      /* 4 · What we email you about this group */
+      h('form', { className: 'ac-card gp-set', 'aria-labelledby': 'gp-email-title', onSubmit: function (e) { e.preventDefault(); } },
+        h(Head, { icon: 'mail', title: 'What we email you about this group', id: 'gp-email-title' }),
+        h(Choice, { legend: 'When people join, claim spots or give them up', name: 'gp-often', initial: 1,
+          choices: [['Email me every time'], ['Send one summary a day'], ['Don’t email me']] }),
+        h('fieldset', { className: 'gp-q' },
+          h('legend', { className: 'label-small' }, 'Shift alerts'),
+          h(F.Checkbox, { label: 'When one of our shifts fills', checked: fills, onChange: function (e) { setFills(e.target.checked); } }),
+          h('div', { className: 'gp-alert' },
+            h(F.Checkbox, { label: 'When spots are still open', checked: open, onChange: function (e) { setOpen(e.target.checked); } }),
+            h(F.Dropdown, { label: 'When to send the open spots alert', options: ['1 day before', '3 days before', '1 week before'], defaultValue: '3 days before', disabled: !open, name: 'open-spots-when' }))),
+        h(F.ArrowLink, { label: 'Your personal email preferences', href: 'account-profile.html' }),
+        h(F.Button, { variant: 'primary', size: 'medium', type: 'submit' }, 'Save your emails')));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(GroupSettings));
+</script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Donate · FMSC</title>
+<meta name="description" content="Donate page for the FMSC.org usability test, built from the FMSC Design System.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul { margin: 0; }
+
+  .do-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .do-section--subtle { background: var(--background-subtle); }
+  .do-section--tight { gap: var(--space-xl); }
+  .do-inner { width: 100%; max-width: var(--content-width); }
+
+  /* Ways to give: two copy blocks beside the Donate module */
+  .do-ways { display: flex; flex-direction: column; gap: var(--space-xl); }
+  .do-way { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+  .do-way p { color: var(--content-secondary); max-width: 80ch; }
+  .fm-split .fm-donate { width: 100%; }
+
+  /* Employer matching band (navy) */
+  .do-match { display: flex; justify-content: center; padding: var(--space-xl) var(--margin-x); background: var(--background-brand-dark); color: var(--content-on-brand); }
+  .do-match__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--grid-gap); width: 100%; max-width: var(--content-width); }
+  .do-match__copy { display: flex; flex-direction: column; gap: var(--space-md); flex: 1 1 400px; max-width: 619px; }
+  .do-match__copy p { max-width: 80ch; }
+  .do-match__actions { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-md); flex: 0 1 435px; min-width: 0; }
+  .do-match__actions .fm-search { width: 100%; }
+  .do-match__credit { display: flex; align-items: center; gap: var(--space-2xs); }
+  .do-match__credit img { width: 24px; height: 25px; flex: none; }
+
+  /* Table Builders */
+  .do-tb-photo { position: relative; overflow: hidden; border-radius: var(--radius-lg); min-height: 320px; height: 100%; }
+  .do-tb-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .do-tb-copy { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); color: var(--content-secondary); }
+  .do-tb-copy p, .do-tb-copy ul { max-width: 80ch; }
+  .do-tb-copy ul { padding-left: var(--space-lg); }
+  .do-tb-copy strong { font-weight: 600; color: var(--content-primary); }
+  .do-section .do-nested { padding: 0; }
+  .do-section .fm-badge-card, .do-section .fm-media-card { width: 100%; }
+
+  /* More ways to give: the media-card row sits flush on the badge-card row */
+  .do-more-top { padding-bottom: 0; }
+  .fm-section-card-grid__item > .fm-media-card { width: 100%; }
+
+  /* Stat row: the four-star rating needs ~260px, so step the four stats to 2 × 2 before they collide */
+  @media (max-width: 1099.98px) {
+    .do-page .fm-section-stat-row__stats { flex-wrap: wrap; row-gap: var(--section-gap); }
+    .do-page .fm-section-stat-row.fm-section-stat-row--desktop .fm-section-stat-row__stats > .fm-section-stat-row__slot { flex: 1 1 calc(50% - var(--grid-gap)); }
+  }
+
+  /* Figma column widths the DS doesn't carry: section-header supporting text 730px, FAQ answer 600px */
+  .do-page .fm-section-header__supporting { max-width: 730px; }
+  .do-page .fm-section-faq__answer { max-width: 600px; }
+  /* Stat row: the frame shows outline stars (the DS fills them) */
+  .do-page .fm-section-stat-row__rating path { fill: none; stroke: currentColor; }
+  /* Footer: the frame's legal line runs on one line beside the seals (DS caps it at 756px) */
+  .do-page .fm-footer--desktop .fm-footer__legal-copy { max-width: none; }
+
+  /* CTA band: this frame has no eyebrow */
+  .do-cta .fm-cta-band__eyebrow { display: none; }
+  /* Trust strip: the DS fixes each group at 384px, which overflows under ~1250px; let the groups share the row */
+  .do-cta .fm-cta-band__trust { width: 100%; max-width: var(--content-width); }
+  .do-cta.fm-cta-band--desktop .fm-cta-band__group { width: auto; flex: 1 1 0; min-width: 0; }
+  /* …and let a trust label wrap instead of clipping when the three groups get narrow */
+  .do-cta .fm-cta-band__trust-stat { white-space: normal; min-width: 0; text-align: left; }
+  /* 600–879 (desktop stacked): three trust groups don't fit one row; stack them, centred. */
+  @media (min-width: 600px) and (max-width: 879.98px) {
+    .do-cta.fm-cta-band--desktop .fm-cta-band__trust { flex-direction: column; align-items: center; }
+    .do-cta.fm-cta-band--desktop .fm-cta-band__group { flex: none; width: 280px; justify-content: flex-start; }
+  }
+  /* Trust strip rating: Figma draws the four stars as one 128 × 28 artwork (DS stars are 28px icons, 4px apart, ~22px glyphs) */
+  .do-cta .fm-impact-band__stars { gap: 0; }
+  .do-cta .fm-impact-band__stars .fm-icon { width: var(--size-xl); height: var(--size-xl); transform: scale(1.08); }
+  .do-cta .fm-impact-band__stars path { stroke-width: 1.4; }
+  /* Stat row stars: the frame's 54px (38px mobile) star outlines fill their box with a ~3px ring; the DS icon glyph is ~85% of the box with a 2-unit stroke */
+  .do-page .fm-section-stat-row__rating .fm-icon { transform: scale(1.15); }
+  .do-page .fm-section-stat-row__rating path { stroke-width: 1.35; }
+
+  /* Action card: under 900px the copy column gets squeezed beside the buttons, so stack them */
+  @media (max-width: 899.98px) {
+    .do-page .fm-action-card:not(.fm-action-card--mobile) { flex-direction: column; align-items: flex-start; }
+    .do-page .fm-action-card:not(.fm-action-card--mobile) .fm-action-card__copy { flex: none; width: 100%; }
+    .do-page .fm-action-card:not(.fm-action-card--mobile) .fm-action-card__actions { flex-wrap: wrap; }
+  }
+
+  /* ---------- Mobile (< 600px): the "Mobile/How to Help/Donate" frame ---------- */
+  @media (max-width: 599.98px) {
+    /* Donate module: DS mobile keeps the desktop flex-basis (244px / 171px) on the answer and input, which turns into height once the ask stacks */
+    .do-page .fm-donate--mobile .fm-donate__answer, .do-page .fm-donate--mobile .fm-donate__input { flex: none; }
+    /* Employer matching: search and credit stack full width, credit left-aligned with the 40px Double the Donation mark */
+    .do-match { padding: var(--section-y) var(--margin-x); }
+    .do-match__row { flex-direction: column; align-items: stretch; gap: var(--space-md); }
+    .do-match__copy { flex: none; max-width: none; }
+    .do-match__actions { flex: none; align-items: stretch; gap: var(--space-md); }
+    .do-match__credit img { width: 40px; height: 41px; }
+    /* Table Builders: brand-subtle band, 16:9 photo, 16px rhythm in the copy column */
+    .do-section--subtle { background: var(--background-brand-subtle); }
+    .do-tb-photo { min-height: 0; height: auto; aspect-ratio: 361 / 203; }
+    .do-tb-copy { gap: var(--space-md); }
+    /* Badge and media cards have no breakpoint prop: give their titles the Heading/H4 mobile size (= .heading-h4-mobile) */
+    .do-page .fm-badge-card__title, .do-page .fm-media-card__title { font-size: 18px; line-height: 24px; }
+    /* Action card: full-width button, link centred under it */
+    .do-page .fm-action-card--mobile .fm-action-card__actions { align-items: stretch; }
+    .do-page .fm-action-card--mobile .fm-action-card__link { align-self: center; }
+    /* CTA trust strip: the frame's rating row is 38px tall */
+    /* Footer: DS mobile columns keep the desktop 140px flex-basis, which becomes height in the column stack */
+    .do-page .fm-footer--mobile .fm-footer__col, .do-page .fm-footer--mobile .fm-footer__brand { flex: none; }
+  }
+</style>
+</head>
+<body class="do-page">
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+
+  var helpItems = ['Volunteer at a packing event', 'Donate once or monthly', 'Start a fundraiser', 'Shop FMSC MarketPlace™',
+    'Host a MobilePack™ event', 'Attend a fundraising event', 'Plan an estate gift', 'Corporate partnerships']
+    .map(function (l) { return { label: l }; });
+
+  function Way(p) {
+    var mobile = F.useIsMobile();
+    return h('div', { className: 'do-way' },
+      h(F.IllustrationBadge, { size: 'large', illustration: p.illustration }),
+      h('h3', { className: mobile ? 'heading-h3-mobile' : 'heading-h3' }, p.title),
+      h('p', { className: mobile ? 'body-large-mobile' : 'body-large' }, p.body));
+  }
+
+  /* ?amount=<whole dollars>&freq=<once|monthly> preset the DonateModule (from "Change amount" on Your giving,
+     or a DonateModule on another page). No params: the module's own defaults ($106, Give once), as in Figma.
+     Links add #do-give so site-nav.js opens the page at the module. */
+  var gift = (function () {
+    var q = {};
+    try { q = new URLSearchParams(window.location.search); } catch (e) { return {}; }
+    var out = {}, a = q.get ? q.get('amount') : null, f = q.get ? q.get('freq') : null;
+    if (a && /^\d{1,7}$/.test(a) && parseInt(a, 10) >= 1) out.defaultAmount = parseInt(a, 10);
+    if (f === 'once' || f === 'monthly') out.defaultFrequency = f;
+    return out;
+  })();
+
+  function badge(src) { return h(F.IllustrationBadge, { illustration: src }); }
+
+  function DonatePage() {
+    var mobile = F.useIsMobile();
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'donate' }),
+
+      h('main', null,
+        h(F.Hero, { breakpoint: 'auto',
+          type: 'standard',
+          eyebrow: 'DONATE',
+          h1: 'Your donations pay for the meals packed by volunteers',
+          body: 'One meal costs 29¢, and $106 feeds a child a daily meal for a full year.',
+          primaryLabel: 'Volunteer', primaryHref: 'volunteer.html',
+          secondaryLabel: 'Donate', secondaryHref: '#do-give',
+          image: img('donate-hero.jpg'),
+          imageAlt: 'Schoolchildren in blue uniforms give a thumbs-up as they eat bowls of rice at their classroom desks.'
+        }),
+
+        /* 2 · Ways to give */
+        h('section', { className: 'do-section do-section--tight', id: 'do-give', 'aria-labelledby': 'do-give-h' },
+          h('div', { className: 'do-inner' },
+            h(F.SectionHeader, { breakpoint: 'auto', align: 'left', heading: h('span', { id: 'do-give-h' }, 'Feed a child every day this year'), showEyebrow: false,
+              supporting: 'Give monthly and you’re an FMSC Table Builder, one of the people who help build the table every month. You can also give once.' })),
+          h('div', { className: 'do-inner' }, h(F.LayoutSplit, null,
+            h('div', { className: 'do-ways' },
+              h(Way, { illustration: img('donations-recurring.svg'), title: 'Give monthly and become an FMSC Table Builder',
+                body: 'A recurring gift keeps the food coming and gives partners a stable food source. Table Builders get early access to new stories, updates and events. You can change or stop your gift anytime.' }),
+              h(Way, { illustration: img('donations-cash-gift.svg'), title: 'Give once',
+                body: 'A one-time gift goes directly to buying food, which volunteers pack for hungry children around the world.' })),
+            h(F.DonateModule, Object.assign({ breakpoint: 'auto', showModeTabs: false, linkHref: 'impact.html' }, gift))))),
+
+        /* Employer matching */
+        h('section', { className: 'do-match', id: 'matching', 'aria-labelledby': 'do-match-h' },
+          h('div', { className: 'do-match__row' },
+            h('div', { className: 'do-match__copy' },
+              h('h2', { id: 'do-match-h', className: mobile ? 'heading-h3-mobile' : 'heading-h3' }, 'Your employer may double it'),
+              h('p', { className: 'body-base' }, 'Thousands of companies match employee donations, and many match volunteer hours too. Search for your employer to find out.')),
+            h('div', { className: 'do-match__actions' },
+              h(F.Search, { label: 'Search for company', placeholder: 'Search for company' }),
+              h('p', { className: 'do-match__credit body-small' },
+                h('img', { src: img('donate-double-the-donation.svg'), alt: '' }),
+                'All information provided by Double the Donation')))),
+
+        /* 3 · FMSC Table Builders */
+        h('section', { className: 'do-section do-section--subtle', 'aria-labelledby': 'do-tb-h' },
+          h('div', { className: 'do-inner' },
+            h(F.SectionHeader, { breakpoint: 'auto', align: 'left', heading: h('span', { id: 'do-tb-h' }, 'FMSC Table Builders are our monthly givers'), showEyebrow: false,
+              supporting: 'Give monthly and help build the table.' })),
+          h('div', { className: 'do-inner' }, h(F.LayoutSplit, { align: 'stretch' },
+            h('div', { className: 'do-tb-photo' }, h('img', { src: img('donate-table-builders.jpg'), alt: 'Smiling children hold green bowls of rice at a wooden table.' })),
+            h('div', { className: 'do-tb-copy ' + (mobile ? 'body-large-mobile' : 'body-large') },
+              h('p', null, 'A table is built one plank at a time, and monthly gifts add up the same way. There’s always room for one more child at the table, and for one more person to help feed them.'),
+              h('div', null,
+                h('p', null, 'Your monthly gift:'),
+                h('ul', null,
+                  h('li', null, 'Puts a complete meal on a child’s plate.'),
+                  h('li', null, 'Gives a child the chance to grow, learn and have a future.'),
+                  h('li', null, 'Makes room for the next child.'))),
+              h('div', null,
+                h('p', null, 'There are three Builder levels:'),
+                h('ul', null,
+                  h('li', null, h('strong', null, 'Table Builders'), ' help build the table with a gift every month.'),
+                  h('li', null, h('strong', null, 'Foundation Builders’'), ' gifts build the foundation for greater impact.'),
+                  h('li', null, h('strong', null, 'Legacy Builders’'), ' will or estate gifts build a future beyond us all.'))),
+              h(F.ArrowLink, { label: 'Learn more about FMSC Table Builders', href: '#' })))),
+          h('div', { className: 'do-inner' },
+            h(F.SectionCardGrid, { breakpoint: 'auto',
+              className: 'do-nested', columns: 3,
+              header: { align: 'left', heading: 'What’s included as a Table\u00a0Builder', showEyebrow: false, showSupporting: false },
+              items: [
+                h(F.BadgeCard, { key: 'r', container: 'plain', illustration: img('donations-recurring.svg'), title: 'Quarterly impact reports', body: 'Get a report on our impact and what’s new.', showLink: false }),
+                h(F.BadgeCard, { key: 's', container: 'plain', illustration: img('legacy-heart-cross.svg'), title: 'First look at stories', body: 'See new stories from our partners first.', showLink: false }),
+                h(F.BadgeCard, { key: 'm', container: 'plain', illustration: img('marketplace-gift.svg'), title: 'FMSC MarketPlace™ discounts', body: 'Year-round discounts on artisan-crafted goods.', showLink: false })
+              ]
+            })),
+          h('div', { className: 'do-inner' },
+            h(F.ActionCard, { breakpoint: 'auto',
+              heading: 'Become an FMSC Table Builder',
+              body: 'Your first monthly gift makes you a Table Builder. You can change, pause or stop your monthly gift at any time.',
+              buttonLabel: 'Join and give monthly', buttonHref: '#do-give',
+              showLink: true, linkLabel: 'Manage my monthly gift', linkHref: '#'
+            }))),
+
+        /* 4 · Where your money goes */
+        h(F.SectionStatRow, { breakpoint: 'auto',
+          stats: 4,
+          header: { align: 'left', heading: 'Where your money goes', showEyebrow: false, supporting: 'Meals go out as donations come in, which is why the ratio matters.' },
+          showLink: false,
+          headerButton: true, headerButtonLabel: 'See FMSC’s financial accountability', headerButtonHref: '#',
+          items: [
+            { value: '88%', label: 'of donations go to meal production' },
+            { value: '29¢', label: 'the cost of one meal' },
+            { rating: true, label: 'Charity Navigator four-star rating' },
+            { value: 'Platinum', label: 'Candid Seal of Transparency' }
+          ]
+        }),
+
+        /* 5 · More ways to give */
+        h(F.SectionCardGrid, { breakpoint: 'auto',
+          className: 'do-more-top', columns: 2,
+          header: { align: 'left', heading: 'More ways to give', showEyebrow: false, showSupporting: false },
+          items: [
+            h(F.MediaCard, { key: 'n', title: 'Give in someone’s name', image: img('donate-in-their-name.jpg'),
+              imageAlt: 'A toddler in a red top stands at a wooden rail inside a home.',
+              badge: badge(img('in-country-home-heart.svg')),
+              body: 'Giving in honor of someone, or in memory of them? Add a dedication at checkout and FMSC will send a notification to whoever you choose.',
+              linkLabel: 'Give in their name', href: '#' }),
+            h(F.MediaCard, { key: 's', title: 'Give stock or from a fund', image: img('donate-stock.jpg'),
+              imageAlt: 'A worker pulls a pallet jack past stacked boxes in a warehouse.',
+              badge: badge(img('donations-cash-gift.svg')),
+              body: 'Transfer appreciated stock, recommend a grant from a donor advised fund, or post a check.',
+              linkLabel: 'Get transfer instructions', href: '#' })
+          ]
+        }),
+        h(F.SectionCardGrid, { breakpoint: 'auto',
+          columns: 3, showHeader: false,
+          items: [
+            { title: 'Start a fundraiser', body: 'Set a meal goal for a birthday, a race or no reason at all.', illustration: img('volunteers-team-raise.svg'), linkLabel: 'Start your fundraiser', href: 'fundraiser.html' },
+            { title: 'Leave a gift in your will', body: 'A bequest, a trust, or naming FMSC as a beneficiary. Arranged now, given later.', illustration: img('legacy-coins.svg'), linkLabel: 'See estate gift options', href: 'estate-gift.html' },
+            { title: 'Give as a company', body: 'Corporate partnership and sponsorship.', illustration: img('extras-handshake.svg'), linkLabel: 'See partnership options', href: 'corporate-partnerships.html' }
+          ]
+        }),
+
+        /* 6 · Common questions */
+        h(F.SectionFAQ, { breakpoint: 'auto',
+          header: { align: 'left', heading: 'Common questions', showEyebrow: false, showSupporting: false },
+          items: [
+            { question: 'Is my gift tax deductible?', expanded: true, answer: 'Yes. Feed My Starving Children is a 501(c)(3) charitable nonprofit. The tax ID is 41-1601449, and donations are deductible to the full extent provided by law.' },
+            { question: 'Does my gift feed one specific child?', answer: 'No, and that’s deliberate. Gifts fund meal production as a whole, so FMSC and its partners can send food where the need is greatest rather than where the money happens to be earmarked.' },
+            { question: 'Where do the meals go?', answer: 'Faith-based and humanitarian partners distribute MannaPack® meals in more than 100 countries. More than 99% of meals shipped safely reach their destination.' },
+            { question: 'What’s in a MannaPack® meal?', answer: 'Rice, soy, dried vegetables and a vitamin packet — formulas developed by food scientists for malnourished children.' },
+            { question: 'When do I get a receipt?', answer: 'A receipt is emailed immediately. Year-end tax documents go out in January covering the previous calendar year.' },
+            { question: 'Can I change or stop my monthly gift?', answer: 'Yes, anytime. Monthly gifts run through GoFundMe Pro, a secure donation platform separate from your fmsc.org account.' }
+          ],
+          showLink: true, linkLabel: 'See all FMSC FAQs', linkHref: '#'
+        }),
+
+        h(F.CTABand, { breakpoint: 'auto',
+          className: 'do-cta',
+          eyebrow: '',
+          headline: 'Keep track of your impact',
+          subtext: 'Create an FMSC account to keep your shift reservations, volunteer hours, family members, donations and tax receipts in one place. Every gift, shift and purchase adds to one lifetime total.',
+          primaryLabel: 'Track your impact', primaryHref: 'create-account.html',
+          secondaryLabel: 'Sign in', secondaryHref: 'sign-in.html',
+          showTrustStrip: true,
+          trustIllustrations: [img('donations-recurring.svg'), img('food-mannapack-bag.svg'), img('volunteers-celebrate.svg')]
+        })),
+
+      h(F.Footer, { breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        /* Figma footer copy differs from the DS defaults ("Our finances", "Host an FMSC MobilePack™ event") */
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(DonatePage));
+</script>
+</body>
+</html>

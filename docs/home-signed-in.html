@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FMSC Homepage — Signed In</title>
+<meta name="description" content="Signed-in homepage for the FMSC.org usability test (Figma Homepage/Authenticated), built from the FMSC Design System.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p { margin: 0; }
+
+  .hp-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .hp-section--subtle { background: var(--background-subtle); }
+  .hp-section--surface { background: var(--background-surface); }
+  .hp-section--brand { background: var(--background-brand); }
+  .hp-inner { width: 100%; max-width: var(--content-width); }
+
+  /* Section intro: Overline + Display/XL + Body/Base, centred */
+  .hp-intro { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); max-width: 792px; text-align: center; }
+  .hp-intro__eyebrow { color: var(--content-secondary); }
+  .hp-intro__body { color: var(--content-secondary); max-width: 607px; }
+
+  /* Photos inside a LayoutSplit */
+  .hp-photo { position: relative; overflow: hidden; border-radius: var(--radius-xl); min-height: 100%; }
+  .hp-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hp-photo--gift { width: 100%; min-height: 0; aspect-ratio: 588 / 526; }
+  .fm-split .fm-volunteer, .fm-split .fm-donate { width: 100%; }
+  /* Wrapper that listens to the Volunteer module's fields; it adds no box, so the split lays out as before. */
+  .hp-vfinder { display: contents; }
+  .fm-split--center .hp-photo { min-height: 0; }
+  .hp-photo--stretch { min-height: 320px; }
+  /* Figma crops: packing photo pinned to the top, gift photo pinned to the right */
+  /* Figma shows the top 81.2% of the packing photo; the 123.2% box keeps the bottom (photographer watermark) cropped at every height */
+  .hp-photo--stretch img { height: 123.2%; object-position: 50% 0; }
+  .hp-photo--gift img { object-position: 100% 50%; }
+  /* When the LayoutSplit stacks (its own width < 840px), keep the photos landscape instead of very tall */
+  @container (max-width: 839.98px) {
+    .hp-photo--stretch, .hp-photo--gift { min-height: 0; aspect-ratio: 16 / 9; }
+    .hp-photo--stretch img { height: 100%; object-position: 50% 35%; }
+  }
+
+  /* Hero: the DS scrim fades by % of the viewport, so on narrower screens the end of the body line sat on
+     an almost clear photo. Anchor the fade to the copy column instead (same stops as 1440 in px). */
+  @media (max-width: 1279.98px) {
+    .fm-hero--homepage:not(.fm-hero--mobile) .fm-hero__scrim { background-image: linear-gradient(90deg, var(--scrim-strong) 0, var(--scrim-strong) 424px, var(--scrim-default) 965px, transparent 1440px); }
+  }
+
+  /* Welcome back hero between breakpoints (Figma draws 1440 and 393 only). The DS desktop variant keeps a fixed
+     606px photo, which squeezes the copy to one stat per row below ~1280 and runs off the page at 600.
+     880–1279: photo shrinks to 42% and the four figures stay a 2 × 2 grid. 600–879: photo on top, copy below. */
+  @media (min-width: 600px) and (max-width: 1279.98px) {
+    .fm-hero--welcome-back:not(.fm-hero--mobile) .fm-hero__photo { width: 42%; }
+    .fm-hero--welcome-back:not(.fm-hero--mobile) .fm-hero__stats { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--grid-gap); }
+    .fm-hero--welcome-back:not(.fm-hero--mobile) .fm-hero__stat { min-width: 0; }
+  }
+  @media (min-width: 600px) and (max-width: 879.98px) {
+    .fm-hero--welcome-back:not(.fm-hero--mobile) { flex-direction: column-reverse; align-items: stretch; min-height: 0; padding: 0 var(--margin-x) var(--section-y); gap: var(--section-gap); }
+    .fm-hero--welcome-back:not(.fm-hero--mobile) .fm-hero__photo { width: auto; margin: 0 calc(-1 * var(--margin-x)); aspect-ratio: 16 / 7; }
+    .fm-hero--welcome-back:not(.fm-hero--mobile) .fm-hero__fade { background-image: linear-gradient(0deg, var(--background-brand-subtle) 0%, transparent 35%); }
+  }
+
+  /* What to expect */
+  .hp-expect { display: flex; flex-direction: column; align-items: flex-start; gap: var(--section-gap); }
+  .hp-expect__head { display: flex; flex-direction: column; gap: var(--space-md); width: 100%; }
+  .hp-expect__label { color: var(--content-secondary); }
+  .hp-expect__item { display: flex; flex-direction: column; gap: var(--space-2xs); }
+  .hp-expect__item p:last-child { color: var(--content-secondary); }
+
+  /* One story — Samuel */
+  .hp-story .fm-video { width: 100%; aspect-ratio: 588 / 371; }
+  /* Frame shows a bare white rounded triangle (no pill); button keeps its 64px hit area */
+  .hp-story .fm-video__play { background: transparent; box-shadow: none; color: var(--content-on-brand); justify-content: center; }
+  .hp-story .fm-video__tri { width: 32px; height: 38px; margin-left: var(--space-2xs); overflow: visible; }
+  .hp-story .fm-video__tri path { stroke: currentColor; stroke-width: 3; stroke-linejoin: round; }
+  .hp-story__copy { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-lg); color: var(--content-on-brand); }
+  .hp-story__head { display: flex; flex-direction: column; gap: var(--space-md); }
+
+  /* Pack meals as a group */
+  .hp-tile { height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); padding: var(--card-pad); background: var(--background-surface); border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--border-subtle); }
+  .hp-tile__copy { display: flex; flex-direction: column; gap: var(--space-xs); }
+  .hp-tile__copy p { color: var(--content-secondary); }
+  .hp-group-header { max-width: 792px; }
+
+  /* Our mission */
+  .hp-mission { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); max-width: 792px; width: 100%; }
+  .hp-mission__copy { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); text-align: center; }
+  .hp-mission__copy .overline, .hp-mission__copy .body-base { color: var(--content-secondary); }
+  .hp-mission__copy .body-base { max-width: 607px; }
+  .hp-mission__photo { width: 100%; aspect-ratio: 792 / 360; object-fit: cover; border-radius: var(--radius-lg); }
+
+  /* CTA band: the homepage frames (desktop and mobile) set the subtext to blue/200, not the DS default content/on-brand */
+  .fm-cta-band__subtext { color: var(--blue-200); }
+
+  /* Mobile (< 600px): Figma "Mobile/Homepage/Authenticated" 4656:85800. Components switch themselves (breakpoint: 'auto');
+     these rules cover the page-level blocks. Text styles switch to the -mobile classes in the render function. */
+  @media (max-width: 599.98px) {
+    /* Shift finder photo 361×420, top of the photo (Figma crop shows the top 78%) */
+    .hp-photo--stretch { min-height: 0; aspect-ratio: 361 / 420; }
+    @container (max-width: 839.98px) { .hp-photo--stretch { aspect-ratio: 361 / 420; } .hp-photo--stretch img { height: 100%; object-position: 50% 0; } }
+    /* DS fix: the VolunteerModule's narrow-card wrap rules (flex-basis 100%) also hit the Mobile variant's column
+       rows, pushing Within/When into a second column off the card. Keep the Mobile rows a plain stack. */
+    .fm-volunteer--mobile .fm-volunteer__row { flex-wrap: nowrap; }
+    .fm-volunteer--mobile .fm-volunteer__where, .fm-volunteer--mobile .fm-volunteer__within, .fm-volunteer--mobile .fm-volunteer__when { flex: 0 0 auto; min-width: 0; }
+    /* DS fix: Footer Mobile stacks its columns vertically but keeps the desktop flex-basis (140px), so each
+       collapsed disclosure row was 140px tall (36px in Figma) and the brand block 260px (150px). */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; }
+    /* DS fix: DonateModule Mobile stacks Ask/Answer in a column but keeps the desktop flex-basis (171px/244px) as
+       height once the card is wider than 460px (480–599px), leaving a blank band in the readout. */
+    .fm-donate--mobile .fm-donate__input, .fm-donate--mobile .fm-donate__answer { flex: none; }
+    /* Gift photo 361×240, centred fill */
+    @container (max-width: 839.98px) { .hp-photo--gift { aspect-ratio: 361 / 240; } }
+    .hp-photo--gift img { object-position: 50% 50%; }
+    /* Story: photo 361×260 r16, bare 56px play mark */
+    .hp-story .fm-video { aspect-ratio: 361 / 260; border-radius: var(--radius-xl); }
+    .hp-story .fm-video__play { width: 56px; height: 56px; }
+    .hp-story .fm-video__tri { width: 35px; height: 42px; }
+    .hp-story__copy { gap: var(--space-lg); }
+    /* Group tiles: one column, 16 gap, copy gap 8 */
+    .hp-tile__copy { gap: var(--space-xs); }
+    /* Mission photo 361×240 */
+    .hp-mission__photo { aspect-ratio: 361 / 240; }
+  }
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+
+  function Intro(p) {
+    var mobile = F.useIsMobile();
+    return h('div', { className: 'hp-intro' },
+      h('p', { className: 'hp-intro__eyebrow overline' }, p.eyebrow),
+      h('h2', { className: mobile ? 'display-xl-mobile' : 'display-xl' }, p.heading),
+      h('p', { className: 'hp-intro__body body-base' }, p.body));
+  }
+
+  var expectations = [
+    ['Nothing to prepare', 'Come as you are. Someone will show you the ropes when you arrive.'],
+    ['Simple, joyful work', 'Scoop, seal and box MannaPack® meals. Easy to learn, easy to love.'],
+    ['Never on your own', 'Kids, grandparents and coworkers all find their place at the same table.'],
+    ['You’ll leave fuller', 'You’ll go home knowing a child will eat because you showed up.']
+  ];
+  var groups = [
+    ['Churches', 'Serve together as a congregation, or host a MobilePack™ event.', 'Start with your church'],
+    ['Schools', 'Give students a hands-on way to help kids their own age.', 'Start with your school'],
+    ['Workplaces', 'A team day that ends with meals boxed and bound for kids.', 'Start with your team'],
+    ['Families with kids', 'Kids and adults of all ages can pack, so everyone can come.', 'Bring your family']
+  ];
+
+  /* Volunteer module search. The DS module keeps Where / Within / When to itself, so the page follows their changes
+     (React change events bubble to the wrapper) to build the "View more events" link, and hands a search to the
+     Volunteer page's finder: volunteer.html?where=&within=&when=#vo-find. "Upcoming events near 55421" keeps Figma's
+     text until someone searches, then names what they typed (Jonny, Oct. 22, 2026). */
+  var HOME_ZIP = '55421';
+  var SEARCH_KEY = 'fmsc-home-search';
+  function volunteerSearchURL(q) {
+    return 'volunteer.html?where=' + encodeURIComponent(q.where.trim() || HOME_ZIP) + '&within=' + encodeURIComponent(q.within) +
+      (q.when ? '&when=' + encodeURIComponent(q.when) : '') + '#vo-find';
+  }
+  function readSaved() { try { return JSON.parse(sessionStorage.getItem(SEARCH_KEY) || 'null'); } catch (e) { return null; } }
+  /* Set a DS field's value the way typing would, so the component's own state follows. */
+  function setFieldValue(el, v) {
+    if (!el || v == null) return;
+    var proto = el.tagName === 'SELECT' ? HTMLSelectElement.prototype : HTMLInputElement.prototype;
+    Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, v);
+    el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+  }
+
+  function VolunteerFinder() {
+    var ref = React.useRef(null);
+    var _q = React.useState({ where: '', within: '25 miles', when: 'Any date' }), q = _q[0], setQ = _q[1];
+    var _n = React.useState(''), near = _n[0], setNear = _n[1];
+    var field = function (sel) { return ref.current && ref.current.querySelector(sel); };
+    /* Back on the homepage in the same session: show the last search again. */
+    React.useEffect(function () {
+      var saved = readSaved();
+      if (!saved || !saved.where) return;
+      setNear(saved.where);
+      setFieldValue(field('.fm-volunteer__where input'), saved.where);
+      setFieldValue(field('.fm-volunteer__within select'), saved.within);
+      setFieldValue(field('.fm-volunteer__when select'), saved.when);
+    }, []);
+    function onChange(e) {
+      var t = e.target, k = t.closest('.fm-volunteer__where') ? 'where' : t.closest('.fm-volunteer__within') ? 'within' : t.closest('.fm-volunteer__when') ? 'when' : null;
+      if (!k) return;
+      var next = Object.assign({}, q); next[k] = t.value; setQ(next);
+    }
+    return h('div', { ref: ref, className: 'hp-vfinder', onChange: onChange },
+      h(F.VolunteerModule, {
+        version: 'detailed', breakpoint: 'auto', defaultDistance: '25 miles',
+        nearLabel: 'Upcoming events near ' + (near || HOME_ZIP),
+        onFind: function (f) {
+          var where = f.where.trim();
+          if (where) { setNear(where); try { sessionStorage.setItem(SEARCH_KEY, JSON.stringify({ where: where, within: f.within, when: f.when })); } catch (e) {} }
+          location.href = volunteerSearchURL({ where: where, within: f.within, when: f.when === 'Any date' ? '' : f.when });
+        },
+        onChangeLocation: function () { var el = field('.fm-volunteer__where input'); if (el) { el.focus(); el.select(); } },
+        events: [
+          { title: 'Coon Rapids, Minnesota', meta: 'Mon–Sat • 6.1 miles • Permanent site', count: '113', availability: 'Packing times available', href: 'signup-1.html?path=a&site=coon-rapids' },
+          { title: 'Jordan Community FMSC MobilePack', meta: 'Sept. 4 • 21.8 miles • MobilePack™ event', count: '21', availability: 'Packing times available', href: 'signup-1.html?path=a&site=jordan-mobilepack' },
+          { title: 'St. Croix Valley Packs Hope', meta: 'Sept. 6 • 24.3 miles • MobilePack™ event', count: '35', availability: 'Packing times available', href: 'signup-1.html?path=a&site=st-croix-valley-packs-hope' }
+        ],
+        moreLabel: 'View more events within ' + q.within,
+        moreHref: volunteerSearchURL({ where: q.where, within: q.within, when: q.when === 'Any date' ? '' : q.when }),
+        /* account-people.html has the "Have a join code?" field; ?join= is carried for when that page reads it. */
+        onJoinSearch: function (code) { code = String(code || '').trim(); location.href = 'account-people.html' + (code ? '?join=' + encodeURIComponent(code) : ''); },
+        manageHref: 'event-upcoming.html'
+      }));
+  }
+
+  function HomeSignedIn() {
+    var mobile = F.useIsMobile();
+    /* Text style for the current breakpoint: the DS -mobile class below 600px */
+    var ts = function (c) { return mobile ? c + '-mobile' : c; };
+    return h(Fragment, null,
+      h(window.SiteNav, { current: '' }),
+
+      h('main', null,
+        /* Signed-in hero: Figma "Welcome back" (Desktop 4656:51040, Mobile 4656:85802), Sarah's figures */
+        h(F.Hero, {
+          type: 'welcome-back', breakpoint: 'auto',
+          eyebrow: 'WELCOME BACK',
+          h1: 'Good to see you, Sarah.',
+          body: 'Thank you for sticking with us since 2019. Here’s what you’ve made possible.',
+          stats: [
+            { value: '1,240', label: 'Lifetime meals funded & packed' },
+            { value: '$1,842', label: 'Lifetime giving' },
+            { value: '12', label: 'Volunteer hours' },
+            { value: '$29/mo', label: 'Monthly gift since 2024' }
+          ],
+          primaryLabel: 'Find your next shift', secondaryLabel: 'See your full impact',
+          primaryHref: 'volunteer.html', secondaryHref: 'account-dashboard.html',
+          image: img('hs-hero.jpg'),
+          imageAlt: 'Volunteers in hairnets and yellow T-shirts scoop meal ingredients at a packing table.'
+        }),
+
+        h(F.ImpactBand, { breakpoint: 'auto', illustrations: [img('donations-recurring.svg'), img('food-mannapack-bag.svg'), img('volunteers-celebrate.svg')] }),
+
+        /* Shift finder */
+        h('section', { className: 'hp-section hp-section--subtle', 'aria-labelledby': 'hp-volunteer' },
+          h(Intro, { eyebrow: 'Volunteer', heading: h('span', { id: 'hp-volunteer' }, 'Hand-pack meals near you'),
+            body: 'Bring your family, church or team. No experience needed — just reserve your spot and we’ll supply the hairnet.' }),
+          h('div', { className: 'hp-inner' }, h(F.LayoutSplit, { align: 'stretch' },
+            h('div', { className: 'hp-photo hp-photo--stretch' }, h('img', { src: img('packing.jpg'), alt: 'Smiling volunteers in hairnets scoop rice and soy into MannaPack® bags at a packing table.' })),
+            h(VolunteerFinder))),
+          h('div', { className: 'hp-inner hp-expect' },
+            h('div', { className: 'hp-expect__head' },
+              h('h3', { className: 'hp-expect__label overline' }, 'What to expect'),
+              h(F.LayoutGrid, { columns: 4 }, expectations.map(function (e) {
+                return h('div', { key: e[0], className: 'hp-expect__item' },
+                  h('p', { className: 'label-small' }, e[0]),
+                  h('p', { className: 'body-small' }, e[1]));
+              }))),
+            h(F.ArrowLink, { label: 'How packing works', href: 'volunteer.html' }))),
+
+        /* What your gift becomes */
+        h('section', { className: 'hp-section hp-section--surface', 'aria-labelledby': 'hp-donate' },
+          h(Intro, { eyebrow: 'Donate', heading: h('span', { id: 'hp-donate' }, 'See what your gift becomes'),
+            body: 'Every meal is a MannaPack® formula built by food scientists to reverse malnutrition. Move the slider to see how far a gift goes.' }),
+          h('div', { className: 'hp-inner' }, h(F.LayoutSplit, null,
+            h(F.DonateModule, { breakpoint: 'auto', showModeTabs: false, linkHref: 'impact.html',
+              /* Donate $<amount>: carry the chosen gift to the Donate page, which presets its module from ?amount=&freq= */
+              onDonate: function (g) { location.href = 'donate.html?amount=' + Math.round(g.amount) + '&freq=' + g.frequency + '#do-give'; } }),
+            h('div', { className: 'hp-photo hp-photo--gift' }, h('img', { src: img('gift.jpg'), alt: 'Smiling children hold green bowls of MannaPack® rice at a school table.' }))))),
+
+        /* One story — Samuel */
+        h('section', { className: 'hp-section hp-section--brand', 'aria-labelledby': 'hp-story' },
+          h('div', { className: 'hp-inner hp-story' }, h(F.LayoutSplit, null,
+            h(F.VideoPlayer, { poster: img('samuel.jpg'), posterAlt: 'Samuel eats a MannaPack® meal at his school in Uganda.', title: 'Samuel is top of his class' }),
+            h('div', { className: 'hp-story__copy' },
+              h('div', { className: 'hp-story__head' },
+                h('p', { className: 'overline' }, 'A Story From the Field'),
+                h('h2', { id: 'hp-story', className: ts('heading-h1') }, 'Samuel is top of his class'),
+                h('p', { className: ts('body-large') }, 'Samuel left school in Uganda when food ran short. A daily MannaPack® meal brought him back. He now tops his class.')),
+              h(F.ArrowLink, { tone: 'on-dark', label: 'Read Samuel’s story', href: '#' }))))),
+
+        /* Ways to get involved */
+        h(F.SectionCardGrid, {
+          columns: 4, breakpoint: 'auto',
+          header: { align: 'center', eyebrow: 'More Ways to Help', heading: 'Four ways to feed a child', showSupporting: false },
+          items: [
+            { title: 'Give', body: 'A one-time or monthly gift funds meals. 29¢ feeds a child one meal.', illustration: img('donations-cash-gift.svg'), linkLabel: 'Give now', href: 'donate.html' },
+            { title: 'Volunteer', body: 'Hand-pack MannaPack® meals at a site near you, or host a MobilePack™ event.', illustration: img('volunteers-hands-up.svg'), linkLabel: 'Find a shift', href: 'volunteer.html' },
+            { title: 'Shop', body: 'FMSC MarketPlace™ artisans earn a fair wage. Profits fund more meals.', illustration: img('marketplace-gift.svg'), linkLabel: 'Shop goods', href: 'marketplace.html' },
+            { title: 'Fundraise', body: 'Rally your church, school or team around a goal, and watch the meals add up.', illustration: img('extras-handshake.svg'), linkLabel: 'Start a fundraiser', href: 'fundraiser.html' }
+          ]
+        }),
+
+        /* Organize a group */
+        h('section', { className: 'hp-section', 'aria-labelledby': 'hp-groups' },
+          h('div', { className: 'hp-group-header' },
+            h(F.SectionHeader, { breakpoint: 'auto', align: 'center', eyebrow: 'Bring Your People', heading: h('span', { id: 'hp-groups' }, 'Pack meals as a group'), showSupporting: false })),
+          h('div', { className: 'hp-inner' }, h(F.LayoutGrid, { columns: 4 }, groups.map(function (g) {
+            return h('div', { key: g[0], className: 'hp-tile' },
+              h('div', { className: 'hp-tile__copy' },
+                h('h3', { className: ts('heading-h4') }, g[0]),
+                h('p', { className: 'body-small' }, g[1])),
+              h(F.ArrowLink, { label: g[2], href: 'volunteer.html' }));
+          })))),
+
+        /* MarketPlace teaser */
+        h(F.SectionProductCarousel, {
+          align: 'center', breakpoint: 'auto',
+          eyebrow: 'FMSC MarketPlace™',
+          heading: 'Fair wages for artisans, more meals for kids',
+          supporting: 'Shop handmade goods from FMSC MarketPlace™ artisans. They earn a fair wage for their work, and the profits become meals for kids.',
+          showLink: true, linkLabel: 'Shop FMSC MarketPlace™', linkHref: 'marketplace.html',
+          items: [
+            { tag: 'HAITI', title: 'Tree of Life Oil Drum Art', description: 'Hand-cut from a recycled steel oil drum.', price: '$48.00', image: img('product-tree.jpg'), imageAlt: 'Tree of Life wall art cut from a steel oil drum and painted teal.', href: 'marketplace.html' },
+            { tag: 'UGANDA', title: 'Grass-Woven Basket', description: 'Hand-woven from local grasses.', price: '$32.00', image: img('product-basket.jpg'), imageAlt: 'Round woven basket in black, cream and orange.', href: 'marketplace.html' },
+            { tag: 'GUATEMALA', title: 'Guatemalan Sling Bag', description: 'Hand-loomed by artisan partners.', price: '$84.00', image: img('product-sling.jpg'), imageAlt: 'Black sling bag embroidered with bright flowers.', href: 'marketplace.html' },
+            { tag: 'UGANDA', title: 'Amari Bracelet', description: 'Wavy gold-colored disc beads and recycled glass.', price: '$48.00', image: img('product-bracelet.jpg'), imageAlt: 'Bracelet of cream paper beads and gold discs on a linen pillow.', href: 'marketplace.html' }
+          ]
+        }),
+
+        /* Our mission */
+        h('section', { className: 'hp-section', 'aria-labelledby': 'hp-mission' },
+          h('div', { className: 'hp-mission' },
+            h('div', { className: 'hp-mission__copy' },
+              h('p', { className: 'overline' }, 'Our mission'),
+              h('h2', { id: 'hp-mission', className: ts('heading-h2') }, 'Feeding God’s children hungry in body and spirit.'),
+              h('p', { className: 'body-base' }, 'A Christian nonprofit that believes hope starts with food. Volunteers hand-pack the meals; partners carry them to kids who need them.'),
+              h(F.ArrowLink, { label: 'Read our mission', href: 'mission.html' })),
+            h('img', { className: 'hp-mission__photo', src: img('mission.jpg'), alt: 'Hundreds of volunteers in hairnets pack meals at long tables in a school gym.' }))),
+
+        h(F.CTABand, {
+          breakpoint: 'auto',
+          eyebrow: 'JOIN THE MOVEMENT',
+          headline: 'Be someone’s miracle.',
+          subtext: '29¢ feeds a child a meal. Give one today — or grab a hairnet and pack a thousand.',
+          primaryHref: 'donate.html', secondaryHref: 'volunteer.html'
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host a MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(HomeSignedIn));
+</script>
+</body>
+</html>

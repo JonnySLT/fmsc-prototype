@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Mission · FMSC</title>
+<meta name="description" content="Feed My Starving Children’s mission, meals, locations, finances and leadership, built from the FMSC Design System.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p { margin: 0; }
+
+  .mi-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .mi-section--brand { background: var(--background-brand); }
+  .mi-section--brand-subtle { background: var(--background-brand-subtle); }
+  .mi-inner { width: 100%; max-width: var(--content-width); }
+  .mi-header { width: 100%; max-width: 792px; }
+
+  /* Impact this year (brand field) */
+  .mi-impact__actions { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); }
+  .mi-impact .fm-stat-block { width: 100%; }
+
+  /* Locations: map + permanent sites */
+  .mi-locations { display: grid; grid-template-columns: minmax(0, 796fr) minmax(320px, 380fr); gap: var(--grid-gap); align-items: start; }
+  .mi-map { width: 100%; aspect-ratio: 796 / 501; }
+  .mi-map__svg { display: block; width: 100%; height: 100%; }
+  .mi-map__states path, .mi-map__highlight path { opacity: 0.3; stroke: var(--background-brand-subtle); }
+  .mi-map__states path { fill: var(--content-placeholder); }
+  .mi-map__highlight path { fill: var(--blue-400); }
+  .mi-map__dots circle { fill: var(--background-brand); }
+  .mi-sites { display: flex; flex-direction: column; gap: var(--space-lg); padding: var(--card-pad); background: var(--background-surface); border-radius: var(--radius-xl); }
+  .mi-sites__eyebrow { color: var(--content-secondary); }
+  /* Figma rows are 40 tall (8/16 padding around a 24px line), 8 apart */
+  .mi-sites__list { display: flex; flex-direction: column; gap: var(--space-xs); margin: 0; padding: 0; list-style: none; }
+  .mi-sites__link { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); padding: var(--space-xs) var(--space-md); border-radius: var(--radius-md); box-shadow: inset 0 0 0 1px var(--border-subtle); color: var(--content-link); text-decoration: none; }
+  .mi-sites__link:hover { background: var(--background-subtle); }
+  .mi-sites__link:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }
+  .mi-sites__more { display: flex; flex-direction: column; }
+  .mi-sites__more p { color: var(--content-secondary); }
+  .mi-sites__more a { display: inline-flex; align-items: center; padding: var(--space-xs) 0; color: var(--content-link); text-decoration: none; }
+  .mi-sites__more a:hover { text-decoration: underline; }
+  .mi-sites__more a:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }
+
+  /* Finances (Section · Stat row, centred header) */
+  .mi-finances .fm-section-stat-row__head { width: 100%; }
+  .mi-finances .fm-section-stat-row__link { align-self: center; }
+
+  /* Scripture band */
+  .mi-scripture { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md); min-height: 420px; padding: var(--section-y) var(--margin-x); margin: 0; color: var(--content-on-brand); text-align: center; }
+  .mi-scripture__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+  .mi-scripture__scrim { position: absolute; inset: 0; background: var(--scrim-strong); }
+  .mi-scripture blockquote, .mi-scripture figcaption { position: relative; max-width: 792px; margin: 0; }
+
+  /* Section header supporting: Figma caps Body/Large at 730px (80ch of Inter renders wider) */
+  main .fm-section-header__supporting { max-width: 730px; }
+
+  /* CTA band trust strip: let the three groups share the row instead of fixed 384px each */
+  .fm-cta-band--desktop .fm-cta-band__trust { width: 100%; }
+  .fm-cta-band--desktop .fm-cta-band__group { flex: 1 1 0; width: auto; min-width: 0; }
+
+  /* CTA band subtext: the desktop frame sets it in content/on-brand, the mobile frame in blue/200 (see the mobile block) */
+  main .fm-cta-band__subtext { color: var(--content-on-brand); }
+
+  /* Footer legal: Figma copy runs one line across the row (DS caps it at 756px) */
+  .fm-footer--desktop .fm-footer__legal-copy { max-width: none; }
+
+  .mi-nowrap { white-space: nowrap; }
+
+  /* Hero H1: avoid a one-word last line when it wraps (1100–1024) */
+  .fm-hero__title { text-wrap: pretty; }
+  /* Centred section headings: balance lines instead of leaving one word on the last line */
+  main h2 { text-wrap: balance; }
+
+  /* Leadership */
+  .mi-leadership { gap: var(--section-gap); }
+
+  @media (max-width: 1000px) {
+    .mi-locations { grid-template-columns: minmax(0, 1fr); }
+    .mi-map { max-width: 796px; justify-self: center; }
+    /* Stacked: site list in two columns so rows don't stretch the full width */
+    .mi-sites__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); row-gap: var(--space-2xs); }
+  }
+
+  /* ---- Mobile (< 600px): Figma "Mobile/Mission" 4454:38209 ---- */
+  @media (max-width: 599.98px) {
+    main .fm-cta-band__subtext { color: var(--blue-200); }
+    /* Impact band sits on brand-dark in the mobile frame */
+    .mi-impact { background: var(--background-brand-dark); }
+    .mi-impact__stats { display: flex; flex-direction: column; gap: var(--grid-gap); }
+    .mi-impact__stats .fm-stat { display: flex; width: 100%; }
+
+    /* Locations: no map on mobile; one card with a single-column site list */
+    .mi-map { display: none; }
+    .mi-sites { gap: var(--space-xs); border-radius: var(--radius-lg); }
+    .mi-sites__list { display: flex; flex-direction: column; gap: var(--space-xs); }
+
+    /* Scripture: photo with a brand-dark ramp, then the verse on brand-dark */
+    .mi-scripture { display: block; min-height: 0; padding: 0; overflow: visible; }
+    .mi-scripture__media { position: relative; width: 100%; aspect-ratio: 393 / 260; overflow: hidden; }
+    .mi-scripture__media .mi-scripture__photo { object-position: 50% 50%; }
+    .mi-scripture__ramp { position: absolute; left: 0; right: 0; bottom: 0; height: var(--space-4xl);
+      background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--background-brand-dark) 75%, transparent) 60%, var(--background-brand-dark) 100%); }
+    .mi-scripture__copy { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); padding: var(--section-y) var(--margin-x); background: var(--background-brand-dark); }
+
+
+    /* DS fix: mobile footer brand + columns inherit flex-basis 260px / 140px, which becomes height in the stacked column */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<template id="mi-map-art"><svg class="mi-map__svg" viewBox="0 0 796 501" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><g class="mi-map__states"><path d="M541 316L569 313L580 354L585 362L584 364L586 365L584 367L583 373L585 379V384L587 389L545 393L544 396L548 399V403L549 404L547 407L545 408L541 405L540 400H538L537 407H533L529 377L530 319L528 317L541 316Z"/><path d="M430 293L496 290L498 294L493 300L503 299V303L501 304L500 307L498 311V315L497 319H496L497 321L494 323L493 326L492 327V331L489 332V333L486 337L487 339L485 342L483 348L485 350L484 352L485 356L484 359L438 360V350L436 349L432 350L431 348V314L428 293H430Z"/><path d="M209 270L194 378L161 373L105 341L107 337H111L112 335V331H109L110 324L114 321L115 314L117 311L122 308L120 305L117 296L119 291L120 272L126 273L127 275H128L131 273L134 257L209 270Z"/><path d="M25 131L69 143L55 200L117 294V296L120 305L122 308L117 311L115 314L114 321L110 324L109 331H112V335L111 337L69 332L67 329L68 320L67 316L58 305L56 306L54 305L55 303L53 298H49L43 294V291L39 288L35 286L31 284L26 283L24 280L26 271L23 267L24 263L23 262L20 257L16 246L14 243L15 236L16 237L18 234L17 230H14L11 223L12 221L11 218L13 213H15L16 206L15 207L13 210H10L8 206V202L7 198L5 195L1 186L3 184L2 178L4 174L5 169L3 163L0 159V155L6 148L11 138V133L10 131L12 127L25 131Z"/><path d="M235 195L267 198L320 203L315 280L242 274L209 270L219 193L235 195Z"/><path d="M729 146L746 142L749 154V156L742 159L735 160L732 163L726 168L724 166L727 163L726 162L723 147L729 146Z"/><path d="M706 196L704 200L705 203L707 206L709 210L713 214H715L717 221L707 222L701 199L703 196H706Z"/><path d="M579 390L587 389L590 394L634 391L635 395H637L636 387L637 386L646 387L652 404L658 415L668 427L667 428L668 434L681 457L683 477L681 478L680 483L681 484L679 488H677L669 492L667 490V487L662 479L659 478L656 480L652 471L648 468L647 465V461H645V463L644 464L634 452L638 444L635 445L633 447L630 444L632 433L631 424L629 422L628 420H625L620 415L617 414L616 411L614 410L612 408L605 404L600 406V409L599 408L592 413L585 414V412L583 410L574 405L567 404L562 403L547 407L549 404L548 403V399L544 396L545 393L579 390Z"/><path d="M607 308L605 313V315L611 318H612L619 327L630 335V337L634 341L638 343L641 350L643 351L646 356L647 359L651 360L648 367L647 377L645 378L646 387L637 386L636 387L637 395H635L634 391L590 394L585 384V379L583 373L584 367L586 365L584 364L585 362L580 354L569 313L607 308Z"/><path d="M471 155H473V158L476 160L474 162L476 170L481 172L486 179L489 181L490 183L489 187L488 189L487 192L483 194L478 196L477 199L479 202V205L477 207V210L473 212V216L468 212L446 213H410L408 211L409 206L408 202V197L405 195L406 190L405 187L403 185L400 177L398 172L401 164L399 162V157L471 155Z"/><path d="M152 25L148 44L151 50L150 55L155 59L159 69L162 71L161 72L165 73L161 84L162 87L159 89V91L158 93L161 96L166 92L168 94V99L171 105L170 109L172 111H174L175 118L176 119L178 118L182 119L186 117L187 119L191 118V120L194 119L198 116L201 122L194 169L152 162L111 153L118 119L121 113V111L118 110V107L122 101H124L126 98V97L133 87V84L130 82L129 71L140 22L152 25Z"/><path d="M482 174L522 172V175L527 186L531 232L530 236L533 243L529 253H527L528 256L526 257L527 263L525 266L526 269L520 271V273L522 276L520 277L514 275H512L510 279L511 280H509L505 274L506 273L504 266L499 263H498L491 257V254L494 245L489 243L487 245L486 243L484 237L475 229L472 219L473 212L477 210V207L479 205V202L477 199L478 196L483 194L487 192L488 189L489 187V181L486 179L485 177L482 174Z"/><path d="M549 183L566 181L572 233L571 234L572 239H570L567 241H563L564 245L562 246L561 249L558 250V255L556 257L552 255V253L549 256V258L546 259L545 257L541 259L540 262L536 259L534 260L533 259L532 260L528 261L527 263L526 257L528 256L527 253H529L533 243L530 236L531 232L527 186L529 187H533L537 184L549 183Z"/><path d="M320 222L417 225L418 227L423 228L420 234L424 240L427 241L428 283L344 282L315 280L318 222H320Z"/><path d="M586 237L590 240L592 238L597 239L601 236L602 239H604L606 241L607 247L609 251L613 255L618 257L613 263L608 267V268L606 270V271L603 273L602 275L595 279L531 285L528 284V288L507 289L508 287L510 288L511 280L510 279L512 275H514L520 277L522 276L520 273V271L526 269L525 266L528 261L532 260L533 259L534 260L536 259L540 262L541 259L545 257L546 259L549 258V256L552 253V255L556 257L558 255V250L561 249L562 246L564 245L563 241H567L570 239H572L571 234L572 233L577 232L581 237H586Z"/><path d="M445 360L484 359L486 361L485 362V366L487 368L488 374L486 378L482 381V386L480 385V392L478 393L479 396L478 398L509 396L508 403L511 407L512 410L514 412L509 415V416L513 417L515 414L518 417V420L516 421L513 420V422L512 425L515 427H521L523 430H524L522 434L519 433L516 430L510 429V425L507 427V429L506 432L504 433L502 430H498L497 433L494 434L489 432L487 428L483 426H481L480 422L475 423V420L471 423L472 425L468 426L453 422L443 424L441 422L445 415L444 412L445 410L444 407L447 400V396L442 388V384L438 380V360H445Z"/><path d="M754 123H756L757 126V129L756 132V135L759 134L765 141L769 142L773 139V142L767 146L764 147L763 146L758 150L754 145L752 141L723 147V134L750 128L754 123Z"/><path d="M648 209L701 199L707 222L717 221L716 229L707 234L706 230L705 229L706 228L703 225V227H700L698 224H699V217L696 211L697 207L699 206V203H697V205L694 208L693 211L694 216L693 219L695 224L698 226V229L700 231L699 232L695 230L690 229L688 227L686 229L684 227L688 218L686 216L685 218L679 216V213L677 212H675L672 207L669 208L667 206L666 208H663V211L658 210L656 213H654L649 219L648 209Z"/><path d="M756 119L751 114L740 78L745 74L744 73L747 68L746 67L748 65L746 61V56L747 54V49L753 32H755L756 35L758 36L766 30L773 34L780 59H785V61L787 63V65L789 67L792 66L796 72L794 76L792 75V78H790V79L787 80L785 85L783 83H782L783 86L781 88L779 86L778 87L775 88L774 86L772 87L773 94L771 97H768V100L766 101L764 103H762L761 102L759 106L760 107L758 109L759 111L757 113L756 119Z"/><path d="M585 179L566 183V181L537 184L540 182L543 174L544 165L543 159L538 149L539 144L537 139L540 134L539 127L542 126V123L545 122L547 118L548 125H549L551 121L550 116L551 114L555 113L553 109L555 105L558 104L562 106H565L567 109L575 110L578 114L577 116L580 122V129L577 131V135L574 137L573 141L574 143L577 144L582 136L586 134L589 135L591 137L596 154V161L594 162L593 160L592 161L591 167L588 169V174L585 178V179ZM521 121L518 119L519 117L516 116L517 110L512 106L506 105H505L499 103L485 100L483 97L481 96L486 93L488 91L494 90L497 87L499 86L506 79L509 77L512 78L506 86L507 90L509 87H513L517 88L521 93L523 94L526 93L527 94H530L537 89L545 88L551 86L552 91L555 92L557 90L559 92L560 90L564 89L565 96L567 98H570V97L572 96L574 98L573 100L565 99L562 101L558 99L557 101L558 103L553 100L547 99L545 102L538 103L536 104V106L532 108V106H530V108L527 109L525 110L521 121Z"/><path d="M459 94L458 93L456 95V106L452 109L449 114V116H450L452 119L450 122V132L454 136H457L458 138L463 140V142L470 146L472 150L473 155L400 157L401 122L397 120L395 116L399 112V102L396 96L395 78L392 68V60L393 57L391 51H417V44H420L422 46L423 56L429 58H434L435 60H439V59L443 58H445L449 60L450 61H452L454 65V64L458 63V64L462 65V67L464 68L468 67L473 64L475 67L483 66L486 68H489L485 71L475 76L458 93L459 94Z"/><path d="M467 212H468L473 216L472 219V223L475 229L484 237L486 243L487 245L489 243L494 245L491 254V257L498 263H499L504 266L506 273L505 274L509 280H511L510 288L508 287L507 289L506 290V294L503 299L493 300L498 294L496 290L428 293L427 241L424 240L420 234L423 228L418 227L410 213L467 212Z"/><path d="M524 317H528L530 319L529 377L533 407L531 408L527 407L525 406L514 412L512 410L511 407L508 403L509 396L478 398L479 396L478 393L480 392V385L482 386V381L486 378L488 374L487 368L485 366V362L486 361L484 359L485 356L484 352L485 350L483 348L485 342L487 339L486 337L489 333V332L492 331V327L493 326L494 323L497 321L496 319L524 317Z"/><path d="M304 47L298 124L203 112L201 122L198 116L194 119L191 120V118L187 119L186 117L182 119L178 118L176 119L175 118L174 111H172L170 109L171 105L168 99V94L166 92L161 96L158 93L159 91V89L162 87L161 84L165 73L161 72L162 71L159 69L155 59L150 55L151 50L148 44L152 25L209 35L235 39L304 47Z"/><path d="M636 274L658 270L713 259L716 267H712L706 271L702 272L703 274L712 271L714 272L716 271L718 275V277L716 278L713 284L708 285V288L711 291H713L711 297H708L700 301L695 305L692 311L691 317H687L682 319L661 304L644 306V304L641 301L639 303V301L620 303L607 308L589 311V306H592V302L596 299L600 298L603 295L607 293L612 287L613 289L618 284L621 285L622 281L625 279V275L636 274Z"/><path d="M391 51L393 57L392 60V68L395 78L396 96L399 102V110L299 105L304 47L391 51Z"/><path d="M304 163L372 166L379 171L381 169L390 170L397 173L398 176L400 177L403 185L405 187L406 190L405 195L408 197V202L409 206L408 211L417 225L318 222L320 203L291 200L294 162L304 163Z"/><path d="M740 78L751 114L756 119V123H754L751 126L750 128L734 131L732 130V127L733 126L731 115L733 104L732 100L736 97L737 93L735 91L736 80H740V78Z"/><path d="M717 167L722 169V175L720 176L719 180H723L725 193L718 210L716 207L712 206L706 203L704 200L706 196L709 194V192L713 188V186L708 183V181H706L705 179L706 175L705 173L709 164L717 167Z"/><path d="M233 273L300 279L292 376L235 371L234 372L236 375L208 371L207 380L194 378L209 270L233 273Z"/><path d="M111 153L152 162L131 273L128 275H127L126 273L120 272L119 291L117 294L55 200L69 143L111 153Z"/><path d="M712 91L713 99L715 102V110L717 115V116L720 119L723 134V147L726 162L727 163L724 166L726 168H732L733 167L740 164L744 160L745 162L747 163L733 173L724 177L722 175V169L709 164L708 163L706 164L703 161V158L697 154L636 166L635 161L643 154L644 152L646 149L643 146L641 141L649 137L659 136L663 137L670 135L674 133L677 129L679 128L678 123L679 120L675 118V116L680 111L687 100L692 96L712 91Z"/><path d="M626 169L630 194L628 196L630 201L628 213L624 220L622 221L620 220L619 223H617L616 227L617 229L615 231L613 229L611 234L612 236L610 238V240L606 241L604 239H602L601 236L597 239L592 238L590 240L586 237H581L577 232L572 233L566 183L585 179L593 183L594 181L600 184L606 181H610L619 172L626 169Z"/><path d="M344 282L428 283V293L431 314V348L425 346L423 344L419 342L418 344H414L413 343L409 345L408 344H404L401 347L400 346L397 344H393L392 342L388 346L387 344L385 345L380 341L377 344L376 341H374L372 339L369 338L367 340L366 338L356 336L355 333H348L345 329H344L345 292L299 289L300 279L344 282Z"/><path d="M48 54L52 57L51 65L57 69L64 68H68L71 70V72L79 71L81 72L85 73L88 72L100 73L102 72L129 78L130 82L133 84V87L126 97V98L124 101H122L118 107V110L121 111V113L118 119L111 153L55 140L12 127L11 124L13 114L12 110L23 94L33 70L37 55L39 52L45 51L46 54H48Z"/><path d="M635 162L636 166L697 154L703 158V161L706 164L708 163L709 164L705 173L706 175L705 179L706 181H708V183L713 186V188L709 192V194L706 196H703L701 199L633 212L626 169L635 162Z"/><path d="M750 141H752L754 145L756 146H754V153L749 156V154L747 142L750 141Z"/><path d="M613 306L620 303L639 301V303L641 301L644 304V306L661 304L682 319L679 320L677 324L674 330V334L672 337L669 338L668 340L663 347L660 348L651 360L647 359L646 356L643 351L641 350L638 343L634 341L630 337V335L619 327L612 318H611L605 315V313L607 308L613 306Z"/><path d="M299 105L399 110V112L395 116L397 120L401 122L400 157H399V162L401 164L398 172L400 177L398 176L397 173L390 170L381 169L379 171L372 166L294 162L299 105Z"/><path d="M528 288V284L531 285L582 280L625 275V279L622 281L621 285L618 284L613 289L612 287L607 293L603 295L600 298L596 299L592 302V306H589V311L496 319H497L498 315V311L500 307L501 304L503 303V299L506 294V290L528 288Z"/><path d="M318 290L345 292L344 329H345L348 333H355L356 336L366 338L367 340L369 338L372 339L374 341H376L377 344L380 341L385 345L387 344L388 346L392 342L393 344H397L400 346L401 347L404 344H408L409 345L413 343L414 344H418L419 342L432 350L436 349L438 350V380L442 384V388L447 396V400L444 407L445 410L444 412L445 415L441 422L443 424L431 427L428 426V423L425 425L424 424L423 427L425 428V432L417 440L407 446L406 445L403 446V445L399 446L397 443L395 444L400 449L397 450L394 449L393 453L389 456L383 470L381 469L380 472L382 471L381 476H380V479L381 481L382 486L383 488L385 495L380 497L378 495L368 494L364 491L360 490L352 484L350 478L347 475V466L345 463L343 462L340 460V456L334 450L332 444L329 438L328 434L322 427L319 425L316 421L305 419L301 418L300 420H296L293 424L290 430H289L287 434H284L270 425L265 419L262 414L263 409L260 404V401L258 398L252 395L244 384L240 381L238 376L234 372L235 371L292 376L299 289L318 290Z"/><path d="M178 167L194 169L191 188L219 193L209 270L134 257L152 162L178 167Z"/><path d="M665 211L674 216L675 212H677L679 213V216L685 218L686 220L684 228L685 230L688 228L690 231H695L697 233L702 235L701 241L704 245L702 247V249L704 251L703 253L699 251V252L702 254L709 253L713 259L658 270L595 279L602 275L603 273L606 271V270L608 268V267L613 263L618 257V259L620 262L623 263L625 262L628 260L630 261L634 260L640 255L641 256L643 254L642 250L649 236V231L652 233L655 234L658 225L660 226L665 217V211Z"/><path d="M736 85V87L735 91L737 93L736 97L732 100L733 104L731 115L733 126L732 127V130L734 131L723 134L720 119L717 116V115L715 110V102L713 99L712 91L736 85Z"/><path d="M140 22L129 71L130 75L129 78L102 72L100 73L88 72L85 73L81 72L79 71L71 72V70L68 68H64L57 69L51 65L52 59L50 54H46L45 51L42 50H40L38 48L40 45H42L40 40L42 21L40 17L41 11L43 8L49 14L56 17H60L61 19L64 20L65 25H66L64 36H66V31L67 27L71 23L69 21L71 9L69 8L68 6L69 4L140 22Z"/><path d="M481 96L483 97L485 100L499 103L505 105H506L512 106L517 110L516 116L519 117L518 119L521 121L520 124H518L515 132H517L521 126L523 124L525 119L528 118V121L523 131V139L522 140L521 145V148L519 157L522 166V172L482 174L481 172L476 170L474 162L476 160L473 158L472 150L470 146L463 142V140L458 138L457 136H454L450 132V122L452 119L450 116H449V114L452 109L456 106V95L458 93L462 94L475 89L476 90L474 93L481 96Z"/><path d="M630 194L633 212L648 209L649 219L654 213H656L658 210L663 211V208H666L667 206L669 208L672 207L675 212L674 216L665 211V217L660 226L658 225L655 234L652 233L649 231V236L642 250L643 254L641 256L640 255L634 260L630 261L628 260L625 262L623 263L620 262L618 259V257L613 255L609 251L607 247L606 241L610 240V238L612 236L611 234L613 229L615 231L617 229L616 227L617 223H619L620 220L622 221L624 220L628 213L630 201L628 196L630 194Z"/><path d="M229 116L297 124L291 200L235 195L191 188L203 112L229 116Z"/></g><g class="mi-map__highlight"><path d="M482 174L522 172V175L527 186L531 232L530 236L533 243L529 253H527L528 256L526 257L527 263L525 266L526 269L520 271V273L522 276L520 277L514 275H512L510 279L511 280H509L505 274L506 273L504 266L499 263H498L491 257V254L494 245L489 243L487 245L486 243L484 237L475 229L472 219L473 212L477 210V207L479 205V202L477 199L478 196L483 194L487 192L488 189L489 187V181L486 179L485 177L482 174Z"/><path d="M318 290L345 292L344 329H345L348 333H355L356 336L366 338L367 340L369 338L372 339L374 341H376L377 344L380 341L385 345L387 344L388 346L392 342L393 344H397L400 346L401 347L404 344H408L409 345L413 343L414 344H418L419 342L432 350L436 349L438 350V380L442 384V388L447 396V400L444 407L445 410L444 412L445 415L441 422L443 424L431 427L428 426V423L425 425L424 424L423 427L425 428V432L417 440L407 446L406 445L403 446V445L399 446L397 443L395 444L400 449L397 450L394 449L393 453L389 456L383 470L381 469L380 472L382 471L381 476H380V479L381 481L382 486L383 488L385 495L380 497L378 495L368 494L364 491L360 490L352 484L350 478L347 475V466L345 463L343 462L340 460V456L334 450L332 444L329 438L328 434L322 427L319 425L316 421L305 419L301 418L300 420H296L293 424L290 430H289L287 434H284L270 425L265 419L262 414L263 409L260 404V401L258 398L252 395L244 384L240 381L238 376L234 372L235 371L292 376L299 289L318 290Z"/><path d="M209 270L194 378L161 373L105 341L107 337H111L112 335V331H109L110 324L114 321L115 314L117 311L122 308L120 305L117 296L119 291L120 272L126 273L127 275H128L131 273L134 257L209 270Z"/><path d="M459 94L458 93L456 95V106L452 109L449 114V116H450L452 119L450 122V132L454 136H457L458 138L463 140V142L470 146L472 150L473 155L400 157L401 122L397 120L395 116L399 112V102L396 96L395 78L392 68V60L393 57L391 51H417V44H420L422 46L423 56L429 58H434L435 60H439V59L443 58H445L449 60L450 61H452L454 65V64L458 63V64L462 65V67L464 68L468 67L473 64L475 67L483 66L486 68H489L485 71L475 76L458 93L459 94Z"/></g><g class="mi-map__dots"><circle cx="67" cy="29.7" r="3"/><circle cx="129" cy="44.7" r="3"/><circle cx="51" cy="67.7" r="3"/><circle cx="128" cy="124.7" r="3"/><circle cx="31" cy="201.7" r="3"/><circle cx="58" cy="298.7" r="3"/><circle cx="114" cy="268.7" r="3"/><circle cx="178" cy="190.7" r="3"/><circle cx="240" cy="310.7" r="3"/><circle cx="275" cy="222.7" r="3"/><circle cx="391" cy="93.7" r="3"/><circle cx="396" cy="155.7" r="3"/><circle cx="407" cy="199.7" r="3"/><circle cx="440" cy="192.7" r="3"/><circle cx="427" cy="241.7" r="3"/><circle cx="364" cy="428.7" r="3"/><circle cx="417" cy="422.7" r="3"/><circle cx="519" cy="160.7" r="3"/><circle cx="551" cy="158.7" r="3"/><circle cx="550" cy="221.7" r="3"/><circle cx="548" cy="291.7" r="3"/><circle cx="590" cy="334.7" r="3"/><circle cx="653" cy="427.7" r="3"/><circle cx="596" cy="211.7" r="3"/><circle cx="641" cy="297.7" r="3"/><circle cx="685" cy="244.7" r="3"/><circle cx="637" cy="196.7" r="3"/><circle cx="708" cy="191.7" r="3"/><circle cx="719" cy="162.7" r="3"/><circle cx="754" cy="132.7" r="3"/><circle cx="443" cy="124.7" r="3"/><circle cx="440" cy="129.7" r="3"/><circle cx="445" cy="130.7" r="3"/><circle cx="520" cy="175.7" r="3"/><circle cx="518" cy="180.7" r="3"/><circle cx="515" cy="185.7" r="3"/><circle cx="394" cy="360.7" r="3"/><circle cx="153" cy="330.7" r="3"/></g></svg></template>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+  var mapArt = document.getElementById('mi-map-art').innerHTML;
+
+  var helpItems = ['Volunteer at a packing event', 'Donate once or monthly', 'Start a fundraiser', 'Shop FMSC MarketPlace™', 'Host a MobilePack™ event', 'Attend a fundraising event', 'Plan an estate gift', 'Corporate partnerships'];
+  var helpHref = { 'Volunteer at a packing event': 'volunteer.html', 'Donate once or monthly': 'donate.html', 'Start a fundraiser': 'fundraiser.html', 'Host a MobilePack™ event': 'host-mobilepack.html', 'Host an FMSC MobilePack™ event': 'host-mobilepack.html', 'Corporate partnerships': 'corporate-partnerships.html', 'Shop FMSC MarketPlace™': 'marketplace.html', 'Attend a fundraising event': 'fundraising-events.html', 'Plan an estate gift': 'estate-gift.html' };
+  var footerColumns = [
+    { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', { label: 'Locations', href: '#mi-locations' }, 'Finances', { label: 'Leadership and board', href: '#mi-leadership' }, 'Careers', 'News', 'Contact us'] },
+    { title: 'Ways to help', links: helpItems.map(function (l) { return { label: l, href: helpHref[l] }; }) },
+    { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+    { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+    { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+  ];
+  var sites = ['Chanhassen, Minnesota', 'Coon Rapids, Minnesota', 'Eagan, Minnesota', 'Aurora, Illinois', 'Libertyville, Illinois', 'Schaumburg, Illinois', 'Tempe, Arizona', 'Richardson, Texas'];
+
+  var impactStats = [['382,120,176', 'meals provided'], ['1,046,904', 'kids fed for a year'], ['1,207,456', 'volunteers']];
+
+  function MissionPage() {
+    var mobile = F.useIsMobile();
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'mission' }),
+
+      h('main', null,
+        h(F.Hero, { breakpoint: 'auto',
+          type: 'mission',
+          eyebrow: 'Mission',
+          h1: 'Feeding God’s children hungry in body and spirit.',
+          body: 'Feed My Starving Children is a Christian nonprofit that believes hope starts with food. Volunteers hand-pack our meals. Donors support for them. Food distribution partners carry meals to hungry communities throughout the world.',
+          showLink: true, linkLabel: 'Our story', linkHref: '#',
+          images: [
+            { src: img('mission-strip-1.jpg'), alt: 'Smiling schoolchildren eat from orange bowls at a blue table.' },
+            { src: img('mission-strip-2.jpg'), alt: 'A smiling girl hugs a large bag of meals to her shoulder.' },
+            { src: img('mission-strip-3.jpg'), alt: 'Two smiling children sit on the ground holding MannaPack® bags.' }
+          ]
+        }),
+
+        /* Impact this year */
+        h('section', { className: 'mi-section mi-section--brand mi-impact', 'aria-labelledby': 'mi-impact' },
+          h('div', { className: 'mi-inner' },
+            h(F.SectionHeader, { breakpoint: 'auto', align: 'center', tone: 'on-dark', eyebrow: 'FMSC’s Impact in 2025/26', heading: h('span', { id: 'mi-impact' }, 'Because of you, this year.'), showSupporting: false })),
+          mobile
+            /* StatBlock has no Mobile variant: same DS stat markup with the mobile display style */
+            ? h('div', { className: 'mi-inner mi-impact__stats' }, impactStats.map(function (st) {
+                return h('div', { key: st[1], className: 'fm-stat fm-stat--figure fm-stat--on-brand' },
+                  h('p', { className: 'fm-stat__value display-xl-mobile' }, st[0]),
+                  h('p', { className: 'fm-stat__label body-base' }, st[1]));
+              }))
+            : h('div', { className: 'mi-inner' }, h(F.LayoutGrid, { columns: 3 }, impactStats.map(function (st) {
+                return h(F.StatBlock, { key: st[1], theme: 'on-brand', value: st[0], label: st[1] });
+              }))),
+          h('div', { className: 'mi-impact__actions' },
+            h(F.Button, { variant: 'secondary', href: '#' }, 'Download the 2025/26 Impact Report'),
+            h(F.ArrowLink, { tone: 'on-dark', label: 'Learn about our impact', href: 'impact.html' }))),
+
+        /* What's in a meal */
+        h(F.SectionCardGrid, { breakpoint: 'auto',
+          columns: 3,
+          header: { align: 'center', eyebrow: 'What’s in a Meal', heading: 'Hope begins with nutritious food.',
+            supporting: 'Developed by food science and nutrition professionals, MannaPack® meals are vegetarian and halal certified. Each meal costs only 29 cents.' },
+          items: [
+            { title: 'MannaPack® Rice', body: 'Our original formula — key nutrients for anyone over the age of one.', illustration: img('food-mannapack-bag.svg'), showLink: false },
+            { title: h(Fragment, null, 'MannaPack® ', h('span', { className: 'mi-nowrap' }, 'Potato-D')), body: 'A fortified potato-soy meal for children recovering from diarrhea.', illustration: img('food-mannapack-bag.svg'), showLink: false },
+            { title: h(Fragment, null, 'MannaPack® ', h('span', { className: 'mi-nowrap' }, 'Potato-W')), body: 'A weaning food for children 7–12 months, alongside breastfeeding.', illustration: img('food-mannapack-bag.svg'), showLink: false }
+          ],
+          showFooter: true, footerLabel: 'See how our meals are made', footerHref: '#'
+        }),
+
+        /* Locations */
+        h('section', { className: 'mi-section mi-section--brand-subtle', 'aria-labelledby': 'mi-locations' },
+          h('div', { className: 'mi-header' },
+            h(F.SectionHeader, { breakpoint: 'auto', align: 'center', eyebrow: 'Locations', heading: h('span', { id: 'mi-locations' }, 'Eight permanent sites, and a MobilePack™ near you.'),
+              supporting: 'We pack meals year-round at eight permanent sites, and host MobilePack™ events in communities across the country. Make a reservation today.' })),
+          h('div', { className: 'mi-inner mi-locations' },
+            h('div', { className: 'mi-map', role: 'img', 'aria-label': 'Map of the United States. Minnesota, Illinois, Texas and Arizona, home to FMSC’s eight permanent sites, are highlighted; dots mark permanent sites and MobilePack™ events across the country.', dangerouslySetInnerHTML: { __html: mapArt } }),
+            h('div', { className: 'mi-sites' },
+              h('h3', { className: 'mi-sites__eyebrow overline' }, 'Permanent Sites'),
+              h('ul', { className: 'mi-sites__list' }, sites.map(function (s) {
+                return h('li', { key: s }, h('a', { className: 'mi-sites__link body-base', href: 'signup-1.html?path=a&site=' + s.split(',')[0].toLowerCase().replace(/ /g, '-') },
+                  h('span', null, s), h(F.Icon, { name: 'arrow-right', size: 24 })));
+              })),
+              h('div', { className: 'mi-sites__more' },
+                h('p', { className: 'body-small' }, 'Not near one of our permanent sites?'),
+                h('a', { className: 'body-base', href: 'volunteer.html' }, 'Find a MobilePack™ event near me'))))),
+
+        /* Finances */
+        h(F.SectionStatRow, { breakpoint: 'auto',
+          className: 'mi-finances', stats: 3,
+          header: { align: 'center', eyebrow: 'Finances', heading: 'Faithful with every gift.',
+            supporting: 'FMSC consistently receives the highest awards for accountability and transparency from Charity Navigator, and has a GuideStar Platinum Seal of Transparency.' },
+          items: [
+            { value: '99%+', label: 'of meals shipped safely reach their destination' },
+            { rating: true, label: 'Charity Navigator four-star rating' },
+            { value: '88%', label: 'of donations go to meal production' }
+          ],
+          showLink: true, linkLabel: 'View our financials', linkHref: '#'
+        }),
+
+        /* Scripture */
+        mobile
+          ? h('figure', { className: 'mi-scripture' },
+              h('div', { className: 'mi-scripture__media' },
+                h('img', { className: 'mi-scripture__photo', src: img('mission-scripture.jpg'), alt: '' }),
+                h('div', { className: 'mi-scripture__ramp', 'aria-hidden': 'true' })),
+              h('div', { className: 'mi-scripture__copy' },
+                h('blockquote', { className: 'heading-h1-mobile' }, h('p', null, '“He upholds the cause of the oppressed and gives food to the hungry.”')),
+                h('figcaption', { className: 'body-base' }, 'Psalm 146:7 (NIV)')))
+          : h('figure', { className: 'mi-scripture' },
+              h('img', { className: 'mi-scripture__photo', src: img('mission-scripture.jpg'), alt: '' }),
+              h('div', { className: 'mi-scripture__scrim', 'aria-hidden': 'true' }),
+              h('blockquote', { className: 'heading-h1' }, h('p', null, '“He upholds the cause of the oppressed and gives food to the hungry.”')),
+              h('figcaption', { className: 'body-base' }, 'Psalm 146:7 (NIV)')),
+
+        /* Leadership and board */
+        h('section', { className: 'mi-section mi-leadership', 'aria-labelledby': 'mi-leadership' },
+          h('div', { className: 'mi-header' },
+            h(F.SectionHeader, { breakpoint: 'auto', align: 'center', eyebrow: 'Leadership and Board', heading: h('span', { id: 'mi-leadership' }, 'The people accountable for this work.'),
+              supporting: h(Fragment, null, 'J.J. Slag serves as CEO, following Mark Crea’s more than 20 years of leadership. A ', h('span', { className: 'mi-nowrap' }, '16-member'), ' board of directors oversees the organization.') })),
+          h(F.ArrowLink, { label: 'Meet the team', href: '#' })),
+
+        h(F.CTABand, { breakpoint: 'auto',
+          eyebrow: 'Join the movement',
+          headline: '$106 feeds a child a daily meal for a full year.',
+          subtext: 'Donations buy the ingredients. Volunteers pack the meals. Both are part of the work.',
+          primaryHref: 'donate.html', secondaryHref: 'volunteer.html',
+          showTrustStrip: true,
+          trustIllustrations: [img('donations-recurring.svg'), img('food-mannapack-bag.svg'), img('volunteers-celebrate.svg')]
+        })),
+
+      h(F.Footer, { breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        columns: footerColumns,
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(MissionPage));
+</script>
+</body>
+</html>

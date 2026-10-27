@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giving · FMSC</title>
+<meta name="description" content="Your FMSC giving: your monthly gift, employer matching, every gift you’ve made with its receipt, and your year-end tax statements.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .ag-muted { color: var(--content-secondary); }
+  .ag-link { color: var(--content-link); text-decoration: none; }
+  .ag-link:hover { text-decoration: underline; }
+
+  /* Account page header: stacking under 800px is built into the DS AccountPageHeader. */
+
+  /* Monthly gift + Double the Donation: two cards side by side, one column under 800px of content. */
+  .ag-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); align-items: stretch; }
+  @container ac-content (max-width: 799.98px) { .ag-pair { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Label/value facts: label Body/Small secondary, value primary. Rule above the block. */
+  .ag-facts { display: flex; flex-direction: column; gap: var(--space-xs); padding-top: var(--space-sm); border-top: 1px solid var(--border-subtle); }
+  .ag-fact { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); min-width: 0; }
+  .ag-fact__label { flex: none; color: var(--content-secondary); }
+  .ag-fact__value { min-width: 0; text-align: right; color: var(--content-primary); }
+
+  /* 1 · Your monthly gift */
+  .ag-amount { display: flex; flex-direction: column; gap: var(--space-2xs); }
+  .ag-monthly .ag-facts { flex: 1 1 auto; }
+  .ag-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+
+  /* 2 · Double the Donation */
+  .ag-employer { display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-md); border-radius: var(--radius-md); background: var(--background-subtle); }
+  .ag-employer__top { display: flex; flex-direction: column; gap: var(--space-3xs); }
+  .ag-employer__name { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3xs); flex-wrap: wrap; }
+  .ag-employer__name a { display: inline-block; padding: var(--space-sm) 0; margin: calc(-1 * var(--space-sm)) 0; }
+  .ag-matched { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm); border-radius: var(--radius-md); background: var(--brand-subtle); }
+  .ag-matched__amount { flex: none; color: var(--brand-primary); }
+  .ag-matched__copy { display: flex; flex-direction: column; gap: var(--space-3xs); min-width: 0; }
+  .ag-employer .ag-fact { align-items: flex-start; }
+  .ag-remove { position: relative; display: inline-flex; align-items: center; gap: var(--space-2xs); align-self: flex-start; padding: 0; border: 0; background: none; color: var(--feedback-error); cursor: pointer; font-family: var(--font-sans); }
+  /* 24px tall in Figma; the hit area extends to 44px without moving the layout. */
+  .ag-remove::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+  .ag-remove:hover .ag-remove__label { text-decoration: underline; }
+  .ag-source { display: flex; align-items: center; gap: var(--space-2xs); }
+  .ag-source img { flex: none; width: 24px; height: 25px; }
+
+  /* 3 · What you've given: header row with the two filters on the right */
+  .ag-head { display: flex; align-items: center; gap: var(--space-sm); padding-bottom: var(--space-sm); }
+  .ag-head .ac-card__title { flex: 1 1 0; }
+  .ag-filters { display: flex; gap: var(--space-sm); flex: none; }
+  .ag-filter--type { width: 218px; }
+  .ag-filter--year { width: 240px; }
+  .ag-table { border: 1px solid var(--border-default); border-radius: var(--radius-lg); overflow: hidden; }
+  .ag-table .fm-dtable { width: 100%; }
+  .ag-table .fm-dtable__table { width: 100%; }
+  /* Figma: the first column is inset space-lg from the table edge, and the sort indicator sits at the column's right edge. */
+  .ag-table .fm-dtable__table tr > :first-child { padding-left: var(--space-lg); }
+  .ag-table .fm-table-header__in, .ag-table .fm-table-header__sort { width: 100%; justify-content: space-between; }
+  /* Narrower than the Figma 944px table (1100–1279): only the designation wraps. */
+  .ag-table .fm-dtable__table td:not(:nth-child(2)), .ag-table .fm-dtable__table th { white-space: nowrap; }
+  .ag-table .fm-dtable__table thead th:nth-child(2) { white-space: normal; }
+  /* DS sort buttons (16px) and row links (20px): extend the hit area to 44px without moving the layout. */
+  .ag-table .fm-table-header__sort, .ag-table .fm-table-cell__link { position: relative; }
+  .ag-table .fm-table-header__sort::before, .ag-table .fm-table-cell__link::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+  .ag-empty { padding: var(--space-md) var(--card-pad); color: var(--content-secondary); }
+  /* Figma record rule sits in the layout (+1px each record); the DS draws it as an inset shadow. */
+  .ag-table .fm-dtable__record { box-shadow: none; border-bottom: 1px solid var(--border-subtle); }
+  @container ac-content (max-width: 799.98px) {
+    .ag-head { flex-wrap: wrap; }
+    .ag-filters { flex: 1 1 100%; }
+    .ag-filter--type, .ag-filter--year { flex: 1 1 0; width: auto; min-width: 0; }
+  }
+
+  /* 4 · Receipts and tax statements: choose on the left, statement preview on the right */
+  .ac-card.ag-receipts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); padding: var(--card-pad); }
+  .ag-receipts__main { display: flex; flex-direction: column; gap: var(--space-sm); min-width: 0; }
+  .ag-choose { display: flex; flex-direction: column; gap: var(--space-lg); max-width: 450px; }
+  .ag-choose__actions { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); }
+  .ag-choose__actions .fm-dropdown { align-self: stretch; }
+  .ag-fine { display: flex; flex-direction: column; gap: var(--space-2xs); padding-top: var(--space-sm); }
+  .ag-preview { padding-top: var(--space-2xl); min-width: 0; display: flex; }
+  .ag-sheet { flex: 1 1 auto; display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-lg); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--background-surface); }
+  .ag-sheet__rule { height: 1px; background: var(--border-subtle); }
+  .ag-sheet__line { display: flex; justify-content: space-between; gap: var(--space-sm); color: var(--content-secondary); }
+  .ag-sheet__line--total { color: var(--content-primary); }
+  @container ac-content (max-width: 799.98px) {
+    .ac-card.ag-receipts { grid-template-columns: minmax(0, 1fr); }
+    .ag-preview { padding-top: 0; }
+  }
+
+  /* 5 · Questions about your giving: the first (open) item has no rule above it */
+  /* Figma draws the rule above each collapsed item in the layout (+1px each item; the DS uses an inset shadow). */
+  .ag-faq .fm-disclosure-item { box-shadow: none; border-top: 1px solid var(--border-subtle); }
+  .ag-faq .ac-card__header + .fm-disclosure-item { border-top: 0; }
+  /* Figma: chevron at the right edge of the row (the question stays capped at 771px). */
+  .ag-faq .fm-disclosure-item__row { justify-content: space-between; }
+  .ag-faq__email { padding-top: 0; }
+  /* Figma colours the "i" of info@fmsc.org grey (only "nfo@fmsc.org" is link blue); reproduced as drawn. */
+  .ag-faq__email a .ag-muted { color: var(--content-secondary); }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    /* Figma mobile card headers keep space-sm below and are 56 tall (the shell zeroes the padding on mobile). */
+    .ac-shell__content .ac-card__header { padding-bottom: var(--space-sm); min-height: 56px; }
+    .ac-shell__content .ac-card__header.ag-head { min-height: 0; }
+    .ag-pair { grid-template-columns: minmax(0, 1fr); gap: var(--section-gap); }
+    .ag-amount { gap: var(--space-0); }
+    .ag-actions { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .ag-actions .fm-btn { width: 100%; }
+    .ag-employer__top { gap: var(--space-xs); }
+    .ag-employer__name { flex-direction: column; align-items: flex-start; gap: var(--space-xs); }
+    .ag-employer__id { display: flex; flex-direction: column; gap: var(--space-3xs); }
+    .ag-remove { align-self: center; }
+    /* Figma mobile FAQ questions are Heading/H4 mobile (18/24); the DS DisclosureItem has no mobile type. */
+    .ag-faq .fm-disclosure-item__question { font-size: 18px; line-height: 24px; }
+    /* Figma mobile monthly-gift facts: rows fixed at 20 / 48 / hug / 20, and "Card on file" sits flush against its
+       label (no gap) on one line. */
+    .ag-monthly .ag-fact:nth-child(1), .ag-monthly .ag-fact:nth-child(4) { height: calc(var(--space-md) + var(--space-2xs)); }
+    .ag-monthly .ag-fact:nth-child(2) { height: var(--space-2xl); }
+    .ag-monthly .ag-fact:nth-child(3) { align-items: flex-start; gap: var(--space-0); }
+    .ag-monthly .ag-fact:nth-child(3) .ag-fact__value { white-space: nowrap; }
+    /* Figma mobile "How to claim": label fills, value is a fixed 149px right-aligned block (wraps after "Acme"). */
+    .ag-employer .ag-fact:nth-child(4) .ag-fact__label { flex: 1 1 0; }
+    .ag-employer .ag-fact:nth-child(4) .ag-fact__value { flex: none; width: 149px; }
+    .ag-source { align-items: center; }
+    .ag-head { padding-bottom: 0; }
+    .ag-filters { flex-direction: column; gap: var(--space-md); }
+    .ag-filter--type, .ag-filter--year { flex: none; width: 100%; }
+    .ag-table { border: 0; border-radius: 0; }
+    .ac-card.ag-receipts { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .ag-receipts__main { display: contents; }
+    .ag-choose { max-width: none; }
+    .ag-choose__actions { align-items: stretch; gap: var(--space-sm); }
+    .ag-choose__actions .fm-btn { width: 100%; }
+    .ag-preview { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="account-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+  var img = function (n) { return 'img/' + n; };
+
+  /* SAMPLE DATA (Figma): the usability-test persona Sarah's gifts, figures and dates. */
+  var facts = [['Next charge', 'Oct. 1, 2026'], ['Designation', 'Where the need is greatest'], ['Card on file', 'Visa ending 4482 · expires 03/27'], ['Giving since', 'March 2019 · 90 gifts']];
+  var matches = [['Matches', '1:1, up to $5,000 a year'], ['Minimum gift', '$25'], ['Deadline', 'Dec. 31'], ['How to claim', 'Through the Acme giving portal']];
+  var gifts = [
+    { date: 'Sept. 1, 2026', iso: '2026-09-01', place: 'Where the need is greatest', type: 'Monthly gift', amount: '$29.00', meals: '100 meals', receipt: 'Emailed Sept. 1, 2026' },
+    { date: 'July 14, 2026', iso: '2026-07-14', place: 'Hope Church MobilePack™ 2026', type: 'Campaign gift', amount: '$87.00', meals: '300 meals', receipt: 'Emailed July 14, 2026' },
+    { date: 'June 1, 2026', iso: '2026-06-01', place: 'Where the need is greatest', type: 'Monthly gift', amount: '$29.00', meals: '100 meals', receipt: 'Emailed June 1, 2026' },
+    { date: 'Nov. 12, 2025', iso: '2025-11-12', place: 'Dana Reyes’ birthday fundraiser', type: 'Fundraiser gift', amount: '$50.00', meals: '172 meals', receipt: 'Emailed Nov. 12, 2025' },
+    { date: 'March 3, 2025', iso: '2025-03-03', place: 'Where the need is greatest', type: 'One-time gift', amount: '$100.00', meals: '345 meals', receipt: 'Emailed March 3, 2025' }
+  ];
+  var statement = [['Monthly gifts · 12 gifts', '$348.00'], ['March 3, 2025 · One-time gift', '$100.00'], ['Nov. 12, 2025 · Dana Reyes’ fundraiser', '$50.00']];
+  var faqs = [
+    ['A gift is missing from this list', 'Gifts by check or stock can take up to three weeks to appear. Gifts made under a different email or name are matched when we can, and sometimes we cannot — tell us and we will link them.'],
+    ['Does this work as my tax statement?', 'No. Use the year-end statement above, which carries our tax ID and excludes anything not deductible.'],
+    ['I need to correct the name or address on a past gift', 'Email donor care with the gift date and amount. The receipt is reissued with the correction.'],
+    ['What happens to a gift I designated to a program?', 'It funds that program first. If that program is already fully funded, the gift goes where the need is greatest rather than sitting unused.'],
+    /* Figma's answer ends in a "[CONFIRM]" placeholder; kept exactly as drawn. */
+    ['Who do I contact about one particular gift?', 'Donor care, at donorcare@fmsc.org or 763-504-2919. Quote the gift date and amount. [CONFIRM]']
+  ];
+  /* Current monthly gift in whole dollars ("$29 a month" in Figma); "Change amount" hands it to donate.html. */
+  var MONTHLY_AMOUNT = 29;
+  /* Only the 2025 statement has a preview (Figma). Other years show a short note in its place. */
+  var STATEMENT_YEAR = '2025';
+  var TYPES = ['All types', 'Monthly gift', 'One-time gift', 'Campaign gift', 'Fundraiser gift'];
+  var YEARS = ['All years', '2026', '2025'];
+
+  function Fact(p) {
+    return h('div', { className: 'ag-fact' },
+      h('span', { className: 'ag-fact__label body-small' }, p.label),
+      h('span', { className: 'ag-fact__value ' + (p.valueClass || 'body-base') }, p.value));
+  }
+
+  /* Card header with something on the right (the gift filters). Same look as UI.CardHeader. */
+  function HeadWithFilters(p) {
+    var mobile = F.useIsMobile();
+    return h('div', { className: 'ac-card__header ag-head' },
+      h(UI.Badge, { icon: p.icon }),
+      h('h2', { className: 'ac-card__title ' + (mobile ? 'heading-h4-mobile' : 'heading-h4'), id: p.id }, p.title),
+      p.children);
+  }
+
+  /* 4 · Receipts and tax statements: the preview follows the chosen tax year. */
+  function Receipts() {
+    var ty = React.useState(STATEMENT_YEAR), taxYear = ty[0], setTaxYear = ty[1];
+    var hasPreview = taxYear === STATEMENT_YEAR;
+    return h('section', { className: 'ac-card ag-receipts', 'aria-labelledby': 'ag-receipts-title' },
+        h('div', { className: 'ag-receipts__main' },
+          h(UI.CardHeader, { icon: 'certificate', title: 'Receipts and tax statements', id: 'ag-receipts-title' }),
+          h('p', { className: 'body-base ag-muted' }, 'A single PDF listing every deductible gift for the year.'),
+          h('div', { className: 'ag-choose' },
+            h('div', { className: 'ag-choose__actions' },
+              h(F.Dropdown, { label: 'Tax year', showLabel: true, options: ['2025', '2024', '2023'], value: taxYear, onChange: function (v) { setTaxYear(v); } }),
+              h(F.Button, { variant: 'secondary', size: 'large', href: '#' }, 'Download your statement')),
+            h('div', { className: 'ag-fine' },
+              h('p', { className: 'body-small ag-muted' }, 'Feed My Starving Children is a 501(c)(3). Tax ID 41-1601449.'),
+              h('p', { className: 'body-small ag-muted' }, 'MarketPlace purchases and the cost of goods received are not deductible and are left out.')))),
+        h('div', { className: 'ag-preview' },
+          h('div', { className: 'ag-sheet', role: 'group', 'aria-label': 'Preview of your ' + taxYear + ' giving statement', 'aria-live': 'polite' },
+            h('p', { className: 'caption ag-muted' }, 'FEED MY STARVING CHILDREN'),
+            h('p', { className: 'label-small' }, taxYear + ' giving statement'),
+            h('p', { className: 'caption ag-muted' }, window.FMSCData.profile.fullName() + ' · Jan. 1 to Dec. 31, ' + taxYear),
+            h('div', { className: 'ag-sheet__rule', 'aria-hidden': 'true' }),
+            hasPreview
+              ? h(React.Fragment, null,
+                  statement.map(function (l) { return h('p', { key: l[0], className: 'ag-sheet__line caption' }, h('span', null, l[0]), h('span', null, l[1])); }),
+                  h('p', { className: 'ag-sheet__line ag-sheet__line--total caption' }, h('span', null, 'Total deductible'), h('span', null, '$498.00')))
+              /* INVENTED COPY (prototype): no preview exists for other years. */
+              : h('p', { className: 'caption ag-muted ag-sheet__note' }, 'A preview isn’t available for ' + taxYear + '. Download your statement to see every deductible gift you made that year.'))));
+  }
+
+  function Gifts() {
+    var mobile = F.useIsMobile();
+    /* Stacked records (the DS mobile table) whenever the content column is under 800px: 1024 and down. */
+    var records = F.useMediaQuery('(max-width: 1024.98px)');
+    var t = React.useState('All types'), type = t[0], setType = t[1];
+    var y = React.useState('All years'), year = y[0], setYear = y[1];
+    var s = React.useState({ key: 'date', dir: 'descending' }), sort = s[0], setSort = s[1];
+    var num = function (v) { return parseFloat(String(v).replace(/[^0-9.]/g, '')) || 0; };
+    var rows = gifts.filter(function (g) {
+      return (type === 'All types' || g.type === type) && (year === 'All years' || g.iso.slice(0, 4) === year);
+    });
+    var keyOf = { date: function (g) { return g.iso; }, place: function (g) { return g.place; }, amount: function (g) { return num(g.amount); }, meals: function (g) { return num(g.meals); }, receipt: function (g) { return g.iso; } };
+    rows = rows.slice().sort(function (a, b) {
+      var ka = keyOf[sort.key](a), kb = keyOf[sort.key](b), c = ka < kb ? -1 : ka > kb ? 1 : 0;
+      return sort.dir === 'ascending' ? c : -c;
+    });
+    function col(key, label, cells, width) {
+      return { key: key, label: label, cells: cells, width: width, sort: sort.key === key ? sort.dir : 'unsorted',
+        onSort: function () { setSort({ key: key, dir: sort.key === key && sort.dir === 'descending' ? 'ascending' : 'descending' }); } };
+    }
+    var columns = records
+      ? [{ key: 'date', label: 'Date', cells: 'strong' }, { key: 'amount', label: 'Amount', mobileJoin: 'date' }, { key: 'place', label: 'Designation', cells: 'stacked' }, { key: 'meals', label: 'Meals' }, { key: 'link', label: 'Receipt', cells: 'link' }]
+      : [col('date', 'Date', 'strong', 155), col('place', 'Designation', 'stacked', 229), col('amount', 'Amount', 'text', 100), col('meals', 'Meals', 'text', 110), col('receipt', 'Receipt', 'text', 200),
+         { key: 'link', label: '', cells: 'link', width: 150, sort: 'none', header: { 'aria-label': 'Receipt action' } }];
+    var data = rows.map(function (g) {
+      return { date: g.date, place: { value: g.place, secondary: g.type }, amount: g.amount, meals: g.meals, receipt: g.receipt,
+        link: { value: 'Resend receipt', href: '#', 'aria-label': 'Resend receipt for ' + g.date + ' gift' } };
+    });
+    var filtered = type !== 'All types' || year !== 'All years';
+    var count = filtered ? (rows.length ? '1–' + rows.length + ' of ' + rows.length + ' gifts' : '0 gifts') : '1–5 of 90 gifts';
+    return h('section', { className: 'ac-card ag-given', 'aria-labelledby': 'ag-given-title' },
+      h(HeadWithFilters, { icon: 'file-text', title: 'What you’ve given', id: 'ag-given-title' },
+        h('div', { className: 'ag-filters' },
+          h('div', { className: 'ag-filter--type' }, h(F.Dropdown, { label: 'Gift type', options: TYPES, value: type, onChange: setType })),
+          h('div', { className: 'ag-filter--year' }, h(F.Dropdown, { label: 'Year', options: YEARS, value: year, onChange: setYear })))),
+      h('div', { className: 'ag-table' },
+        rows.length ? h(F.DataTable, { breakpoint: records ? 'mobile' : 'desktop', caption: 'Your gifts', columns: columns, rows: data, count: count,
+          pagination: { previousLabel: 'Previous gifts', nextLabel: 'Next gifts' } })
+          : h('p', { className: 'ag-empty body-base' }, 'No gifts match these filters.')));
+  }
+
+  function Giving() {
+    var mobile = F.useIsMobile();
+    return h(window.AccountShell, { current: 'giving' },
+
+      /* Account page header: title + three figures */
+      h(F.AccountPageHeader, { breakpoint: 'auto', className: 'ag-header', title: 'Your giving', showStats: true, showStat3: true,
+        stats: [{ value: '$1,842', label: 'given since 2019' }, { value: '$348', label: 'given in 2026' }, { value: '6,352', label: 'meals funded' }] }),
+
+      /* 1 · Your monthly gift + 2 · Employer lookup */
+      h('div', { className: 'ag-pair' },
+        h(UI.Card, { className: 'ag-monthly', mask: img('donations-recurring.svg'), title: 'Your monthly gift' },
+          h('div', { className: 'ag-amount' },
+            h('p', { className: mobile ? 'display-xl-mobile' : 'display-xl' }, '$29 a month'),
+            h('p', { className: 'body-base ag-muted' }, 'About 100 meals a month')),
+          h('div', { className: 'ag-facts' }, facts.map(function (f) { return h(Fact, { key: f[0], label: f[0], value: f[1] }); })),
+          h('div', { className: 'ag-actions' },
+            h(F.Button, { variant: 'secondary', size: 'small', href: 'donate.html?amount=' + MONTHLY_AMOUNT + '&freq=monthly#do-give' }, 'Change amount'),
+            h(F.Button, { variant: 'secondary', size: 'small', href: '#' }, 'Update card'))),
+        h(UI.Card, { icon: 'building-community', title: 'Double the Donation' },
+          h('div', { className: 'ag-employer' },
+            h('div', { className: 'ag-employer__top' },
+              mobile
+                ? h('div', { className: 'ag-employer__name' },
+                    h('div', { className: 'ag-employer__id' },
+                      h('p', { className: 'label-small' }, 'Acme Inc'),
+                      h('p', { className: 'caption ag-muted' }, 'Added in March 2026')),
+                    h('a', { className: 'ag-link body-small fm-focusable', href: '#' }, 'Search for another employer'))
+                : h(React.Fragment, null,
+                    h('div', { className: 'ag-employer__name' },
+                      h('p', { className: 'label-small' }, 'Acme Inc'),
+                      h('a', { className: 'ag-link body-small fm-focusable', href: '#' }, 'Search for another employer')),
+                    h('p', { className: 'caption ag-muted' }, 'Added in March 2026'))),
+            h('div', { className: 'ag-matched' },
+              h('p', { className: 'ag-matched__amount ' + (mobile ? 'heading-h3-mobile' : 'heading-h3') }, '$174'),
+              h('div', { className: 'ag-matched__copy' },
+                h('p', { className: 'body-small' }, 'matched by Acme so far'),
+                h('p', { className: 'caption ag-muted' }, '600 more meals, on top of what you gave.'))),
+            h('div', { className: 'ag-facts' }, matches.map(function (f) { return h(Fact, { key: f[0], label: f[0], value: f[1], valueClass: 'body-small' }); })),
+            h('button', { type: 'button', className: 'ag-remove fm-focusable', 'aria-label': 'Remove Acme Inc from my account' },
+              mobile ? h(F.Icon, { name: 'x', size: 24 }) : null,
+              h('span', { className: 'ag-remove__label body-small' }, 'Remove from my account'),
+              mobile ? null : h(F.Icon, { name: 'x', size: 24 }))),
+          h('div', { className: 'ag-source' },
+            h('img', { src: img('donate-double-the-donation.svg'), alt: '' }),
+            h('p', { className: 'body-small ag-muted' }, 'All information provided by Double the Donation')))),
+
+      /* 3 · What you've given */
+      h(Gifts),
+
+      /* 4 · Receipts and tax statements */
+      h(Receipts),
+
+      /* 5 · Questions about your giving */
+      h(UI.Card, { className: 'ag-faq', icon: 'message', title: 'Questions about your giving' },
+        faqs.map(function (q, i) {
+          return h(F.DisclosureItem, { key: q[0], question: q[0], answer: q[1], defaultExpanded: i === 0 });
+        }),
+        h('p', { className: 'body-base ag-muted ag-faq__email' }, 'Please email ', h('a', { className: 'ag-link fm-focusable', href: 'mailto:info@fmsc.org' }, h('span', { className: 'ag-muted' }, 'i'), 'nfo@fmsc.org'), ' with any additional questions.')));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Giving));
+</script>
+</body>
+</html>

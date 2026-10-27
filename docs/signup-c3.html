@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guidelines and waiver · Sign up to pack meals · FMSC</title>
+<meta name="description" content="Read the volunteer guidelines, accept the waiver and reserve 4 spots for Whitfield Household at FMSC Coon Rapids.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (su-) come from signup-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Waiver block (Figma "Waiver", space-sm): checkbox, "Read the waiver" and the group waiver note, as SignupUI.Waiver plus the note. */
+  .sc-waiver-note { max-width: 559px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="signup-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
+  /* Path C · step 3 (Figma "Sign up — C3 Guidelines and waiver", 4454:34826 / mobile 4454:41826). Same as A3 plus the
+     group waiver note inside the waiver block. The waiver box starts checked, as the frame shows (nothing stored yet); unchecking it blocks Reserve: without it the checkbox shows its
+     error state and takes focus. */
+  function Waiver(p) {
+    /* SignupUI.Waiver markup (su-waiver, name su-waiver) with the Figma group note as its third row. */
+    return h('div', { className: 'su-waiver' },
+      h(F.Checkbox, { name: 'su-waiver', label: 'I’ve read the guidelines and accept the volunteer waiver.', checked: !!p.checked, error: !!p.error,
+        onChange: function (e) { p.onChange(e.target.checked); } }),
+      h(F.ArrowLink, { href: '#', label: 'Read the waiver' }),
+      h(UI.Note, { className: 'sc-waiver-note' }, 'You accept the waiver for yourself. Everyone you add gets it by email and needs to sign before ' + p.dateShort + ' to check in. Anyone under 18 also needs a guardian’s consent.'));
+  }
+  function Page() {
+    /* Spots, group and date come from the flow store; the waiver box is kept there too. */
+    var flow = Shell.useFlow(), accepted = flow[0].waiver !== false, r = Shell.flow.resolve('c');
+    function setAccepted(v) { flow[1]({ waiver: v }); }
+    var e = React.useState(false), error = e[0], setError = e[1];
+    function reserve() {
+      if (accepted) { Shell.go(Shell.href('c', 4)); return; }
+      setError(true);
+      var box = document.querySelector('input[name="su-waiver"]'); if (box) box.focus();
+    }
+    return h(Shell, { path: 'c', step: 3 },
+      h(UI.Guidelines),
+      h(UI.Rule),
+      h(Waiver, { dateShort: r.dateShort, checked: accepted, error: error, onChange: function (v) { setAccepted(v); if (v) setError(false); } }),
+      h(UI.Actions, { label: 'Reserve ' + r.spotsText, onClick: reserve }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

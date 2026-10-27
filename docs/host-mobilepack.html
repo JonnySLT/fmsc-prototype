@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Host a MobilePack™ event · FMSC</title>
+<meta name="description" content="Host an FMSC MobilePack™ event: you bring the venue, volunteers and funding for 100,000 meals, and FMSC brings the food, equipment and staff.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .hm-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); scroll-margin-top: var(--space-4xl); }
+  .hm-section--subtle { background: var(--background-subtle); }
+  .hm-inner { width: 100%; max-width: var(--content-width); }
+  .hm-stack { display: flex; flex-direction: column; align-items: flex-start; gap: var(--section-gap); }
+  .hm-stack > * { width: 100%; }
+  .hm-stack > .fm-arrow-link { width: auto; }
+  .hm-secondary { color: var(--content-secondary); }
+
+  /* How hosting works: four steps read down the columns (1 2 | 3 4), then three photos */
+  .hm-how { container-type: inline-size; }
+  .hm-steps { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, auto); grid-auto-flow: column; gap: var(--space-lg); }
+  .hm-steps .fm-step-item, .hm-apply-steps .fm-step-item { width: 100%; }
+  @container (max-width: 640px) { .hm-steps { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-flow: row; gap: var(--space-md); } }
+  .hm-photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .hm-photos .fm-media { width: 100%; }
+
+  /* Events near you */
+  .hm-results { display: flex; flex-direction: column; gap: var(--space-md); }
+  .hm-scope { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-3xs) var(--space-2xs); color: var(--content-secondary); }
+  .hm-change { padding: 0; border: 0; background: none; font: inherit; color: var(--content-link); cursor: pointer; text-decoration: none; }
+  .hm-change { position: relative; }
+  /* Inline link: widen the hit area to 44px without moving the text. */
+  .hm-change::after { content: ""; position: absolute; inset: calc(-1 * var(--space-sm)) calc(-1 * var(--space-2xs)); }
+  .hm-change:hover { text-decoration: underline; }
+  .hm-change:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; border-radius: var(--radius-sm); }
+  .hm-search { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-md); padding: var(--card-pad); background: var(--background-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+  .hm-search .fm-input { flex: 1 1 200px; max-width: 280px; }
+  .hm-search .fm-dropdown { flex: 1 1 160px; max-width: 220px; }
+  .hm-search__actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+  .hm-result { height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); padding: var(--space-md) var(--space-lg) var(--space-sm); background: var(--background-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
+  .hm-result__info { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2xs); flex: 1 1 auto; }
+  .hm-result__meta { color: var(--content-secondary); white-space: pre-line; }
+  .hm-result .fm-arrow-link, .hm-page .fm-arrow-link { min-height: 44px; }
+  .hm-empty { padding: var(--card-pad); background: var(--background-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--content-secondary); }
+
+  /* What it takes: one card, two columns of four checklist rows */
+  .hm-checklist { list-style: none; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(4, auto); grid-auto-flow: column; gap: var(--space-lg); padding: var(--space-lg); background: var(--background-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+  .hm-checklist .fm-checklist-item { width: 100%; }
+  @media (max-width: 899.98px) { .hm-checklist { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-flow: row; } }
+
+  /* What FMSC brings */
+  .hm-brings .fm-badge-card { width: 100%; height: 100%; }
+  .hm-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .hm-pair .fm-testimonial-card { width: 100%; height: 100%; }
+  /* Empty avatar: Figma draws a brand/subtle circle with a blue/400 person (17px head at 15,9; 36 × 30 body at 6,29, clipped by the circle).
+     The DS draws an outline user icon on background/subtle. */
+  .hm-pair .fm-testimonial-card__avatar--empty {
+    background: radial-gradient(8.5px 8.5px at 23.5px 17.5px, var(--blue-400) 98%, transparent 100%),
+                radial-gradient(18px 15px at 24px 44px, var(--blue-400) 98%, transparent 100%), var(--brand-subtle);
+  }
+  .hm-pair .fm-testimonial-card__avatar--empty .fm-icon { display: none; }
+  .hm-resources { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); padding: var(--space-lg); background: var(--background-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); }
+  .hm-resources__links { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-xs); }
+  @media (max-width: 839.98px) { .hm-pair { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Apply to host */
+  .hm-apply-panel { container-type: inline-size; padding: var(--space-xl) var(--space-lg); background: var(--background-brand-subtle); border-radius: var(--radius-lg); }
+  .hm-apply-steps { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-lg); }
+  @container (max-width: 720px) { .hm-apply-steps { grid-template-columns: minmax(0, 1fr); gap: var(--space-md); } }
+  .hm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-lg); }
+  .hm-help { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); color: var(--content-secondary); }
+
+  /* FAQ: Figma answers are a 607px text box; each item's 1px top rule sits in its height. */
+  .hm-faq { background: var(--background-subtle); }
+  .hm-faq .fm-section-faq__answer { max-width: 607px; }
+  /* Scripture: Figma has no photo yet, only the quote band's grey placeholder fill (#80878f) under the scrim. */
+  /* #80878f is the frame's raw, unbound fill (no DS token matches; gray-450 #888f98 is the nearest) — kept exact for fidelity. */
+  .hm-quote .fm-quote-band__img--empty { background: #80878f; }
+  .hm-quote .fm-quote-band__img--empty .fm-icon, .hm-quote .fm-quote-band__img--empty svg { display: none; }
+  .hm-faq .fm-section-faq__item { box-shadow: none; border-top: 1px solid var(--border-subtle); }
+
+  /* CTA band: Figma hides the eyebrow; subtext is content/on-brand (white). */
+  .hm-cta .fm-cta-band__eyebrow:empty { display: none; }
+  .hm-cta .fm-cta-band__subtext { color: var(--content-on-brand); }
+  .fm-footer--desktop .fm-footer__legal-copy { max-width: 968px; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .hm-photos { grid-template-columns: minmax(0, 1fr); }
+    .hm-result { padding: var(--card-pad) var(--card-pad) var(--space-sm); }
+    .hm-search .fm-input, .hm-search .fm-dropdown { max-width: none; flex: 1 1 100%; }
+    .hm-checklist { gap: var(--space-xs); padding: var(--card-pad); }
+    .hm-pair { gap: var(--space-lg); }
+    /* Badge and testimonial cards have no breakpoint prop: mobile H4 (18/24) titles, Body/Large mobile (17/26) quote, no 220px floor. */
+    .hm-brings .fm-badge-card__title { font-size: 18px; line-height: 24px; }
+    .hm-pair .fm-testimonial-card { min-height: 0; }
+    .hm-pair .fm-testimonial-card__quote { font-size: 17px; line-height: 26px; }
+    .hm-resources { padding: var(--card-pad); }
+    .hm-apply-panel { padding: var(--space-xl) var(--card-pad); }
+    .hm-actions { flex-direction: column; align-items: stretch; gap: var(--space-lg); }
+    .hm-actions .fm-btn { width: 100%; }
+    .hm-help { flex-direction: column; align-items: flex-start; }
+    .hm-faq .fm-section-faq__answer { max-width: none; }
+    /* DS fix: Footer Mobile keeps the desktop flex-basis (140px) on its stacked columns, which becomes height. */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; }
+  }
+</style>
+</head>
+<body class="hm-page">
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+
+  var howSteps = [
+    ['Apply and pick a date', 'Send a short application, and FMSC\'s team reviews your venue. Plan for a date about 12 weeks out if you can.'],
+    ['Raise the funding and recruit', 'Your group raises funding for 100,000 MannaPack® meals and signs up people to pack them. Volunteer registration usually opens four to six weeks before the event.'],
+    ['The truck arrives', 'A 53-foot semi brings the ingredients and equipment. FMSC staff set up the packing line and run it with you.'],
+    ['Pack, seal and box', 'Volunteers scoop rice, soy, dried vegetables and a vitamin packet into bags, then seal and box them. FMSC ships the meals to its food distribution partners.']
+  ];
+  var photos = [
+    ['hm-strip-1.jpg', 'Volunteers in hairnets crowd around a packing table, filling meal bags'],
+    ['hm-strip-2.jpg', 'A volunteer in a hairnet laughs while weighing a meal bag at the scale'],
+    ['hm-strip-3.jpg', 'Volunteers scoop ingredients into bags along a busy packing line']
+  ];
+  /* SAMPLE DATA (Figma): fictional hosts, distances and dates for the usability test. */
+  var events = [
+    /* site: the sign-up flow's event (flow-data.js catalog), so "View packing times" opens that event's dates. */
+    { title: 'Lakeview High School', miles: 35, meta: 'Hudson, WI · 35 miles away\nNov. 7–8 · Registration opens Oct. 10', site: 'lakeview-mobilepack' },
+    { title: 'St. Mark\'s Lutheran Church', miles: 55, meta: 'St. Cloud, MN · 55 miles away\nOct. 17–18 · Spots open', site: 'st-marks-mobilepack' },
+    { title: 'Rochester Community Churches', miles: 85, meta: 'Rochester, MN · 85 miles away\nOct. 3–5 · Spots open', site: 'rochester-mobilepack' }
+  ];
+  var checklist = [
+    ['Funding for 100,000 meals', 'Your group commits to the full amount when you apply.'],
+    ['3,000 square feet or more', 'Room to pack and store food, with no thick carpet.'],
+    ['Room for a semi-truck', 'A large, level lot where a 53-foot semi can stay for the whole event, or a loading dock with a dock plate.'],
+    ['A 50-inch clear path', 'From the truck to the packing room, with no thick carpet.'],
+    ['A working forklift', 'On site and ready for event day.'],
+    ['Working heating and cooling', 'A fully operational HVAC system.'],
+    ['Water and a drain', 'Drinking-quality water to fill handwashing stations, and a drain to empty them.'],
+    ['Sinks or a dishwasher', 'For washing dishes.']
+  ];
+  var brings = [
+    ['Food, equipment and shipping', 'The ingredients and packing equipment arrive with FMSC staff. FMSC ships the finished meals.', 'hm-shipping-pallet.svg'],
+    ['A staff team', 'Staff help you plan in the weeks ahead and run the packing line on event day.', 'careers-team.svg'],
+    ['Planning and promotion tools', 'A hosting overview to plan your event, and a promotion toolkit to invite people to it.', 'hm-legacy-document.svg'],
+    ['Help with your goals', 'Staff help you set volunteer and fundraising goals that fit your venue and schedule.', 'hm-donations-growth-chart.svg']
+  ];
+  var applySteps = [
+    ['Send the application', 'Tell FMSC who you are, what kind of group you\'re with and where you\'d host.'],
+    ['Hear back within three business days', 'FMSC\'s MobilePack team reads every application and gets back to you.'],
+    ['Plan with FMSC staff', 'Staff approve your venue and work with you on a date, a volunteer goal and a fundraising goal.']
+  ];
+  var faqs = [
+    { question: 'How far ahead should we plan?', answer: 'Ideally 12 weeks before your event\'s start date. Apply as early as you can.' },
+    { question: 'How many volunteers do we need?', answer: 'It depends on your venue size and packing schedule. FMSC staff set the goal with you.' },
+    { question: 'When can volunteers sign up?', answer: 'Registration for FMSC MobilePack™ events usually opens four to six weeks before the event starts. Volunteers find your event in the packing event search.' },
+    { question: 'What does FMSC give hosts?', answer: 'A host event overview, a promotion toolkit, FMSC\'s signed W-9, its IRS tax-exempt letter and the latest Impact Report. They\'re all in the hosting overview.' },
+    { question: 'Can people give without packing?', answer: 'Yes. Anyone can give to an FMSC MobilePack™ event, whether or not they pack.' }
+  ];
+
+  function Header(p) {
+    return h(F.SectionHeader, { breakpoint: 'auto', align: 'left', showEyebrow: false, showSupporting: false,
+      heading: h('span', { id: p.id }, p.heading) });
+  }
+
+  /* DS StepItem has no Mobile variant: below 600px render the same markup with the mobile H4 (18/24) title. */
+  function Step(p) {
+    var mobile = F.useIsMobile();
+    if (!mobile) return h(F.StepItem, { as: 'li', indicator: 'number', number: p.number, title: p.title, description: p.description, titleAs: 'h3' });
+    return h('li', { className: 'fm-step-item fm-step-item--number' },
+      h('span', { className: 'fm-step-item__number body-large', 'aria-hidden': 'true' }, p.number),
+      h('div', { className: 'fm-step-item__copy' },
+        h('h3', { className: 'fm-step-item__title heading-h4-mobile' }, h('span', { className: 'fm-visually-hidden' }, 'Step ' + p.number + ': '), p.title),
+        h('p', { className: 'fm-step-item__desc body-base' }, p.description)));
+  }
+
+  /* Events near you: "(change)" opens a ZIP + distance search; the sample list filters by distance. Nothing is sent. */
+  function Events() {
+    var mobile = F.useIsMobile();
+    var dists = ['25 miles', '50 miles', '100 miles', '150 miles'];
+    var st = React.useState({ zip: '55433', miles: 150 }), q = st[0], setQ = st[1];
+    var op = React.useState(false), open = op[0], setOpen = op[1];
+    var dz = React.useState(q.zip), draftZip = dz[0], setDraftZip = dz[1];
+    var dm = React.useState(q.miles + ' miles'), draftMiles = dm[0], setDraftMiles = dm[1];
+    var er = React.useState(''), err = er[0], setErr = er[1];
+    var zipRef = React.useRef(null), changeRef = React.useRef(null);
+    React.useEffect(function () { if (open && zipRef.current) { var i = zipRef.current.querySelector('input'); if (i) i.focus(); } }, [open]);
+    var shown = events.filter(function (e) { return e.miles <= q.miles; });
+    function apply(ev) {
+      ev.preventDefault();
+      if (!/^\d{5}$/.test(draftZip.trim())) { setErr('Enter a 5-digit ZIP code.'); return; }
+      setErr(''); setQ({ zip: draftZip.trim(), miles: parseInt(draftMiles, 10) }); setOpen(false);
+      setTimeout(function () { if (changeRef.current) changeRef.current.focus(); }, 0);
+    }
+    function cancel() { setOpen(false); setErr(''); setDraftZip(q.zip); setDraftMiles(q.miles + ' miles'); setTimeout(function () { if (changeRef.current) changeRef.current.focus(); }, 0); }
+    return h('div', { className: 'hm-results' },
+      h('p', { className: 'hm-scope body-small', 'aria-live': 'polite' },
+        'Within ' + q.miles + ' miles of ' + q.zip, ' ',
+        h('button', { type: 'button', ref: changeRef, className: 'hm-change', 'aria-expanded': open, 'aria-controls': 'hm-search',
+          'aria-label': 'Change ZIP code or distance', onClick: function () { open ? cancel() : setOpen(true); } }, '(change)')),
+      open ? h('form', { id: 'hm-search', className: 'hm-search', onSubmit: apply, noValidate: true },
+        h('div', { ref: zipRef, className: 'fm-input-wrap', style: { display: 'contents' } },
+          h(F.Input, { label: 'ZIP code', value: draftZip, autoComplete: 'postal-code', name: 'zip',
+            error: !!err, description: err || undefined,
+            onChange: function (e) { setDraftZip(e && e.target ? e.target.value : e); } })),
+        h(F.Dropdown, { label: 'Distance', showLabel: true, options: dists, value: draftMiles, onChange: function (v) { setDraftMiles(v); } }),
+        h('div', { className: 'hm-search__actions' },
+          h(F.Button, { variant: 'primary', size: 'medium', type: 'submit' }, 'Search'),
+          h(F.Button, { variant: 'secondary', size: 'medium', type: 'button', onClick: cancel }, 'Cancel'))) : null,
+      shown.length
+        ? h(F.LayoutGrid, { columns: 3 }, shown.map(function (r) {
+            return h('article', { key: r.title, className: 'hm-result' },
+              h('div', { className: 'hm-result__info' },
+                h(F.Tag, { color: 'brand', label: 'MobilePack event' }),
+                h('h3', { className: mobile ? 'heading-h4-mobile' : 'heading-h4' }, r.title),
+                h('p', { className: 'hm-result__meta body-small' }, r.meta)),
+              h(F.ArrowLink, { label: 'View packing times', href: 'signup-1.html?path=a&site=' + r.site, 'aria-label': 'View packing times at ' + r.title }));
+          }))
+        : h('p', { className: 'hm-empty body-base' }, 'No FMSC MobilePack™ events within ' + q.miles + ' miles. Try a wider distance.'));
+  }
+
+  function HostPage() {
+    var mobile = F.useIsMobile();
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'how-to-help' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: 'auto',
+          type: 'standard',
+          eyebrow: 'HOST',
+          h1: 'Bring a packing event\u00a0home',
+          body: 'At an FMSC MobilePack™ event, you bring the venue, volunteers, and funding for 100,000 meals. FMSC brings the food, equipment, and staff.',
+          primaryLabel: 'Apply to host', primaryHref: '#hm-apply',
+          secondaryLabel: 'See what it takes', secondaryHref: '#hm-takes',
+          image: img(mobile ? 'hm-m-hero.jpg' : 'hm-hero.jpg'),
+          imageAlt: 'Rows of packing tables fill a grand hall during an FMSC MobilePack event in Chicago'
+        }),
+
+        /* 2 · How hosting works */
+        h('section', { className: 'hm-section', 'aria-labelledby': 'hm-how' },
+          h('div', { className: 'hm-inner hm-stack hm-how' },
+            h(Header, { id: 'hm-how', heading: 'How hosting a MobilePack™ works' }),
+            h('ol', { className: 'hm-steps' }, howSteps.map(function (s, i) {
+              return h(Step, { key: s[0], number: String(i + 1), title: s[0], description: s[1] });
+            })),
+            h('div', { className: 'hm-photos' }, (mobile ? photos.slice(0, 1) : photos).map(function (p) {
+              return h(F.MediaFrame, { key: p[0], ratio: '3:2', image: img(p[0]), imageAlt: p[1] });
+            })))),
+
+        /* 3 · Events near you */
+        h('section', { className: 'hm-section hm-section--subtle', 'aria-labelledby': 'hm-near' },
+          h('div', { className: 'hm-inner hm-stack' },
+            h(Header, { id: 'hm-near', heading: 'FMSC MobilePack™ events near you' }),
+            h(Events),
+            h(F.ArrowLink, { label: 'See all upcoming events', href: 'volunteer.html#vo-find' }))),
+
+        /* 4 · What it takes */
+        h('section', { className: 'hm-section', id: 'hm-takes', 'aria-labelledby': 'hm-takes-h' },
+          h('div', { className: 'hm-inner hm-stack' },
+            h(Header, { id: 'hm-takes-h', heading: 'What it takes to host' }),
+            h('ul', { className: 'hm-checklist' }, checklist.map(function (c) {
+              return h(F.ChecklistItem, { key: c[0], as: 'li', breakpoint: 'auto', title: c[0], detail: c[1], showDetail: true, icon: 'circle-check' });
+            })),
+            h('p', { className: 'hm-secondary body-base' }, 'Plan ideally 12 weeks before your event.'))),
+
+        /* 5 · What FMSC brings */
+        h('section', { className: 'hm-section hm-section--subtle', 'aria-labelledby': 'hm-brings' },
+          h('div', { className: 'hm-inner hm-stack' },
+            h(Header, { id: 'hm-brings', heading: 'What FMSC brings' }),
+            h('div', { className: 'hm-brings' }, h(F.LayoutGrid, { columns: 4 }, brings.map(function (b) {
+              return h(F.BadgeCard, { key: b[0], container: 'card', align: 'left', illustration: img(b[2]), title: b[0], body: b[1], showLink: false });
+            }))),
+            h('div', { className: 'hm-pair' },
+              h(F.TestimonialCard, { color: 'white', quote: '“FMSC staff are very helpful and knowledgeable when setting this up for the first time.”', name: 'Mark Ebben', role: 'MobilePack host', showAuthor: true }),
+              h('div', { className: 'hm-resources' },
+                h('h3', { className: mobile ? 'heading-h4-mobile' : 'heading-h4' }, 'Host resources'),
+                h('p', { className: 'hm-secondary body-base' }, 'Tax documents, a planning guide and promotion materials for your team.'),
+                h('div', { className: 'hm-resources__links' },
+                  h(F.ArrowLink, { label: 'Read the hosting overview', href: '#' }),
+                  h(F.ArrowLink, { label: 'Get the promotion toolkit', href: '#' })))))),
+
+        /* 7 · Apply to host */
+        h('section', { className: 'hm-section', id: 'hm-apply', 'aria-labelledby': 'hm-apply-h' },
+          h('div', { className: 'hm-inner hm-stack' },
+            h(Header, { id: 'hm-apply-h', heading: 'Apply to host' }),
+            h('div', { className: 'hm-apply-panel' },
+              h('ol', { className: 'hm-apply-steps' }, applySteps.map(function (s, i) {
+                return h(Step, { key: s[0], number: String(i + 1), title: s[0], description: s[1] });
+              }))),
+            h('div', { className: 'hm-actions' },
+              h(F.Button, { variant: 'primary', size: 'large', href: '#' }, 'Apply to host'),
+              h('p', { className: 'hm-help body-base' }, h('span', null, 'Questions first?'),
+                h(F.ArrowLink, { label: 'Request more information', href: '#' }))))),
+
+        /* 8 · Common questions */
+        h(F.SectionFAQ, {
+          breakpoint: 'auto',
+          className: 'hm-faq',
+          header: { align: 'left', showEyebrow: false, showSupporting: false, heading: 'Common questions' },
+          items: faqs, showLink: true, linkLabel: 'Request more information', linkHref: '#'
+        }),
+
+        /* 9 · Scripture (Figma shows the quote band's photo placeholder) */
+        h(F.SectionQuoteBand, {
+          breakpoint: 'auto',
+          className: 'hm-quote',
+          quote:'“Jesus replied, ‘What is impossible with man is possible with God.’”',
+          attribution: '— Luke 18:27 (NIV)', showAttribution: true
+        }),
+
+        /* 10 · CTA band */
+        h(F.CTABand, {
+          breakpoint: 'auto',
+          className: 'hm-cta',
+          eyebrow: '',
+          headline: 'Host an event in your own space',
+          subtext: 'Send the one-page application, and FMSC\'s team will reply within three business days. Not ready yet? Pack at another host\'s event first.',
+          primaryLabel: 'Apply to host', primaryHref: '#hm-apply',
+          secondaryLabel: 'Find a packing event', secondaryHref: 'volunteer.html#vo-find',
+          showTrustStrip: false, showStatsStrip: false
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        /* Figma footer copy differs from the DS defaults ("Our finances", "Host an FMSC MobilePack™ event"). */
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'impact.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(HostPage));
+</script>
+</body>
+</html>

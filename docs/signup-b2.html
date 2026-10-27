@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who’s coming? · Sign up your group · FMSC</title>
+<meta name="description" content="Choose your group and how many spots to reserve for your packing time at FMSC Coon Rapids.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (su-) come from signup-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Group block: "Which group?" then spots, space-md apart. The dropdown is 588 wide in the frame (full column on mobile). */
+  .sb-group { display: flex; flex-direction: column; gap: var(--space-md); min-width: 0; }
+  .sb-group .fm-dropdown { max-width: 588px; }
+  .sb-spots, .sb-youth { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-xs); min-width: 0; }
+  /* Help lines sit at the frame's 559 measure. */
+  .sb-help { max-width: 559px; }
+  /* "Are you packing too?": question (names the radiogroup), radios (a row space-lg apart; a column space-sm apart on mobile), help line. */
+  .sb-packing { display: flex; flex-direction: column; gap: var(--space-sm); min-width: 0; }
+  .sb-packing__question { color: var(--content-primary); }
+  .sb-packing__options { display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); }
+  @media (max-width: 599.98px) {
+    .sb-packing__options { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+    .sb-help { max-width: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="signup-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
+  /* Path B · step 2 (Figma "Sign up — B2 Who’s coming"): an existing group, Grace Church Youth Group, 12 spots.
+     "Just me" switches to path A (signup-a2); "Start a new group" in "Which group?" switches to path C (signup-c2). */
+  var GROUP = 'Grace Church Youth Group', NEW_GROUP = 'Start a new group';
+  function Page() {
+    /* Spots and the packing answer live in the flow store (SignupShell.flow), so "Change who’s coming" reopens them. */
+    var flow = Shell.useFlow(), setFlow = flow[1], r = Shell.flow.resolve('b');
+    var spots = r.spots, packing = r.packing;
+    function setSpots(n) { setFlow({ spots: n }); }
+    function setPacking(v) { setFlow({ packing: v }); }
+    function pickGroup(v) { if (v === NEW_GROUP) Shell.go(Shell.href('c', 2)); }
+    return h(Shell, { path: 'b', step: 2 },
+      h(UI.WhoChoice, { value: 'group' }),
+      h(UI.Rule),
+      h('div', { className: 'sb-group' },
+        h(F.Dropdown, { label: 'Which group?', showLabel: true, value: GROUP, options: [GROUP, NEW_GROUP], onChange: pickGroup }),
+        h('div', { className: 'sb-spots' },
+          h(F.QuantityStepper, { label: 'How many spots?', value: spots, min: 1, max: 99, onChange: setSpots }),
+          h(UI.Note, { className: 'sb-help' }, 'Count everyone who’ll pack, including people who haven’t joined yet. Not sure? Take your best guess. You can change it later.'))),
+      h(UI.Rule),
+      h('div', { className: 'sb-packing' },
+        h('p', { className: 'sb-packing__question label-base', id: 'sb-packing-q' }, 'Are you packing too?'),
+        h('div', { className: 'sb-packing__options', role: 'radiogroup', 'aria-labelledby': 'sb-packing-q' },
+          h(F.Radio, { name: 'sb-packing', value: 'yes', label: 'Yes, I’m packing', checked: packing === 'yes', onChange: function () { setPacking('yes'); } }),
+          h(F.Radio, { name: 'sb-packing', value: 'no', label: 'No, I’m only organizing', checked: packing === 'no', onChange: function () { setPacking('no'); } })),
+        h(UI.Note, { className: 'sb-help' }, 'You’ll choose who’s coming and invite the rest of your group after you reserve.')),
+      h('div', { className: 'sb-youth' },
+        h(UI.Note, { className: 'sb-help' }, 'Youth groups pack alongside adults: one adult for every four students in grades 7–⁠12, and more for younger grades.'),
+        h(F.ArrowLink, { href: '#', label: 'See the age and ratio rules' })),
+      h(UI.Actions, { label: 'Continue to guidelines', href: Shell.href('b', 3),
+        onClick: function () { setFlow({ who: 'group', done2: true }); } }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

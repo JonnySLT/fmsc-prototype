@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Help · FMSC</title>
+<meta name="description" content="Ways to help feed kids: volunteer, give, fundraise, shop FMSC MarketPlace™ and more, built from the FMSC Design System.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p { margin: 0; }
+
+  .hh-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .hh-section--subtle { background: var(--background-subtle); }
+  .hh-inner { width: 100%; max-width: var(--content-width); }
+  .hh-header { width: 100%; max-width: 792px; }
+
+  /* Volunteer: photo + numbered step */
+  .hh-shift { display: flex; flex-direction: column; gap: var(--space-sm); }
+  .hh-shift__photo { width: 100%; aspect-ratio: 384 / 260; object-fit: cover; border-radius: var(--radius-lg); }
+  .hh-shift .fm-step-item, .hh-steps .fm-step-item { width: 100%; }
+  /* When the 3-up grid drops to one column, set each photo beside its step instead of three full-width photos */
+  @media (min-width: 600px) {
+    @container (max-width: 719.98px) and (min-width: 480px) {
+      .hh-shift { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: center; gap: var(--grid-gap); }
+    }
+  }
+
+  /* Card grid nested inside the Volunteer section: the section already pads */
+  .hh-nested.fm-section-card-grid { padding: 0; max-width: var(--content-width); }
+
+
+  /* 4-up card grids (Bringing a group, Events and long-term giving): when the four cards can't sit in one row, stack them full width, one per row */
+  @container (max-width: 1100px) {
+    .hh-cards.fm-section-card-grid--cols-4 .fm-section-card-grid__grid { flex-direction: column; flex-wrap: nowrap; }
+    .hh-cards.fm-section-card-grid--cols-4 .fm-section-card-grid__item { flex: none; width: 100%; }
+  }
+
+  /* Give: Donate module raised over the photo */
+  .hh-give { display: flex; flex-direction: row; align-items: center; }
+  .hh-give__module { position: relative; z-index: 1; flex: 0 1 588px; min-width: 0; }
+  .hh-give__module .fm-donate { width: 100%; background: var(--background-canvas); box-shadow: var(--shadow-lg); }
+  .hh-give__photo { flex: 0 1 732px; min-width: 0; height: 540px; margin-left: calc(-1 * var(--space-container-x)); object-fit: cover; border-radius: var(--radius-lg); }
+
+  /* Fundraise or shop: Section · Media and copy, Overlap, at the Figma card geometry.
+     The DS overlap layout puts the photo on the opposite side of `media`, so media is set inverted below. */
+  .hh-overlap.fm-media-copy--overlap .fm-media-copy__copy { gap: var(--space-md); }
+  .hh-overlap.fm-media-copy--desktop.fm-media-copy--overlap .fm-media-copy__copy { flex-basis: 548px; }
+  .hh-overlap.fm-media-copy--desktop.fm-media-copy--overlap .fm-media-copy__row > :last-child { margin-left: calc(-1 * (var(--space-3xl) + var(--space-md))); }
+  .hh-overlap + .hh-overlap { padding-top: 0; }
+  .hh-overlap__body { color: var(--content-secondary); max-width: 80ch; }
+
+  /* Figma hides the CTA band eyebrow on this page; the DS always renders it */
+  .hh-cta .fm-cta-band__eyebrow:empty { display: none; }
+  /* Figma sets this frame's CTA subtext in blue/200 (DS default is content/on-brand) */
+  .hh-cta .fm-cta-band__subtext { color: var(--blue-200); }
+  /* Trust strip rating: Figma draws the four stars as one 128 × 28 artwork (DS stars are 28px icons, 4px apart, ~22px glyphs) */
+  .hh-cta .fm-impact-band__stars { gap: 0; }
+  .hh-cta .fm-impact-band__stars .fm-icon { width: var(--size-xl); height: var(--size-xl); transform: scale(1.08); }
+  .hh-cta .fm-impact-band__stars path { stroke-width: 1.4; }
+  /* DS trust groups are a fixed 384px and overflow under ~1150px: let them share the row and wrap */
+  .hh-cta.fm-cta-band--desktop .fm-cta-band__trust { width: 100%; flex-wrap: wrap; justify-content: center; }
+  .hh-cta.fm-cta-band--desktop .fm-cta-band__group { width: auto; flex: 1 1 0; min-width: max-content; }
+
+  @media (max-width: 999.98px) {
+    .hh-give { flex-direction: column; align-items: stretch; }
+    .hh-give__module { flex: none; align-self: center; width: 100%; max-width: 588px; }
+    .hh-give__photo { flex: none; width: 100%; height: auto; aspect-ratio: 732 / 540; margin: calc(-1 * var(--space-3xl)) 0 0; }
+    /* Fundraiser and MarketPlace rows stack the same way as the Give row: raised card on top, photo tucked under it */
+    .hh-overlap.fm-media-copy--desktop.fm-media-copy--overlap .fm-media-copy__row { flex-direction: column; align-items: stretch; }
+    .hh-overlap.fm-media-copy--desktop.fm-media-copy--overlap .fm-media-copy__copy { order: 0; flex: none; align-self: center; width: 100%; max-width: 548px; }
+    .hh-overlap.fm-media-copy--desktop.fm-media-copy--overlap .fm-media-copy__media { order: 1; flex: none; width: 100%; height: auto; aspect-ratio: 732 / 420; }
+    .hh-overlap.fm-media-copy--desktop.fm-media-copy--overlap .fm-media-copy__row > :nth-child(n) { margin: 0; }
+    .hh-overlap.fm-media-copy--desktop.fm-media-copy--overlap .fm-media-copy__row > .fm-media-copy__media:nth-child(n) { margin-top: calc(-1 * var(--space-3xl)); }
+  }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .hh-shift__photo { aspect-ratio: 361 / 200; }
+    /* Give: photo above the Donate module, no overlap */
+    .hh-give { flex-direction: column; align-items: stretch; gap: var(--grid-gap); }
+    .hh-give__photo { order: -1; flex: none; width: 100%; height: auto; aspect-ratio: 361 / 240; margin: 0; }
+    .hh-give__module { flex: none; align-self: stretch; width: 100%; max-width: none; }
+    .hh-give__module .fm-donate { background: var(--background-subtle); }
+    /* Fundraise or shop: one section in Figma, cards 16 apart */
+    .hh-overlap:has(+ .hh-overlap) { padding-bottom: 0; }
+    .hh-overlap + .hh-overlap { padding-top: var(--grid-gap); }
+    .hh-overlap.fm-media-copy--mobile .fm-media-copy__media { border-radius: var(--radius-lg); }
+    /* DS: footer brand (260px) and columns (140px) keep their desktop flex-basis in the mobile column stack, where it becomes height */
+    .fm-footer--mobile .fm-footer__brand, .fm-footer--mobile .fm-footer__col { flex: none; }
+    .hh-overlap.fm-media-copy--mobile .fm-media-copy__copy { padding: var(--card-pad); gap: var(--space-md); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+
+  var helpItems = [
+    { label: 'Volunteer at a packing event', href: 'volunteer.html' },
+    { label: 'Donate once or monthly', href: 'donate.html' },
+    { label: 'Start a fundraiser', href: 'fundraiser.html' },
+    { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' },
+    { label: 'Host a MobilePack™ event', href: 'host-mobilepack.html' },
+    { label: 'Attend a fundraising event', href: 'fundraising-events.html' },
+    { label: 'Plan an estate gift', href: 'estate-gift.html' },
+    { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }
+  ];
+
+  var shifts = [
+    { n: '1', title: 'Get oriented', body: 'Our team briefs your group on how the line works and where the food goes.', src: 'how-to-help-orientation.jpg',
+      alt: 'Rows of volunteers in blue shirts and hairnets sit in folding chairs for orientation.' },
+    { n: '2', title: 'Pack the food', body: 'Scoop rice, soy, dried vegetables and a vitamin packet into bags, seal, and pack.', src: 'how-to-help-pack.jpg',
+      alt: 'Smiling girls in hairnets and gloves hold scoops at a packing station.' },
+    { n: '3', title: 'See the impact', body: 'Your group will learn how much food you packed and the impact it will have.', src: 'how-to-help-impact.jpg',
+      alt: 'A volunteer carries a tall stack of MannaPack® boxes across a gym.' }
+  ];
+
+  var giveSteps = [
+    ['1', 'Your gift buys the food', 'Rice, soy, dried vegetables and a vitamin packet — MannaPack® formulas developed by food scientists.'],
+    ['2', 'Volunteers pack it by hand', 'More than 1 million volunteers a year, at permanent sites and FMSC MobilePack™ events.'],
+    ['3', 'Partners deliver it', 'Faith-based and humanitarian partners get the meals to kids in more than 100 countries.']
+  ];
+
+  /* Figma sets Step item titles in Heading/H3; the DS StepItem uses Heading/H4. */
+  function h3(t, mobile) { return h('span', { className: mobile ? 'heading-h3-mobile' : 'heading-h3' }, t); }
+
+  function OverlapCopy(p) {
+    return h(Fragment, null,
+      h('p', { className: 'hh-overlap__body body-base' }, p.body),
+      h(F.ArrowLink, { label: p.linkLabel, href: p.href || '#' }));
+  }
+
+  function HowToHelp() {
+    var mobile = F.useIsMobile(), bp = 'auto';
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'how-to-help' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: bp, type: 'standard',
+          eyebrow: 'How to help',
+          h1: 'Ways to help feed kids',
+          body: 'Feed My Starving Children (FMSC) is a Christian nonprofit. Volunteers pack meals that reach millions of hungry children throughout the world.',
+          primaryLabel: 'Volunteer', secondaryLabel: 'Donate',
+          primaryHref: 'volunteer.html', secondaryHref: 'donate.html',
+          image: img(mobile ? 'how-to-help-m-hero.jpg' : 'how-to-help-hero.jpg'),
+          imageAlt: 'Three smiling volunteers in hairnets sit in a cargo plane doorway holding a MannaPack® rice box.'
+        }),
+
+        /* 2 · Volunteer */
+        h('section', { className: 'hh-section', 'aria-labelledby': 'hh-volunteer' },
+          h('div', { className: 'hh-header' },
+            h(F.SectionHeader, { breakpoint: bp, align: 'center', eyebrow: 'Volunteer', heading: h('span', { id: 'hh-volunteer' }, 'Pack meals by hand'), showSupporting: false })),
+          h('div', { className: 'hh-inner' },
+            h(F.LayoutGrid, { columns: 3 }, shifts.map(function (s) {
+              return h('div', { key: s.n, className: 'hh-shift' },
+                h('img', { className: 'hh-shift__photo', src: img(s.src), alt: s.alt }),
+                h(F.StepItem, { number: s.n, title: h3(s.title, mobile), description: s.body }));
+            }))),
+          h(F.Button, { variant: 'gold', size: 'large', label: 'Find a packing event', href: 'volunteer.html', fullWidth: mobile }),
+          h(F.SectionCardGrid, {
+            breakpoint: bp,
+            className: 'hh-nested hh-cards',
+            columns: 4,
+            header: { align: 'left', heading: 'Bringing a group', showEyebrow: false, showSupporting: false },
+            items: [
+              { title: 'Churches', body: 'Serve together as a congregation or host an FMSC MobilePack™ event.', illustration: img('in-country-church.svg'), linkLabel: 'Start with your church', href: 'signup-1.html?path=d' },
+              { title: 'Schools', body: 'Give students a hands-on way to help kids their own age.', illustration: img('volunteers-team-raise.svg'), linkLabel: 'Start with your school', href: 'signup-1.html?path=d' },
+              { title: 'Workplaces', body: 'Spend a team day packing meals instead of sitting in a conference room.', illustration: img('careers-team.svg'), linkLabel: 'Start with your team', href: 'corporate-partnerships.html#team' },
+              { title: 'Families with kids', body: 'Kids 5 and up can pack alongside adults, so the whole family can come.', illustration: img('in-country-home-heart.svg'), linkLabel: 'Bring your family', href: 'signup-1.html?path=c' }
+            ]
+          })),
+
+        /* 3 · Give */
+        h('section', { className: 'hh-section hh-section--subtle', 'aria-labelledby': 'hh-give' },
+          h('div', { className: 'hh-header' },
+            h(F.SectionHeader, { breakpoint: bp, align: 'center', eyebrow: 'Give', heading: h('span', { id: 'hh-give' }, 'Donate money that pays for meals'), showSupporting: false })),
+          h('div', { className: 'hh-inner hh-steps' },
+            h(F.LayoutGrid, { columns: 3 }, giveSteps.map(function (s) {
+              return h(F.StepItem, { key: s[0], number: s[0], title: h3(s[1], mobile), description: s[2] });
+            }))),
+          h('div', { className: 'hh-inner hh-give' },
+            h('div', { className: 'hh-give__module' },
+              h(F.DonateModule, { breakpoint: bp, showModeTabs: false, onceLabel: 'Give once', onceSublabel: 'A single gift today', monthlyLabel: 'Give monthly', monthlySublabel: 'Join Table Builders', linkHref: 'impact.html',
+                /* Hand the chosen gift to the donate page, which presets its own module. */
+                onDonate: function (g) { window.location.href = 'donate.html?amount=' + encodeURIComponent(g.amount) + '&freq=' + encodeURIComponent(g.frequency) + '#do-give'; } })),
+            h('img', { className: 'hh-give__photo', src: img('how-to-help-child.jpg'), alt: 'A young boy eats a spoonful of a MannaPack® meal from a bowl at an outdoor table.' }))),
+
+        /* 4 · Fundraise or shop */
+        h(F.SectionMediaAndCopy, {
+          breakpoint: bp,
+          className: 'hh-overlap', layout: 'overlap', media: 'right', showButton: false,
+          image: img(mobile ? 'how-to-help-m-fundraiser.jpg' : 'how-to-help-fundraiser.jpg'),
+          imageAlt: 'Friends gather around a backyard picnic table with a donation jar, cupcakes and lemonade.',
+          header: { align: 'left', eyebrow: 'With friends', heading: 'Start a fundraiser', showSupporting: false }
+        }, h(OverlapCopy, { body: 'Set a meal goal for your birthday, your 5k, or any reason at all. Friends give and you can watch the meal count climb.', linkLabel: 'Set your meal goal', href: 'fundraiser.html' })),
+        h(F.SectionMediaAndCopy, {
+          breakpoint: bp,
+          className: 'hh-overlap', layout: 'overlap', media: 'left', showButton: false,
+          image: img(mobile ? 'how-to-help-m-artisan.jpg' : 'how-to-help-artisan.jpg'),
+          imageAlt: 'A smiling artisan holds up a clay cup in a workshop lined with shelves of pottery.',
+          header: { align: 'left', eyebrow: 'FMSC MarketPlace™', heading: 'Shop handcrafted goods', showSupporting: false }
+        }, h(OverlapCopy, { body: 'FMSC MarketPlace goods are handcrafted by artisans in communities FMSC serves. Each order pays the artisan a fair wage, and the profits fund meals.', linkLabel: 'Shop FMSC MarketPlace', href: 'marketplace.html' })),
+
+        /* 6 · Events and long-term giving */
+        h(F.SectionCardGrid, {
+            breakpoint: bp,
+          className: 'hh-cards', columns: 4,
+          header: { align: 'center', eyebrow: 'Go further', heading: 'Events and long-term giving', showSupporting: false },
+          items: [
+            { title: 'Host an FMSC MobilePack™ event', body: 'You fund 100,000 meals and bring the venue. FMSC brings the rest.', illustration: img('mobilepack-usa-map.svg'), linkLabel: 'Host an event', href: 'host-mobilepack.html' },
+            { title: 'Attend a fundraising event', body: 'Dinner, a program and a giving moment. Tickets fund meals.', illustration: img('volunteers-celebrate.svg'), linkLabel: 'See upcoming events', href: 'fundraising-events.html' },
+            { title: 'Plan an estate gift', body: 'A gift in your will costs nothing today. FMSC has a free will-writing tool.', illustration: img('legacy-heart-cross.svg'), linkLabel: 'See estate gift options', href: 'estate-gift.html' },
+            { title: 'Corporate partnerships', body: 'Match gifts, sponsor meals or bring your company to a shift.', illustration: img('legacy-coins.svg'), linkLabel: 'See partnership options', href: 'corporate-partnerships.html' }
+          ]
+        }),
+
+        h(F.CTABand, {
+          breakpoint: bp,
+          className: 'hh-cta', eyebrow: '',
+          headline: 'Be someone’s miracle.',
+          subtext: '29¢ feeds a child a meal. Give one today — or grab a hairnet and pack a thousand.',
+          primaryHref: 'donate.html', secondaryHref: 'volunteer.html',
+          showTrustStrip: true,
+          trustIllustrations: [img('donations-recurring.svg'), img('food-mannapack-bag.svg'), img('volunteers-celebrate.svg')]
+        })),
+
+      h(F.Footer, {
+        breakpoint: bp,
+        logoSrc: img('fmsc-logo-text-only.png'),
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')],
+        /* Figma frame text: "Our finances" and "Host an FMSC MobilePack™ event" differ from the DS defaults */
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [
+            { label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' },
+            { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(HowToHelp));
+</script>
+</body>
+</html>

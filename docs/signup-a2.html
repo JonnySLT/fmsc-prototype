@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who’s coming? · Sign up to pack meals · FMSC</title>
+<meta name="description" content="Tell us who’s coming to your packing time at FMSC Coon Rapids.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (su-) come from signup-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="signup-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
+  /* Path A · step 2 (Figma "Sign up — A2 Who’s coming"). "A group I’m organizing" switches to path B (signup-b2). */
+  function Page() {
+    return h(Shell, { path: 'a', step: 2 },
+      h(UI.WhoChoice, { value: 'me' }),
+      h(UI.Actions, { label: 'Continue to guidelines', href: Shell.href('a', 3),
+        onClick: function () { Shell.flow.set({ who: 'me', done2: true }); } }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

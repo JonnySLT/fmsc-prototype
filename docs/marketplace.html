@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FMSC MarketPlace™ · FMSC</title>
+<meta name="description" content="FMSC MarketPlace™ sells handcrafted goods from artisans in communities that receive FMSC meals. The artisan earns a fair wage, and the profit from each sale pays for more meals.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .mp-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); scroll-margin-top: var(--space-4xl); }
+  .mp-section--subtle { background: var(--background-subtle); }
+  .mp-inner { width: 100%; max-width: var(--content-width); }
+  .mp-stack { display: flex; flex-direction: column; align-items: flex-start; gap: var(--section-gap); }
+  .mp-stack > * { width: 100%; }
+  .mp-stack > .fm-arrow-link { width: auto; }
+
+  /* DS sections that own their padding: keep the content on the 1200 column at any width. */
+  .mp-wide { padding-left: max(var(--margin-x), calc((100% - var(--content-width)) / 2)); padding-right: max(var(--margin-x), calc((100% - var(--content-width)) / 2)); scroll-margin-top: var(--space-4xl); }
+
+  /* External-link marks: Figma draws the external-link icon where the DS parts draw "→". */
+  .mp-ext-label { display: inline-flex; align-items: center; gap: var(--space-xs); }
+  .mp-about .fm-section-header__link > span[aria-hidden="true"],
+  .mp-carousel .fm-carousel__link .fm-arrow-link__arrow,
+  .mp-orders .fm-badge-card__link > span[aria-hidden="true"] { display: none; }
+  .mp-orders .fm-badge-card__link > span:first-child { display: inline-flex; align-items: center; gap: var(--space-xs); }
+  .mp-about .fm-section-header__link > span:first-child { display: inline-flex; align-items: center; gap: var(--space-xs); }
+  .fm-btn .mp-ext-label { gap: var(--space-xs); }
+
+  /* 2 · What MarketPlace is: the copy keeps Figma's paragraph breaks. */
+  .mp-about .fm-section-header__supporting { white-space: pre-line; }
+
+  /* 3 · What one purchase does */
+  .mp-pair { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .mp-pair > li { display: flex; min-width: 0; }
+  .mp-pair .fm-badge-card { width: 100%; }
+  .mp-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); align-items: start; }
+  .mp-stats .fm-stat { display: flex; width: 100%; }
+  .mp-pre { white-space: pre-line; }
+
+  /* 4 · Meet the artisans: DS Article card markup with a Body/Base description and an external Arrow link */
+  .mp-artisans { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .mp-artisans > li { display: flex; min-width: 0; }
+  .mp-artisans .fm-article-card { width: 100%; box-shadow: var(--shadow-md); }
+  .mp-artisans .fm-article-card__body { flex: 1 1 auto; }
+  .mp-artisans .fm-article-card__date { flex: 1 1 auto; }
+  @media (min-width: 600px) and (max-width: 939.98px) {
+    .mp-artisans { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* 5 · New for fall: Figma's product track runs past the 1200 column to the page edge (the viewport doesn't clip there). */
+  .mp-carousel .fm-carousel__viewport { margin-right: calc(-1 * max(var(--margin-x), (100vw - var(--content-width)) / 2)); }
+
+  /* Figma draws the product card's 1px stroke inside the layout (adds 2px to the 562 card). */
+  .mp-carousel .fm-carousel__copy { padding: calc(var(--card-pad) + 1px); }
+
+  /* 6 · Order for a group or a gift: Figma Icon badge Medium is drawn 64px (DS Medium is 56) with a 2px-stroke 48px icon. */
+  .mp-orders .fm-icon-badge--medium { width: 64px; height: 64px; }
+  .mp-orders .fm-icon-badge .fm-icon path { stroke-width: 1; }
+  .mp-orders .fm-section-card-grid__inner, .mp-orders > * { width: 100%; max-width: var(--content-width); }
+  .mp-orders { align-items: center; }
+  .mp-orders .fm-badge-card { width: 100%; height: 100%; }
+
+  /* 7 · FAQ: Figma answers sit in a 607px text box; each item's 1px rule adds to its height (97px closed). */
+  .mp-faq { background: var(--background-subtle); }
+  .mp-faq .fm-section-faq__answer { max-width: 607px; }
+  .mp-faq .fm-section-faq__item { box-shadow: none; border-top: 1px solid var(--border-subtle); }
+
+  /* 8 · CTA band: Figma hides the eyebrow; subtext is content/on-brand, as in the frame. */
+  .mp-cta .fm-cta-band__eyebrow:empty { display: none; }
+  .mp-cta .fm-cta-band__subtext { color: var(--content-on-brand); }
+  .fm-footer--desktop .fm-footer__legal-copy { max-width: 968px; }
+
+  /* 600–879: the split media section stacks (photo above the copy) */
+  @media (min-width: 600px) and (max-width: 879.98px) {
+    .mp-about .fm-media-copy__row { flex-direction: column !important; align-items: stretch !important; }
+    .mp-about .fm-media-copy__media { flex: none !important; width: 100%; order: -1; }
+  }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .mp-pair, .mp-stats, .mp-artisans { grid-template-columns: minmax(0, 1fr); }
+    .mp-stats .fm-stat__label { white-space: normal; }
+    .mp-faq .fm-section-faq__answer { max-width: none; }
+    /* DS fix: Footer Mobile keeps the desktop flex-basis (140px) on its stacked columns, which becomes height. */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+  /* The FMSC MarketPlace store (fmscmarketplace.org) is outside the prototype: its links stay inert. */
+  var STORE = '#';
+
+  /* Label + external-link icon (Figma Arrow link Type=External / Button with trailing external icon). */
+  function ext(label, size) {
+    return h('span', { className: 'mp-ext-label' }, label, h(F.Icon, { name: 'external-link', size: size || 16 }));
+  }
+
+  var purchase = [
+    ['The artisan earns a fair wage', 'FMSC buys each piece from the artisan group for a fair wage before it ever reaches the store. It\'s steady, dignified work, and artisans have used the income to pay school fees and plant crops.', 'mp-marketplace-needle-thread.svg'],
+    ['The profit becomes meals', 'The profit from every sale pays for more FMSC meals. Product pages in the store list how many meals each item provides.', 'mp-food-bowl-spoon.svg']
+  ];
+  /* Figures as the frame shows them (FY2025–26 MarketPlace data; the profit share is a client placeholder). */
+  var stats = [
+    ['5.3M', 'meals from FMSC MarketPlace sales in the\n2025–26 fiscal year'],
+    ['14,959', 'livelihoods supported in the 2025–26 fiscal year'],
+    ['[XX]%', 'of MarketPlace profit spent on meals']
+  ];
+  var artisans = [
+    { tag: 'Uganda', title: 'Hope Again Women\'s Ministry', body: 'More than 300 women in Rakai roll recycled magazine pages into beads for necklaces and bracelets. They also weave hand-dyed grass into baskets and trivets.', link: 'Meet the artisans in Uganda', image: 'mp-artisan-uganda.jpg', alt: 'Five women from Hope Again Women\'s Ministry hold up grass-woven baskets in front of a brick wall in Uganda.' },
+    { tag: 'Haiti', title: 'Anchored in Hope', body: 'Artists cut and flatten recycled 55-gallon oil drums, then hammer and chisel them into wall art. The artist signs each finished piece.', link: 'Meet the artisans in Haiti', image: 'mp-artisan-haiti.jpg', alt: 'An artist\'s hands chisel lettering into a sheet of recycled oil drum metal.' },
+    { tag: 'Peru', title: 'Weaving Hope', body: 'Weaving Hope is a ministry of FMSC food partner Buckner International. It works with Venezuelan migrants and Peruvian women, who crochet small stuffed toys called amigurumi.', link: 'Meet the artisans in Peru', image: 'mp-artisan-peru.jpg', alt: 'A smiling woman holds up a small crocheted lamb at a worktable lined with spools of yarn.' }
+  ];
+  var products = [
+    { tag: 'HAITI', title: 'Autumn Candle Oil Drum Wreath', description: 'Cut from a recycled oil drum.', price: '$44.00', image: img('mp-product-candle-wreath.jpg'), imageAlt: 'A metal leaf wreath cut from an oil drum holds four lit candles among fall flowers.', href: STORE },
+    { tag: 'ESWATINI', title: 'Beaded Pumpkin', description: 'Hand-beaded fall decor.', price: '$32.00', image: img('mp-product-pumpkin.jpg'), imageAlt: 'Four beaded pumpkins in white, brown, tan and orange on a round wooden board.', href: STORE },
+    { tag: 'HAITI', title: 'Give Thanks Oil Drum Wreath', description: 'Cut from a recycled oil drum.', price: '$42.00', image: img('mp-product-give-thanks.jpg'), imageAlt: 'A round metal wreath of painted fall leaves around the words “give thanks.”', href: STORE },
+    { tag: 'HAITI', title: 'Dazzling Tree of Life Oil Drum Art', description: 'Hand-cut from a recycled oil drum.', price: '$48.00', image: img('mp-product-tree-of-life.jpg'), imageAlt: 'Tree of Life wall art cut from an oil drum, its leaves painted teal and gold.', href: STORE }
+  ];
+  var orders = [
+    ['Custom and bulk orders', 'Artisan partners can make custom pieces, and the store can fill large orders of a single item.', 'See custom orders', 'package'],
+    ['Branded gifts', 'Leather goods carry your organization\'s name, for staff, client and volunteer gifts.', 'See branded gifts', 'tag'],
+    ['Gift cards', 'Digital gift cards work online and at every MarketPlace store at an FMSC packing site.', 'Buy a gift card', 'gift']
+  ];
+  var faqs = [
+    { question: 'Can I use my FMSC account in the store?', answer: 'No. The FMSC MarketPlace™ store at fmscmarketplace.org has its own account and checkout, so store orders won\'t show up in your FMSC account.', expanded: true },
+    { question: 'How much is shipping?', answer: 'Standard shipping is a $5 flat rate on every order. You can choose a faster USPS or UPS option at checkout for an extra fee.' },
+    { question: 'How do I track my order?', answer: 'You\'ll get an email with a tracking number when your order ships. If you can\'t find it, email marketplace@fmsc.org or call 763-267-6313.' },
+    { question: 'Can I return or exchange something?', answer: 'Yes. Email marketplace@fmsc.org or call 763-267-6313 to set up a return or exchange. The same team helps if an item arrives damaged or missing.' },
+    { question: 'Can I send an order as a gift?', answer: 'Yes. Add a note at checkout and it prints on the packing slip. Select items can also go in an artisan-made gift bag, which you can add at checkout.' },
+    { question: 'Can I shop at a packing site if I\'m not volunteering?', answer: 'Yes. Every FMSC packing site has a MarketPlace store, open Monday through Saturday and closed Sundays. Stock varies by site, so call ahead if you want a specific item. In-store pickup for online orders is available in Eagan, Minnesota, only.' }
+  ];
+
+  function Header(p) {
+    return h(F.SectionHeader, { breakpoint: 'auto', align: 'left', showEyebrow: false, showSupporting: false,
+      heading: h('span', { id: p.id }, p.heading) });
+  }
+
+  /* DS StatBlock markup with the mobile figure size below 600px (the coded StatBlock has no mobile type). */
+  function Stat(p) {
+    return h('div', { className: 'fm-stat fm-stat--figure fm-stat--default' },
+      h('p', { className: 'fm-stat__value ' + (p.mobile ? 'display-xl-mobile' : 'display-xl') }, p.value),
+      h('p', { className: 'fm-stat__label body-base mp-pre' }, p.mobile ? p.label.replace('\n', ' ') : p.label));
+  }
+
+  /* DS BadgeCard / Article card titles are always Heading/H4 (20/26); the mobile frame uses the mobile H4 (18/24). */
+  function useMobileCardTitles(mobile) {
+    React.useLayoutEffect(function () {
+      document.querySelectorAll('main .fm-badge-card__title, main .fm-article-card__title').forEach(function (el) {
+        el.classList.toggle('heading-h4-mobile', mobile); el.classList.toggle('heading-h4', !mobile);
+      });
+    }, [mobile]);
+  }
+
+  function MarketPlacePage() {
+    var mobile = F.useIsMobile();
+    useMobileCardTitles(mobile);
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'how-to-help' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: 'auto',
+          type: 'standard',
+          eyebrow: 'FMSC MARKETPLACE™',
+          h1: 'Handcrafted goods that pay artisans and feed kids',
+          body: 'Feed My Starving Children (FMSC) buys handcrafted goods from artisans in communities that receive FMSC meals. The artisan earns a fair wage, and the profit from each sale pays for more meals.',
+          primaryLabel: ext('Shop FMSC MarketPlace', 24), primaryHref: STORE,
+          secondaryLabel: 'Meet the artisans', secondaryHref: '#artisans',
+          image: img(mobile ? 'mp-m-hero.jpg' : 'mp-hero.jpg'),
+          imageAlt: 'An artisan smiles as she holds a handmade clay piece in her pottery workshop.'
+        }),
+
+        /* 2 · What MarketPlace is */
+        h(F.SectionMediaAndCopy, {
+          breakpoint: 'auto', className: 'mp-about mp-wide', media: 'right', layout: 'split', showButton: false,
+          image: img('mp-about.jpg'),
+          imageAlt: 'A smiling artisan in a yellow T-shirt holds a red handmade piece in a workshop in Eswatini.',
+          header: { align: 'left', showEyebrow: false, showSupporting: true, heading: 'Made by hand in 12 countries',
+            supporting: 'From baskets in Uganda to oil drum art in Haiti, every piece comes from artisans connected to FMSC.\n\nThe Fair Trade Federation has verified FMSC MarketPlace for fair wages and safe working conditions.\n\nYou can shop the MarketPlace in person at any of our eight packing sites.',
+            showLink: true, linkLabel: ext('Find a MarketPlace store'), linkHref: STORE }
+        }),
+
+        /* 3 · What one purchase does */
+        h('section', { className: 'mp-section mp-section--subtle', id: 'purchase', 'aria-labelledby': 'mp-purchase' },
+          h('div', { className: 'mp-inner mp-stack' },
+            h(Header, { id: 'mp-purchase', heading: 'One purchase pays an artisan and feeds kids' }),
+            h('ul', { className: 'mp-pair' }, purchase.map(function (c) {
+              return h('li', { key: c[0] }, h(F.BadgeCard, { container: 'card', align: 'left', illustration: img(c[2]), title: c[0], body: c[1], showLink: false }));
+            })),
+            h('div', { className: 'mp-stats' }, stats.map(function (s) {
+              return h(Stat, { key: s[0], value: s[0], label: s[1], mobile: mobile });
+            })))),
+
+        /* 4 · Meet the artisans */
+        h('section', { className: 'mp-section', id: 'artisans', 'aria-labelledby': 'mp-artisans' },
+          h('div', { className: 'mp-inner mp-stack' },
+            h(Header, { id: 'mp-artisans', heading: 'Meet the artisans' }),
+            h('ul', { className: 'mp-artisans' }, artisans.map(function (a) {
+              return h('li', { key: a.title },
+                h('article', { className: 'fm-article-card' },
+                  h('img', { className: 'fm-article-card__photo', src: img(a.image), alt: a.alt }),
+                  h('div', { className: 'fm-article-card__body' },
+                    h('p', { className: 'fm-article-card__tag overline' }, a.tag),
+                    h('h3', { className: 'fm-article-card__title heading-h4' }, a.title),
+                    h('p', { className: 'fm-article-card__date body-base' }, a.body),
+                    h(F.ArrowLink, { type: 'external', label: a.link, href: STORE }))));
+            })),
+            h(F.ArrowLink, { type: 'external', label: 'Meet all the artisans', href: STORE }))),
+
+        /* 5 · New for fall (product carousel) */
+        h(F.SectionProductCarousel, {
+          breakpoint: 'auto', className: 'mp-carousel mp-wide',
+          showEyebrow: false, showSupporting: false, align: 'left',
+          heading: 'New for fall',
+          showLink: true, linkLabel: ext('Shop the fall collection'), linkHref: STORE,
+          ariaLabel: 'New for fall',
+          items: products
+        }),
+
+        /* 6 · Order for a group or a gift */
+        h('div', { id: 'orders' }),
+        h(F.SectionCardGrid, {
+          breakpoint: 'auto', className: 'mp-orders', columns: 3,
+          showHeader: true, showFooter: false,
+          header: { align: 'left', showEyebrow: false, showSupporting: false, heading: 'Order for a group or a gift' },
+          items: orders.map(function (o) {
+            return h(F.BadgeCard, { key: o[0], container: 'card', align: 'left', title: o[0], body: o[1],
+              showLink: true, linkLabel: h(Fragment, null, o[2], h(F.Icon, { name: 'external-link', size: 16 })), linkHref: STORE,
+              badge: h(F.IconBadge, { color: 'subtle', size: 'medium', icon: o[3] }) });
+          })
+        }),
+
+        /* 7 · Common questions */
+        h(F.SectionFAQ, {
+          breakpoint: 'auto', className: 'mp-faq',
+          header: { align: 'left', showEyebrow: false, showSupporting: false, heading: 'Common questions' },
+          items: faqs, showLink: false
+        }),
+
+        /* 8 · CTA band */
+        h(F.CTABand, {
+          breakpoint: 'auto', className: 'mp-cta',
+          eyebrow: '',
+          headline: 'Find a gift that feeds kids',
+          subtext: 'Standard shipping is a $5 flat rate, and every order pays an artisan a fair wage.',
+          primaryLabel: ext('Shop FMSC MarketPlace', 24), primaryHref: STORE,
+          secondaryLabel: 'Donate meals', secondaryHref: 'donate.html',
+          showTrustStrip: false, showStatsStrip: false
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(MarketPlacePage));
+</script>
+</body>
+</html>

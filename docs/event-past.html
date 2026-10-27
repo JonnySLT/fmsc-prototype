@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event details · Aug. 8 · FMSC</title>
+<meta name="description" content="Your FMSC packing event on Saturday, Aug. 8, at FMSC Coon Rapids: what the event packed, where the food went, your shift and photos from the day.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Event details sit below an account page: Figma "Account shell" here has no subnav rail or account menu,
+     so the content column runs the full content width (1200 at 1440). */
+  .ev-page .ac-shell__rail, .ev-page .ac-menu { display: none; }
+  .ev-page .ac-shell__content { padding-left: 0; }
+  .ev-page .ac-shell__inner { gap: 0; }
+
+  .ev-muted { color: var(--content-secondary); }
+  .ev-link { color: var(--content-link); text-decoration: none; }
+  .ev-link:hover { text-decoration: underline; }
+  .ev-title { flex: 1 1 0; min-width: 0; }
+  /* Figma breadcrumb and mobile back link use Body/Small Regular (the DS header sets them in Label/Small). */
+  .ev-page .fm-account-header__crumb, .ev-page .fm-account-header__back { font-weight: 400; }
+  /* Figma breadcrumb separator chevrons are content-primary (the DS draws them content-secondary). */
+  .ev-page .fm-account-header__sep { color: var(--content-primary); }
+
+  /* 1 · What this event packed */
+  .ev-figures { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-lg) var(--space-2xl); }
+  .ev-figures .fm-stat { align-items: flex-start; text-align: left; }
+  @container ac-content (max-width: 899.98px) { .ev-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Where it went + your shift */
+  .ev-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); align-items: stretch; }
+  .ev-col { display: flex; flex-direction: column; gap: var(--space-md); min-width: 0; }
+  .ev-col--wide { gap: var(--space-lg); }
+  .ev-facts { display: flex; flex-direction: column; gap: var(--space-md); margin: 0; }
+  .ev-fact { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: var(--space-md); align-items: baseline; }
+  .ev-fact dt { color: var(--content-secondary); }
+  .ev-fact dd { margin: 0; color: var(--content-primary); }
+  .ev-map { position: relative; overflow: hidden; height: 200px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--background-surface); --ev-pin-x: 41.3%; }
+  /* The map art is the Figma "world-reach · Caribbean" layer at 1x, positioned so Cap-Haïtien sits under the pin. */
+  .ev-map { container-type: inline-size; }
+  .ev-map__art { position: absolute; inset: 0; background: url(img/ev-haiti-map.svg) no-repeat; background-size: 2520px 1654px; background-position: calc(41.3cqw - 674px) -638px; }
+  .ev-map__pin { position: absolute; left: calc(var(--ev-pin-x) - 10px); top: calc(50% - 19px); color: var(--accent-highlight); }
+  .ev-map__label { position: absolute; left: calc(var(--ev-pin-x) + 20px); top: calc(50% - 24px); padding: var(--space-xs); border-radius: var(--radius-sm); background: var(--background-surface); color: var(--content-primary); white-space: nowrap; }
+  .ev-chips { display: flex; flex-wrap: wrap; gap: var(--space-xs); list-style: none; padding: 0; }
+  .ev-chips li { padding: var(--space-xs); border-radius: var(--radius-pill); background: var(--background-subtle); color: var(--content-secondary); }
+  .ev-total { display: flex; flex-direction: column; gap: var(--space-2xs); padding-top: var(--space-sm); }
+
+  /* 4 · Photos from this event */
+  .ev-photos .ac-card__header { flex-wrap: wrap; }
+  .ev-photo-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: var(--space-md); margin-left: auto; }
+  .ev-photo-group { display: flex; flex-direction: column; gap: var(--space-sm); }
+  .ev-photo-group + .ev-photo-group { padding-top: var(--space-lg); }
+  .ev-group-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); min-height: 44px; }
+  .ev-group-title { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-xs); }
+  .ev-group-titles { display: flex; flex-direction: column; gap: var(--space-2xs); }
+  .ev-pages { display: flex; align-items: center; gap: var(--space-md); }
+  .ev-pages .fm-pagination { width: auto; padding: 0; }
+  .ev-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-xs); list-style: none; padding: 0; }
+  .ev-tile { position: relative; display: block; width: 100%; aspect-ratio: 1; padding: 0; border: 0; border-radius: var(--radius-sm); overflow: hidden; background: var(--background-subtle); cursor: pointer; }
+  .ev-tile img { width: 100%; height: 100%; object-fit: cover; }
+  .ev-tile:hover img { opacity: 0.9; }
+  .ev-tile--on::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-sm); box-shadow: inset 0 0 0 3px var(--brand-primary); }
+  .ev-tile__check { position: absolute; right: var(--space-xs); bottom: var(--space-xs); display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: var(--radius-sm); background: var(--background-surface); box-shadow: inset 0 0 0 1.5px var(--border-control); color: var(--content-on-brand); }
+  .ev-tile--on .ev-tile__check { background: var(--brand-primary); box-shadow: inset 0 0 0 1.5px var(--brand-primary); }
+  .ev-submit { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  /* 44px hit area for the inline link without moving the line. */
+  .ev-submit a { display: inline-block; padding: var(--space-10) 0; margin: calc(-1 * var(--space-10)) 0; }
+
+  /* Dialogs and the photo viewer: modal layers over the page. */
+  html.ev-lock { overflow: hidden; }
+  .ev-layer { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: var(--space-md); background: var(--scrim-strong); overflow-y: auto; }
+  .ev-dialog.fm-dialog { width: 528px; max-width: 100%; margin: auto; max-height: none; }
+  .ev-dialog .fm-dialog__body { gap: var(--space-lg); }
+  /* Figma's close frame is 20 wide at the header's right edge: the 44px DS button keeps its hit area but sits 12px
+     into the padding so the x lines up with the frame. */
+  .ev-dialog .fm-dialog__close { margin-right: calc(-1 * var(--space-sm)); }
+  .ev-preview { width: 100%; overflow: hidden; border-radius: var(--radius-md); background: var(--background-subtle); }
+  .ev-preview__photo { width: 100%; height: 180px; object-fit: cover; }
+  .ev-preview__summary { display: flex; flex-direction: column; gap: var(--space-2xs); padding: var(--space-md); }
+  .ev-preview__thumbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); padding: var(--space-md) var(--space-md) 0; }
+  .ev-preview__thumbs img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); }
+  .ev-share-block { display: flex; flex-direction: column; gap: var(--space-2xs); width: 100%; }
+  .ev-share-row { display: flex; align-items: center; gap: var(--space-sm); }
+  .ev-url { flex: 1 1 0; min-width: 0; padding: var(--space-md); border-radius: var(--radius-md); background: var(--background-subtle); color: var(--content-primary); overflow-wrap: anywhere; }
+  .ev-share-row .fm-btn { flex: none; }
+  .ev-share-to { display: flex; gap: var(--space-sm); }
+  .ev-share-to .fm-btn { flex: 1 1 0; min-width: 0; }
+  .ev-share-note a { color: var(--content-link); text-decoration: none; }
+  .ev-share-note a:hover { text-decoration: underline; }
+  .ev-mask { display: inline-block; width: 24px; height: 24px; background: currentColor; -webkit-mask: var(--ev-mask) center / contain no-repeat; mask: var(--ev-mask) center / contain no-repeat; }
+
+  /* Photo viewer (Figma "Overlay · Photo viewer"): full screen on background-inverse. */
+  .ev-layer.ev-viewer { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: var(--space-md); padding: var(--space-lg); background: var(--background-inverse); overflow: hidden; }
+  .ev-viewer__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); }
+  .ev-viewer__count, .ev-viewer__caption { color: var(--content-inverse); }
+  /* Figma desktop counter is a fixed 40 x 44 box, top-aligned, and "7 of 30" wraps after "of" (reproduced as drawn). */
+  .ev-viewer__count { width: calc(var(--space-xl) + var(--space-xs)); height: calc(var(--space-2xl) - var(--space-2xs)); align-self: center; }
+  .ev-viewer__count span { display: block; }
+  .ev-viewer__actions, .ev-viewer__bottom { display: flex; gap: var(--space-sm); }
+  .ev-viewer__stage { position: relative; flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: var(--space-md); }
+  .ev-viewer__photo { flex: 1 1 0; min-width: 0; height: 100%; object-fit: contain; }
+  .ev-nav { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-pill); background: var(--background-surface); box-shadow: inset 0 0 0 1px var(--border-subtle); color: var(--graphic-ink); cursor: pointer; }
+  .ev-nav:hover { background: var(--background-subtle); }
+  .ev-viewer .fm-focusable:focus-visible { outline-color: var(--content-inverse); }
+  .ev-viewer__bottom { display: none; }
+
+  @container ac-content (max-width: 799.98px) {
+    .ev-pair { grid-template-columns: minmax(0, 1fr); }
+  }
+  @container ac-content (max-width: 559.98px) { .ev-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    /* Figma mobile keeps the 12px card-header padding (the shell drops it on mobile). */
+    .ev-page .ac-card__header { padding-bottom: var(--space-sm); }
+    .ev-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+    .ev-figures .fm-stat { width: auto; }
+    .ev-pair { gap: var(--section-gap); }
+    .ev-fact { display: flex; flex-direction: column; gap: var(--space-2xs); }
+    .ev-photos .ac-card__header { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .ev-photo-actions { flex-direction: column; align-items: stretch; gap: var(--space-sm); margin-left: 0; }
+    .ev-photo-actions .fm-btn { width: 100%; }
+    /* Figma mobile tiles are 103 x 103 (radius-sm), 8 apart, in a left-aligned row. */
+    .ev-grid { grid-template-columns: repeat(3, minmax(0, 103px)); }
+    .ev-submit { flex-direction: column; gap: var(--space-2xs); }
+    .ev-pages .fm-pagination__count { display: none; }
+
+    .ev-dialog.fm-dialog { width: 100%; }
+    .ev-dialog .fm-dialog__body, .ev-share-block, .ev-preview__summary { gap: var(--space-sm); }
+    .ev-preview__photo { height: 140px; }
+    .ev-share-to { flex-direction: column; }
+    .ev-share-to .fm-btn { flex: none; width: 100%; }
+
+    .ev-viewer__actions .ev-hide-m { display: none; }
+    .ev-viewer__count { width: auto; height: auto; }
+    .ev-viewer__count span { display: inline; }
+    .ev-viewer__bottom { display: flex; }
+    .ev-viewer__bottom .fm-btn { flex: 1 1 0; }
+    .ev-viewer__stage { gap: 0; }
+    /* Figma mobile has no arrows (swipe); they stay for keyboard and screen reader users, shown on focus. */
+    .ev-nav { position: absolute; z-index: 1; top: 50%; transform: translateY(-50%); opacity: 0; }
+    .ev-nav:focus-visible { opacity: 1; }
+    .ev-nav--prev { left: var(--space-xs); }
+    .ev-nav--next { right: var(--space-xs); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="account-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+  document.body.classList.add('ev-page');
+
+  /* SHIFT CATALOG: Sarah's three past shifts, picked with ?shift=<id> (no or unknown id = Aug. 8, the Figma frame).
+     Aug. 8 is the Figma sample verbatim. The other two take only what the prototype already says elsewhere:
+     account-dashboard.html `shifts` (meals, destination, arrival date, photo count), account-volunteering.html rows
+     (date, site, city, group, role; 2 hours each) and signup-shell.js's site catalog (address, phone).
+     Children fed = meals ÷ 365, rounded down ($106 feeds a child a daily meal for a year), matching the dashboard.
+     Anything not sourced (sessions, volunteer count, check-in times, station, who else came, partner, year totals)
+     is left out for those two rather than invented. */
+  var SHIFTS = {
+    '2026-08-08': { figma: true, y: 2026, m: 7, d: 8, eventName: 'FMSC Coon Rapids', site: 'FMSC Coon Rapids',
+      meals: 32400, country: 'Haiti', photoCount: 24 },
+    '2026-06-07': { y: 2026, m: 5, d: 7, eventName: 'Hope Church MobilePack™ event', site: 'the Hope Church MobilePack™ event', place: 'Eagan, MN',
+      header: 'Hope Church MobilePack™ event · Eagan, MN', location: 'Eagan, MN', phone: null,
+      meals: 62784, country: 'Philippines', countryIn: 'the Philippines', arrived: 'July 19, 2026', group: 'Hope Church', admin: false, photoCount: 11,
+      /* Pin over the Visayas; the pin sits at 60% so the map art never runs out on the right at wide single-column widths. */
+      map: { pin: 60, x: 2115, y: 785, label: 'Philippines' } },
+    '2026-02-22': { y: 2026, m: 1, d: 22, eventName: 'FMSC Chanhassen', site: 'FMSC Chanhassen',
+      header: 'FMSC Chanhassen · Chanhassen, MN', location: '18732 Lake Drive East, Chanhassen', phone: '952-937-2329',
+      meals: 25920, country: 'Nicaragua', arrived: 'April 9, 2026', group: 'Grace Church Youth Group', admin: false, photoCount: 38,
+      map: { pin: 41.3, x: 569, y: 792, label: 'Nicaragua' } }
+  };
+  var shiftId = (function () { try { return new URLSearchParams(location.search).get('shift'); } catch (e) { return null; } })();
+  if (!shiftId || !Object.prototype.hasOwnProperty.call(SHIFTS, shiftId)) shiftId = '2026-08-08';
+  var SHIFT = SHIFTS[shiftId];
+  var MONTHS = ['Jan.', 'Feb.', 'March', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+  var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  SHIFT.weekday = DAYS[new Date(SHIFT.y, SHIFT.m, SHIFT.d).getDay()];
+  SHIFT.short = MONTHS[SHIFT.m] + ' ' + SHIFT.d;
+  SHIFT.long = SHIFT.weekday + ', ' + SHIFT.short + ', ' + SHIFT.y;
+  SHIFT.children = Math.floor(SHIFT.meals / 365);
+  function num(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  if (!SHIFT.figma) {
+    document.title = 'Event details · ' + SHIFT.short + ' · FMSC';
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', 'Your FMSC packing event on ' + SHIFT.weekday + ', ' + SHIFT.short + ', at ' + SHIFT.site +
+      (SHIFT.place ? ' in ' + SHIFT.place : '') + ': what the event packed, where the food went, your shift and photos from the day.');
+  }
+
+  /* SAMPLE DATA (Figma): the usability-test persona Sarah's past event, Saturday, Aug. 8, at FMSC Coon Rapids.
+     The photos stay the Figma set for every shift; only the count and captions follow the shift. */
+  var packingAlts = {
+    p1: 'A volunteer in a hairnet carries a box of MannaPack® meals between packing tables',
+    p2: 'Smiling volunteers in hairnets and U.S. Bank shirts at a packing table',
+    p3: 'A volunteer in a hairnet laughs while passing a scoop across the packing line',
+    p4: 'Two boys in hairnets hold up sealed meal bags beside a MannaPack® box',
+    p5: 'A girl in a hairnet rests her arms on a box and smiles at the camera',
+    p6: 'Kids in matching blue shirts and hairnets hold scoops at a packing table',
+    p7: 'Volunteers scoop rice and soy into funnels at a packing table, smiling up at the camera',
+    p8: 'A volunteer carries a tall stack of MannaPack® boxes across the warehouse',
+    p9: 'A volunteer in a hairnet packs sealed meal bags into a box',
+    p10: 'Volunteers in yellow shirts and hairnets fill meal bags with scoops'
+  };
+  var haitiAlts = {
+    h1: 'Children smile over green bowls of rice at a school meal',
+    h2: 'A boy eats a meal of rice from a bowl at a wooden table',
+    h3: 'Children eat together from orange and pink bowls at a blue table',
+    h4: 'A girl smiles while carrying a bag of food on her shoulder',
+    h5: 'Two children sit on the ground eating from bowls and smiling',
+    h6: 'A boy eats a spoonful of rice and vegetables from a bowl'
+  };
+  var PACKING_CAPTION = 'Packing day · ' + SHIFT.eventName + ' · ' + SHIFT.short + ', ' + SHIFT.y;
+  var HAITI_CAPTION = 'In Haiti · From Hope for Haiti Children’s Center';
+  /* Aug. 8: 24 packing-day photos (the 10 sample photos repeat) and 6 partner photos, 30 in all.
+     Other shifts: their packing-day count from the dashboard; the Haiti partner set is Aug. 8 only. */
+  var PACK_N = SHIFT.photoCount;
+  var photos = [];
+  for (var i = 0; i < PACK_N; i++) { var k = 'p' + ((i % 10) + 1); photos.push({ key: 'pack-' + i, id: k, group: 'pack', alt: packingAlts[k], caption: PACKING_CAPTION }); }
+  if (SHIFT.figma) ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(function (k, j) { photos.push({ key: 'haiti-' + j, id: k, group: 'haiti', alt: haitiAlts[k], caption: HAITI_CAPTION }); });
+  photos.forEach(function (p, n) { p.index = n; p.thumb = 'img/ev-thumb-' + p.id + '.jpg'; p.src = 'img/ev-photo-' + p.id + '.jpg'; });
+
+  /* ---------- Modal layers: portal, focus trap, Escape, scroll lock, background inert ---------- */
+  var layers = [];
+  function syncLayers() {
+    var root = document.getElementById('root');
+    if (root) root.inert = layers.length > 0;
+    layers.forEach(function (el, i) { el.inert = i < layers.length - 1; });
+    document.documentElement.classList.toggle('ev-lock', layers.length > 0);
+  }
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  function Layer(p) {
+    var ref = React.useRef(null), closeRef = React.useRef(p.onClose), keyRef = React.useRef(p.onKey);
+    closeRef.current = p.onClose; keyRef.current = p.onKey;
+    React.useLayoutEffect(function () {
+      var el = ref.current, prev = document.activeElement;
+      layers.push(el); syncLayers();
+      var first = el.querySelector('[data-autofocus]') || el.querySelector(FOCUSABLE);
+      if (first) first.focus();
+      function onKey(e) {
+        if (layers[layers.length - 1] !== el) return;
+        if (e.key === 'Escape') { e.preventDefault(); closeRef.current(); return; }
+        if (e.key === 'Tab') {
+          var list = Array.prototype.filter.call(el.querySelectorAll(FOCUSABLE), function (n) { return n.offsetParent !== null || n === document.activeElement; });
+          if (!list.length) return;
+          var a = list[0], b = list[list.length - 1];
+          if (e.shiftKey && (document.activeElement === a || !el.contains(document.activeElement))) { e.preventDefault(); b.focus(); }
+          else if (!e.shiftKey && (document.activeElement === b || !el.contains(document.activeElement))) { e.preventDefault(); a.focus(); }
+          return;
+        }
+        if (keyRef.current) keyRef.current(e);
+      }
+      document.addEventListener('keydown', onKey);
+      return function () {
+        document.removeEventListener('keydown', onKey);
+        var at = layers.indexOf(el); if (at > -1) layers.splice(at, 1);
+        syncLayers();
+        var back = (p.returnFocus && p.returnFocus.current) || prev;
+        if (back && document.contains(back) && back.focus) back.focus();
+      };
+    }, []);
+    return ReactDOM.createPortal(
+      h('div', { ref: ref, className: 'ev-layer ' + (p.className || ''), onMouseDown: function (e) { if (p.scrimCloses && e.target === e.currentTarget) closeRef.current(); } }, p.children),
+      document.body);
+  }
+
+  /* Copy button: copies locally and shows "Copied" for a moment. */
+  function CopyButton(p) {
+    var s = React.useState(false), done = s[0], set = s[1];
+    React.useEffect(function () { if (!done) return undefined; var t = setTimeout(function () { set(false); }, 2500); return function () { clearTimeout(t); }; }, [done]);
+    return h(React.Fragment, null,
+      h(F.Button, { variant: 'secondary', size: 'medium', icon: done ? 'check' : undefined, 'aria-label': done ? 'Copied' : 'Copy link',
+        onClick: function () { try { navigator.clipboard && navigator.clipboard.writeText('https://' + p.url).catch(function () {}); } catch (e) {} set(true); } },
+        done ? 'Copied' : 'Copy'),
+      h('span', { className: 'fm-visually-hidden', role: 'status', 'aria-live': 'polite' }, done ? 'Link copied' : ''));
+  }
+  function LinkedInIcon() { return h('span', { className: 'ev-mask', 'aria-hidden': 'true', style: { '--ev-mask': 'url(img/ev-linkedin.svg)' } }); }
+
+  function ShareBody(p) {
+    var mobile = F.useIsMobile();
+    return h(React.Fragment, null,
+      p.preview,
+      h('div', { className: 'ev-share-block' },
+        h('h3', { className: 'label-small' }, 'Copy link'),
+        h('p', { className: 'caption ev-muted' }, p.why),
+        h('div', { className: 'ev-share-row' },
+          h('p', { className: 'ev-url body-small' }, p.url),
+          h(CopyButton, { url: p.url }))),
+      h('div', { className: 'ev-share-block' },
+        h('h3', { className: 'label-small' }, 'Share to'),
+        h('div', { className: 'ev-share-to' },
+          mobile && p.more ? h(F.Button, { variant: 'primary', size: 'medium', icon: 'share', onClick: function () {
+            if (navigator.share) navigator.share({ title: p.title, url: 'https://' + p.url }).catch(function () {});
+          } }, 'More sharing options') : null,
+          h(F.Button, { variant: 'secondary', size: 'medium', icon: 'mail', href: 'mailto:?subject=' + encodeURIComponent(p.title) + '&body=' + encodeURIComponent('https://' + p.url) }, 'Email'),
+          h(F.Button, { variant: 'secondary', size: 'medium', icon: 'brand-facebook', href: '#' }, 'Facebook'),
+          h(F.Button, { variant: 'secondary', size: 'medium', icon: h(LinkedInIcon), href: '#' }, 'LinkedIn')),
+        h('p', { className: 'caption ev-muted ev-share-note' }, 'Posting to Instagram? ', h('a', { className: 'fm-focusable', href: p.download, download: '' }, p.downloadLabel))));
+  }
+
+  /* Share link: Figma's sample slug for Aug. 8; the other shifts use their id (illustrative, like the sample). */
+  var SHARE_URL = SHIFT.figma ? 'fmsc.org/packed/7Kq2Xr' : 'fmsc.org/packed/' + shiftId;
+  var EVENT_TITLE = SHIFT.figma ? 'Packing event at FMSC Coon Rapids' : (/^FMSC /.test(SHIFT.eventName) ? 'Packing event at ' + SHIFT.eventName : SHIFT.eventName);
+
+  function ShareEventDialog(p) {
+    return h(Layer, { onClose: p.onClose, scrimCloses: true, returnFocus: p.returnFocus },
+      h(F.Dialog, { breakpoint: 'auto', modal: true, className: 'ev-dialog', title: 'Share this event', closeLabel: 'Close', onClose: p.onClose, actions: null },
+        h(ShareBody, {
+          more: true, title: EVENT_TITLE, url: SHARE_URL,
+          why: 'Anyone with the link can see this. Names stay private.',
+          download: 'img/ev-photo-p1.jpg', downloadLabel: 'Download the image',
+          preview: h('div', { className: 'ev-preview' },
+            h('img', { className: 'ev-preview__photo', src: 'img/ev-photo-p1.jpg', alt: '' }),
+            h('div', { className: 'ev-preview__summary' },
+              h('p', { className: 'label-small' }, EVENT_TITLE),
+              h('p', { className: 'caption ev-muted' }, SHIFT.figma ? 'Saturday, Aug. 8, 2026 · three packing sessions' : SHIFT.long),
+              h('p', { className: 'caption ev-muted' }, num(SHIFT.meals) + ' meals packed, headed to ' + (SHIFT.countryIn || SHIFT.country))))
+        })));
+  }
+
+  function SharePhotosDialog(p) {
+    var n = p.items.length, word = n === 1 ? '1 photo' : n + ' photos';
+    return h(Layer, { onClose: p.onClose, scrimCloses: true, returnFocus: p.returnFocus },
+      h(F.Dialog, { breakpoint: 'auto', modal: true, className: 'ev-dialog', title: 'Share ' + word, closeLabel: 'Close', onClose: p.onClose, actions: null },
+        h(ShareBody, {
+          title: word + ' from ' + SHIFT.site, url: SHARE_URL + '/photos',
+          why: n === 1 ? 'Anyone with the link can see this photo.' : 'Anyone with the link can see these ' + n + ' photos.',
+          download: n === 1 ? p.items[0].src : '#', downloadLabel: n === 1 ? 'Download the photo' : 'Download the photos',
+          preview: h('div', { className: 'ev-preview' },
+            h('div', { className: 'ev-preview__thumbs' }, p.items.map(function (x) { return h('img', { key: x.key, src: x.thumb, alt: x.alt }); })),
+            h('div', { className: 'ev-preview__summary' },
+              h('p', { className: 'label-small' }, word + ' from ' + SHIFT.site),
+              h('p', { className: 'caption ev-muted' }, SHIFT.long)))
+        })));
+  }
+
+  function PhotoViewer(p) {
+    var mobile = F.useIsMobile();
+    var cur = photos[p.index], total = photos.length;
+    function go(d) { p.onIndex((p.index + d + total) % total); }
+    var touch = React.useRef(null);
+    return h(Layer, { className: 'ev-viewer', onClose: p.onClose, returnFocus: p.returnFocus,
+      onKey: function (e) { if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); } else if (e.key === 'ArrowRight') { e.preventDefault(); go(1); } } },
+      h('div', { role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Photo viewer', style: { display: 'contents' } },
+        h('div', { className: 'ev-viewer__top' },
+          h('p', { className: 'caption ev-viewer__count', 'aria-live': 'polite' }, h('span', null, (p.index + 1) + ' of'), ' ', h('span', null, String(total))),
+          h('div', { className: 'ev-viewer__actions' },
+            h(F.Button, { variant: 'light', size: 'medium', icon: 'share', className: 'ev-hide-m', onClick: function (e) { p.onShare(cur, e.currentTarget); } }, 'Share'),
+            h(F.Button, { variant: 'light', size: 'medium', icon: 'download', className: 'ev-hide-m', href: cur.src, download: '' }, 'Download'),
+            h(F.Button, { variant: 'light', size: 'medium', icon: 'x', onClick: p.onClose, 'data-autofocus': true }, 'Close'))),
+        h('div', { className: 'ev-viewer__stage',
+          onTouchStart: function (e) { touch.current = e.touches[0].clientX; },
+          onTouchEnd: function (e) { if (touch.current == null) return; var dx = e.changedTouches[0].clientX - touch.current; touch.current = null; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); } },
+          h('button', { type: 'button', className: 'ev-nav ev-nav--prev fm-focusable', 'aria-label': 'Previous photo', onClick: function () { go(-1); } }, h(F.Icon, { name: 'chevron-left', size: 20 })),
+          h('img', { className: 'ev-viewer__photo', src: cur.src, alt: cur.alt }),
+          h('button', { type: 'button', className: 'ev-nav ev-nav--next fm-focusable', 'aria-label': 'Next photo', onClick: function () { go(1); } }, h(F.Icon, { name: 'chevron-right', size: 20 }))),
+        h('p', { className: 'caption ev-viewer__caption' }, cur.caption),
+        mobile ? h('div', { className: 'ev-viewer__bottom' },
+          h(F.Button, { variant: 'light', size: 'medium', icon: 'share', onClick: function (e) { p.onShare(cur, e.currentTarget); } }, 'Share'),
+          h(F.Button, { variant: 'light', size: 'medium', icon: 'download', href: cur.src, download: '' }, 'Download')) : null));
+  }
+
+  /* ---------- Photos from this event (Figma "Event photos": Default, Selecting, Selected) ---------- */
+  function Tile(p) {
+    var x = p.photo, on = p.selected;
+    if (p.selecting) {
+      return h('button', { type: 'button', className: 'ev-tile fm-focusable' + (on ? ' ev-tile--on' : ''), 'aria-pressed': on ? 'true' : 'false',
+        'aria-label': 'Select photo ' + (x.index + 1) + ': ' + x.alt, onClick: function () { p.onToggle(x); } },
+        h('img', { src: x.thumb, alt: '' }),
+        h('span', { className: 'ev-tile__check', 'aria-hidden': 'true' }, on ? h(F.Icon, { name: 'check', size: 14 }) : null));
+    }
+    return h('button', { type: 'button', className: 'ev-tile fm-focusable', 'aria-label': 'Open photo ' + (x.index + 1) + ' of ' + photos.length + ': ' + x.alt, onClick: function (e) { p.onOpen(x, e.currentTarget); } },
+      h('img', { src: x.thumb, alt: '' }));
+  }
+
+  function Photos(p) {
+    var mobile = F.useIsMobile();
+    var per = mobile ? 6 : 12;
+    var pg = React.useState(0), page = pg[0], setPage = pg[1];
+    var sm = React.useState(false), selecting = sm[0], setSelecting = sm[1];
+    var sl = React.useState([]), sel = sl[0], setSel = sl[1];
+    var pages = Math.ceil(PACK_N / per), cur = Math.min(page, pages - 1);
+    var pack = photos.slice(0, PACK_N).slice(cur * per, cur * per + per), haiti = photos.slice(PACK_N);
+    function toggle(x) { setSel(sel.indexOf(x.index) > -1 ? sel.filter(function (i) { return i !== x.index; }) : sel.concat([x.index])); }
+    function cancel() { setSelecting(false); setSel([]); }
+    var n = sel.length;
+    var actions;
+    if (!selecting) actions = [
+      h(F.Button, { key: 's', variant: 'secondary', size: 'medium', onClick: function () { setSelecting(true); } }, 'Select'),
+      h(F.Button, { key: 'd', variant: 'ghost', size: 'medium', icon: 'download', href: '#' }, 'Download all')];
+    else if (!n) actions = [
+      h('p', { key: 'h', className: 'caption ev-muted', role: 'status' }, 'Select photos to share or download'),
+      h(F.Button, { key: 'c', variant: 'secondary', size: 'medium', onClick: cancel }, 'Cancel')];
+    else actions = [
+      h('p', { key: 'h', className: 'caption ev-muted', role: 'status' }, n === 1 ? '1 photo selected' : n + ' photos selected'),
+      h(F.Button, { key: 'sh', variant: 'primary', size: 'medium', icon: 'share', onClick: function (e) { p.onShare(sel.slice().sort(function (a, b) { return a - b; }).map(function (i) { return photos[i]; }), e.currentTarget); } }, 'Share'),
+      h(F.Button, { key: 'dl', variant: 'secondary', size: 'medium', icon: 'download', href: '#' }, 'Download'),
+      h(F.Button, { key: 'c', variant: 'ghost', size: 'medium', onClick: cancel }, 'Cancel')];
+    function grid(list, label) {
+      return h('ul', { className: 'ev-grid', 'aria-label': label }, list.map(function (x) {
+        return h('li', { key: x.key }, h(Tile, { photo: x, selecting: selecting, selected: sel.indexOf(x.index) > -1, onToggle: toggle, onOpen: p.onOpen }));
+      }));
+    }
+    var h4 = mobile ? 'heading-h4-mobile' : 'heading-h4';
+    return h('section', { className: 'ac-card ev-photos', 'aria-labelledby': 'ev-photos-title' },
+      h('div', { className: 'ac-card__header' },
+        h(UI.Badge, { icon: 'camera' }),
+        h('h2', { className: 'ac-card__title ' + h4, id: 'ev-photos-title' }, 'Photos from this event'),
+        h('div', { className: 'ev-photo-actions' }, actions)),
+      h('div', { className: 'ev-photo-group' },
+        h('div', { className: 'ev-group-head' },
+          h('h3', { className: 'ev-group-title' }, h('span', { className: h4 }, 'Packing day'), h('span', { className: 'body-base ev-muted' }, PACK_N + ' photos')),
+          h('div', { className: 'ev-pages' },
+            h(F.Pagination, { count: (cur * per + 1) + '–' + Math.min(PACK_N, cur * per + per) + ' of ' + PACK_N, ariaLabel: 'Packing day photo pages',
+              previousLabel: 'Previous photos', nextLabel: 'Next photos', /* Figma draws both pager buttons enabled on page 1; "previous" there just stays on page 1. */
+              nextDisabled: cur === pages - 1,
+              onPrevious: function () { setPage(Math.max(0, cur - 1)); }, onNext: function () { setPage(Math.min(pages - 1, cur + 1)); } }))),
+        grid(pack, 'Packing day photos'),
+        h('p', { className: 'ev-submit body-base' }, h('span', { className: 'ev-muted' }, 'Have photos from this event?'), h('a', { className: 'ev-link fm-focusable', href: '#' }, 'Submit your photos'))),
+      haiti.length ? h('div', { className: 'ev-photo-group' },
+        h('div', { className: 'ev-group-titles' },
+          h('h3', { className: 'ev-group-title' }, h('span', { className: h4 }, 'In Haiti'), h('span', { className: 'body-base ev-muted' }, '6 photos')),
+          h('p', { className: 'body-base ev-muted' }, 'From Hope for Haiti Children’s Center')),
+        grid(haiti, 'Photos from Haiti')) : null);
+  }
+
+  function Facts(p) {
+    return h('dl', { className: 'ev-facts' }, p.rows.map(function (r) {
+      return h('div', { key: r[0], className: 'ev-fact' }, h('dt', { className: 'body-small' }, r[0]), h('dd', { className: 'body-base' }, r[1]));
+    }));
+  }
+
+  /* Destination map for shifts other than Aug. 8: the same world map art (Figma "world-reach" layer), re-centred on
+     the country the dashboard names. That art shades Haiti (and stacks the Dominican Republic over Hispaniola); when it
+     can be fetched, a copy drops both overlays and moves the shading to this shift's country (its land paths, matched by their first point). If the fetch fails the plain art still shows. */
+  var MAP_SRC = 'img/ev-haiti-map.svg';
+  var COUNTRY_PATHS = {
+    Nicaragua: ['M577.584 775.505'],
+    Philippines: ['M2093.91 789.894', 'M2140.57 802.691', 'M2114.44 783.761', 'M2128.15 788.885', 'M2131.18 778.638', 'M2099.24 724.691', 'M2102.79 770.461']
+  };
+  var HAITI_PATH = 'M665.439 731.089', DR_PATH = 'M697.934 744.523';
+  var mapCache = {};
+  function shadedMap(country) {
+    if (mapCache[country]) return mapCache[country];
+    mapCache[country] = fetch(MAP_SRC).then(function (r) { if (!r.ok) throw new Error('map'); return r.text(); }).then(function (txt) {
+      var doc = new DOMParser().parseFromString(txt, 'image/svg+xml'), svg = doc.documentElement;
+      var all = Array.prototype.slice.call(svg.querySelectorAll('path'));
+      function starts(el, pre) { var d = el.getAttribute('d') || ''; return d.indexOf(pre) === 0 && /[LCHVZ]/.test(d.charAt(pre.length)); }
+      all.forEach(function (el) { if (starts(el, HAITI_PATH) || starts(el, DR_PATH)) el.parentNode.removeChild(el); });
+      (COUNTRY_PATHS[country] || []).forEach(function (pre) {
+        all.forEach(function (el) { if (starts(el, pre)) svg.appendChild(el.cloneNode(true)); });
+      });
+      return URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], { type: 'image/svg+xml' }));
+    }).catch(function () { return null; });
+    return mapCache[country];
+  }
+  function DestinationMap(p) {
+    var m = p.map, st = React.useState(null), url = st[0], setUrl = st[1];
+    React.useEffect(function () { var live = true; shadedMap(p.shade).then(function (u) { if (live && u) setUrl(u); }); return function () { live = false; }; }, [p.shade]);
+    var art = { backgroundImage: 'url(' + (url || MAP_SRC) + ')', backgroundPosition: 'calc(' + m.pin + 'cqw - ' + m.x + 'px) ' + (102 - m.y) + 'px' };
+    return h('div', { className: 'ev-map', role: 'img', 'aria-label': 'World map with a pin on ' + p.country, style: { '--ev-pin-x': m.pin + '%' } },
+      h('div', { className: 'ev-map__art', style: art }),
+      h(F.Icon, { name: 'map-pin-filled', size: 21, className: 'ev-map__pin' }),
+      h('span', { className: 'ev-map__label label-small', 'aria-hidden': 'true' }, m.label));
+  }
+
+  function Past() {
+    var mobile = F.useIsMobile();
+    var sh = React.useState(false), shareOpen = sh[0], setShareOpen = sh[1];
+    var vw = React.useState(null), viewer = vw[0], setViewer = vw[1];
+    var sp = React.useState(null), sharePhotos = sp[0], setSharePhotos = sp[1];
+    var shareBtn = React.useRef(null), viewerReturn = React.useRef(null), photosReturn = React.useRef(null);
+    var names = ['Sarah Whitfield', 'Tom Whitfield', 'Maya Whitfield', 'Ben Ortiz', 'Dana Reyes', 'Carol Whitfield', 'Jake Sorensen', 'Priya Nair'];
+    var shareButton = h('span', { ref: shareBtn, style: { display: 'contents' } },
+      h(F.Button, { variant: 'secondary', size: 'medium', icon: 'share', fullWidth: mobile, 'aria-haspopup': 'dialog', onClick: function () { setShareOpen(true); } }, 'Share this event'));
+    return h(window.AccountShell, { current: 'volunteering' },
+
+      h(F.AccountPageHeader, {
+        breakpoint: 'auto', title: 'Event details for ' + SHIFT.weekday + ', ' + SHIFT.short, showBreadcrumb: true,
+        breadcrumb: [{ label: 'My account', href: 'account-dashboard.html' }, { label: 'Volunteering', href: 'account-volunteering.html' }, { label: 'Event details' }],
+        backTo: { label: 'Volunteering', href: 'account-volunteering.html' },
+        showDescription: true, description: SHIFT.figma ? 'FMSC Coon Rapids · three sessions, 8 a.m. to 4 p.m.' : SHIFT.header
+      }),
+
+      /* 1 · What this event packed */
+      h('section', { className: 'ac-card', 'aria-labelledby': 'ev-packed-title' },
+        h('div', { className: 'ac-card__header' },
+          h(UI.Badge, { icon: 'bowl' }),
+          h('h2', { className: 'ac-card__title ' + (mobile ? 'heading-h4-mobile' : 'heading-h4'), id: 'ev-packed-title' }, 'What this event packed'),
+          mobile ? null : shareButton),
+        mobile ? shareButton : null,
+        h('div', { className: 'ev-figures' },
+          (SHIFT.figma ? [['32,400', 'meals packed'], ['88', 'children fed for a year'], ['~150', 'volunteers across the day'], ['3', 'packing sessions']]
+            : [[num(SHIFT.meals), 'meals packed'], [String(SHIFT.children), 'children fed for a year']]).map(function (s) {
+            /* DS StatBlock has no mobile variant; below 600 the same markup with Display/XL mobile (Figma mobile stat). */
+            return mobile
+              ? h('div', { key: s[1], className: 'fm-stat' }, h('p', { className: 'fm-stat__value display-xl-mobile' }, s[0]), h('p', { className: 'fm-stat__label body-base' }, s[1]))
+              : h(F.StatBlock, { key: s[1], value: s[0], label: s[1] });
+          }))),
+
+      h('div', { className: 'ev-pair' },
+        /* 2 · Where the food went */
+        h(UI.Card, { icon: 'globe', title: 'Where the food went', id: 'ev-where' },
+          SHIFT.figma ? h('div', { className: 'ev-col ev-col--wide' },
+            h(Facts, { rows: [['Left the warehouse', 'Sept. 2, 2026'], ['Arrived in', 'Haiti'], ['Partner', 'Hope for Haiti Children’s Center'], ['Served through', 'A school feeding program in Cap-Haïtien']] }),
+            h('div', { className: 'ev-map', role: 'img', 'aria-label': 'Map of the Caribbean with a pin on Cap-Haïtien, Haiti' },
+              h('div', { className: 'ev-map__art' }),
+              h(F.Icon, { name: 'map-pin-filled', size: 21, className: 'ev-map__pin' }),
+              h('span', { className: 'ev-map__label label-small', 'aria-hidden': 'true' }, 'Cap-Haïtien, Haiti')))
+          : h('div', { className: 'ev-col ev-col--wide' },
+            /* Dashboard data names the country and arrival date only: no partner, program or ship date to show. */
+            h(Facts, { rows: [['Arrived in', SHIFT.country], ['Arrived on', SHIFT.arrived]] }),
+            h(DestinationMap, { map: SHIFT.map, shade: SHIFT.country, country: SHIFT.countryIn || SHIFT.country }))),
+        /* 3 · Your shift */
+        h(UI.Card, { icon: 'users-group', title: 'Your shift details', id: 'ev-shift' },
+          h('div', { className: 'ev-col' },
+            SHIFT.figma ? h(React.Fragment, null,
+              h(Facts, { rows: [['Session', '9–11 a.m. · 2 hours'], ['Checked in', '8:52 a.m.'], ['Checked out', '11:04 a.m.'], ['Your role', 'Packing'], ['Group', 'Grace Church Youth Group · you’re an admin']] }),
+              h('p', { className: 'body-small ev-muted', id: 'ev-who' }, 'Eight of your group packed this session'),
+              h('ul', { className: 'ev-chips', 'aria-labelledby': 'ev-who' }, names.map(function (n) { return h('li', { key: n, className: 'body-small' }, window.FMSCData.profile.display(n)); })),
+              h('div', { className: 'ev-total' },
+                h('p', { className: 'label-small' }, 'Your fifth shift of 2026'),
+                h('p', { className: 'body-small ev-muted' }, '10 hours in 2026 · 32 hours since 2019')))
+            : h(Facts, { rows: [['Location', SHIFT.location]].concat(SHIFT.phone ? [['Site phone', SHIFT.phone]] : [],
+                [['Session', '2 hours'], ['Group', SHIFT.group + (SHIFT.admin ? ' · you’re an admin' : '')]]) }),
+            h('div', null, h(F.ArrowLink, { label: 'Download your hours', href: 'account-volunteering.html#av-hours-title' }))))),
+
+      /* 4 · Photos from this event */
+      h(Photos, {
+        onOpen: function (x, el) { viewerReturn.current = el; setViewer(x.index); },
+        onShare: function (items, el) { photosReturn.current = el; setSharePhotos(items); }
+      }),
+
+      shareOpen ? h(ShareEventDialog, { onClose: function () { setShareOpen(false); }, returnFocus: { current: shareBtn.current && shareBtn.current.querySelector('a, button') } }) : null,
+      viewer != null ? h(PhotoViewer, { index: viewer, onIndex: setViewer, onClose: function () { setViewer(null); }, returnFocus: viewerReturn,
+        onShare: function (x, el) { photosReturn.current = el; setSharePhotos([x]); } }) : null,
+      sharePhotos ? h(SharePhotosDialog, { items: sharePhotos, onClose: function () { setSharePhotos(null); }, returnFocus: photosReturn }) : null);
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Past));
+</script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan an estate gift · FMSC</title>
+<meta name="description" content="Name Feed My Starving Children in your will or on a retirement account, or give stock this year. Writing a will is free and takes about 20 minutes.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .eg-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); scroll-margin-top: var(--space-4xl); }
+  .eg-section--subtle { background: var(--background-subtle); }
+  .eg-inner { width: 100%; max-width: var(--content-width); }
+  .eg-stack { display: flex; flex-direction: column; align-items: flex-start; gap: var(--section-gap); }
+  .eg-stack > * { width: 100%; }
+  .eg-stack > .eg-auto { width: auto; }
+  .eg-secondary { color: var(--content-secondary); }
+
+  /* DS sections that own their padding: keep the content on the 1200 column at any width. */
+  .eg-wide { padding-left: max(var(--margin-x), calc((100% - var(--content-width)) / 2)); padding-right: max(var(--margin-x), calc((100% - var(--content-width)) / 2)); scroll-margin-top: var(--space-4xl); }
+
+  /* 2 · Make your will for free: the copy keeps Figma's paragraph breaks. */
+  .eg-will .fm-section-header__supporting { white-space: pre-line; }
+
+  /* 3 · Name FMSC as a beneficiary: three numbered steps on a brand-subtle panel */
+  .eg-panel { container-type: inline-size; padding: var(--space-xl) var(--card-pad); background: var(--background-brand-subtle); border-radius: var(--radius-lg); }
+  .eg-steps { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .eg-steps .fm-step-item { width: 100%; }
+  @container (max-width: 720px) { .eg-steps { grid-template-columns: minmax(0, 1fr); gap: var(--space-md); } }
+
+  /* 4 · Video: 588 / 588 split, copy centred on the video */
+  .eg-video .fm-video { width: 100%; height: auto; aspect-ratio: 588 / 331; }
+  .eg-video__frame { position: relative; width: 100%; aspect-ratio: 588 / 331; border-radius: var(--radius-lg); overflow: hidden; background: var(--background-inverse); }
+  .eg-video__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* 5 · Give now */
+  .eg-cards { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .eg-cards > li { display: flex; min-width: 0; }
+  .eg-cards .fm-badge-card { width: 100%; }
+  @media (min-width: 600px) and (max-width: 939.98px) { .eg-cards { grid-template-columns: minmax(0, 1fr); } }
+  .eg-notes { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-xs); }
+  .eg-notes p { max-width: 730px; }
+
+  /* 6 · Talk with our planned giving team */
+  .eg-contact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); align-items: stretch; }
+  @media (max-width: 879.98px) { .eg-contact { grid-template-columns: minmax(0, 1fr); gap: var(--section-gap); } }
+  .eg-card { display: flex; flex-direction: column; padding: var(--card-pad); background: var(--background-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+  .eg-form { gap: var(--space-lg); }
+  .eg-form__intro { display: flex; flex-direction: column; gap: var(--space-sm); }
+  .eg-form__row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .eg-form__row > * { min-width: 0; }
+  .eg-form .fm-field, .eg-form .fm-dropdown, .eg-form .fm-textarea { width: 100%; }
+  .eg-form__actions { display: flex; align-items: center; gap: var(--space-md); }
+  .eg-form__actions .eg-secondary { flex: 1 1 0; min-width: 0; }
+  .eg-sent { display: flex; align-items: center; gap: var(--space-sm); min-height: 48px; color: var(--content-primary); }
+  .eg-sent .fm-icon { color: var(--feedback-success); flex: none; }
+  .eg-side { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
+  .eg-side .fm-contact-card { width: 100%; box-shadow: var(--shadow-md); }
+  .eg-attorney { gap: var(--space-md); }
+  .eg-details { display: flex; flex-direction: column; gap: var(--space-md); margin: 0; }
+  .eg-details > div { display: flex; gap: var(--space-md); align-items: flex-start; }
+  .eg-details dt { flex: none; width: 140px; color: var(--content-primary); }
+  .eg-details dd { flex: 1 1 0; min-width: 0; margin: 0; color: var(--content-secondary); }
+  .eg-divider { height: 1px; background: var(--border-subtle); }
+
+  /* CTA band: Figma hides the eyebrow; subtext is content/on-brand, as in the frame. */
+  .eg-cta .fm-cta-band__eyebrow:empty { display: none; }
+  .eg-cta .fm-cta-band__subtext { color: var(--content-on-brand); }
+  .fm-footer--desktop .fm-footer__legal-copy { max-width: 968px; }
+
+  /* 600–879: the split media sections stack (media above the copy) */
+  @media (min-width: 600px) and (max-width: 879.98px) {
+    .eg-will .fm-media-copy__row { flex-direction: column !important; align-items: stretch !important; }
+    .eg-will .fm-media-copy__media { flex: none !important; width: 100%; }
+  }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .eg-cards { grid-template-columns: minmax(0, 1fr); }
+    .eg-video__stack { display: flex; flex-direction: column; gap: var(--grid-gap); }
+    .eg-actions .fm-btn { width: 100%; }
+    .eg-form__row { grid-template-columns: minmax(0, 1fr); }
+    .eg-form__actions { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .eg-form__actions .fm-btn { width: 100%; }
+    .eg-details dt { width: 110px; }
+    .eg-will .fm-media-copy__copy > div:last-child, .eg-will .eg-willbtn { width: 100%; }
+    /* DS fix: Footer Mobile keeps the desktop flex-basis (140px) on its stacked columns, which becomes height. */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+  /* FreeWill (the free online will tool) is outside the prototype: its links stay inert. */
+  var FREEWILL = '#';
+  var EMAIL = 'mailto:plannedgiving@fmsc.org';
+
+  var steps = [
+    ['Get the form', 'Ask your plan administrator, IRA custodian or insurer. Many let you update it online.'],
+    ['Name FMSC', 'Enter Feed My Starving Children and tax ID 41-1601449, for all of the account or a percentage.'],
+    ['Let FMSC know', 'It\'s optional, but it lets us thank you. You can stay anonymous.']
+  ];
+  var giveNow = [
+    ['Give from your IRA', 'At 70½ or older, send money straight from a traditional IRA to FMSC. It isn’t taxed as income, and it can count toward your required distribution.', 'Ask our team for instructions', 'eg-legacy-piggy-bank.svg'],
+    ['Give appreciated stock', 'Transfer shares you’ve held more than a year directly to FMSC. You won’t pay capital gains tax on the growth, and you can generally deduct the full market value.', 'Get stock transfer instructions', 'eg-legacy-chart.svg'],
+    ['Recommend a grant', 'Ask your fund’s sponsor to send a grant to FMSC, tax ID 41-1601449. You already took the tax deduction, so you get to choose where the money goes.', 'Get grant instructions', 'eg-donations-cash-gift.svg']
+  ];
+  /* Not drawn in Figma (the frame shows the closed field): the choices are prototype placeholders. */
+  var planning = ['Just starting to think about it', 'Writing or updating my will', 'I’ve already included FMSC', 'Something else'];
+  var details = [
+    ['Legal name', 'Feed My Starving Children'],
+    ['Tax ID', '41-1601449'],
+    ['Tax status', '501(c)(3) charitable nonprofit'],
+    ['Mailing address', '401 93rd Ave. NW, Coon Rapids, MN 55433']
+  ];
+
+  function Header(p) {
+    return h(F.SectionHeader, { breakpoint: 'auto', align: 'left', showEyebrow: !!p.eyebrow, eyebrow: p.eyebrow,
+      showSupporting: !!p.supporting, supporting: p.supporting, heading: h('span', { id: p.id }, p.heading) });
+  }
+
+  /* DS StepItem has no Mobile variant: below 600px render the same markup with the mobile H4 (18/24) title. */
+  function Step(p) {
+    var mobile = F.useIsMobile();
+    if (!mobile) return h(F.StepItem, { as: 'li', indicator: 'number', number: p.number, title: p.title, description: p.description, titleAs: 'h3' });
+    return h('li', { className: 'fm-step-item fm-step-item--number' },
+      h('span', { className: 'fm-step-item__number body-large', 'aria-hidden': 'true' }, p.number),
+      h('div', { className: 'fm-step-item__copy' },
+        h('h3', { className: 'fm-step-item__title heading-h4-mobile' }, h('span', { className: 'fm-visually-hidden' }, 'Step ' + p.number + ': '), p.title),
+        h('p', { className: 'fm-step-item__desc body-base' }, p.description)));
+  }
+
+  /* DS BadgeCard titles are always Heading/H4 (20/26); the mobile frame uses the mobile H4 (18/24). */
+  function useMobileCardTitles(mobile) {
+    React.useLayoutEffect(function () {
+      document.querySelectorAll('main .fm-badge-card__title, main .eg-card-title').forEach(function (el) {
+        el.classList.toggle('heading-h4-mobile', mobile); el.classList.toggle('heading-h4', !mobile);
+      });
+    }, [mobile]);
+  }
+
+  function Video() {
+    var mobile = F.useIsMobile();
+    var s = React.useState(false), playing = s[0], setPlaying = s[1];
+    var video = playing
+      ? h('div', { className: 'eg-video__frame' },
+          h('iframe', { src: 'https://www.youtube-nocookie.com/embed/KLV5LaK6rWs?autoplay=1&rel=0', title: 'Why Kevin planned his gift', allow: 'autoplay; encrypted-media; picture-in-picture', allowFullScreen: true }))
+      : h(F.VideoPlayer, { poster: img('eg-video-poster.jpg'), posterAlt: 'Kevin Reed, an FMSC volunteer and legacy donor, talks to the camera.', title: 'Why Kevin planned his gift', onPlay: function () { setPlaying(true); } });
+    var copy = h(Header, { id: 'eg-video', heading: 'Why Kevin planned his gift',
+      supporting: 'Longtime FMSC volunteer and donor Kevin and his wife added Feed My Starving Children to their estate plans so their daughter will know that generosity mattered to them.' });
+    return h('section', { className: 'eg-section eg-video', 'aria-labelledby': 'eg-video' },
+      h('div', { className: 'eg-inner' },
+        mobile ? h('div', { className: 'eg-video__stack' }, video, copy)
+          : h(F.LayoutSplit, { align: 'center' }, video, copy)));
+  }
+
+  /* "Planning a gift? Let us know": nothing is sent. After Request a follow-up, the actions row confirms (state not drawn in Figma). */
+  function LegacyForm() {
+    var mobile = F.useIsMobile();
+    var st = React.useState(null), stage = st[0], setStage = st[1];
+    var sent = React.useState(false), done = sent[0], setDone = sent[1];
+    return h('form', { className: 'eg-card eg-form', 'aria-labelledby': 'eg-form-h', noValidate: true,
+        onSubmit: function (e) { e.preventDefault(); setDone(true); } },
+      h('div', { className: 'eg-form__intro' },
+        h('h3', { id: 'eg-form-h', className: 'eg-card-title heading-h4' }, 'Planning a gift? Let us know'),
+        h('p', { className: 'eg-secondary body-base' }, 'Tell FMSC where you are in planning, and the planned giving team will be in touch.')),
+      h('div', { className: 'eg-form__row' },
+        h(F.Input, { label: 'Name', placeholder: 'First and last name', name: 'name', autoComplete: 'name' }),
+        h(F.Input, { label: 'Email', placeholder: 'you@example.com', type: 'email', name: 'email', autoComplete: 'email' })),
+      h('div', { className: 'eg-form__row' },
+        h(F.Input, { label: 'Phone (optional)', placeholder: '763-555-0100', type: 'tel', name: 'phone', autoComplete: 'tel' }),
+        h(F.Dropdown, { label: 'Where are you in planning?', showLabel: true, placeholder: 'Select', options: planning, value: stage, onChange: function (v) { setStage(v); } })),
+      h(F.Textarea, { label: 'Anything you’d like us to know? (optional)', showLabel: true, placeholder: 'A question, or the kind of gift you have in mind', name: 'message', rows: 3 }),
+      h('div', { className: 'eg-form__actions', 'aria-live': 'polite' },
+        done
+          ? h('p', { className: 'eg-sent body-base' }, h(F.Icon, { name: 'circle-check', size: 24 }), 'Thanks. The planned giving team will be in touch.')
+          : h(F.Button, { variant: 'primary', size: 'large', type: 'submit' }, 'Request a follow-up'),
+        h('p', { className: 'eg-secondary body-small' }, 'We’ll only use this to follow up about your gift, and you can stay anonymous.')));
+  }
+
+  function EstateGiftPage() {
+    var mobile = F.useIsMobile();
+    useMobileCardTitles(mobile);
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'how-to-help' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: 'auto',
+          type: 'standard',
+          eyebrow: 'ESTATE GIFTS',
+          h1: 'Your gift can feed kids for years to come',
+          body: 'Name FMSC in your will or on a retirement account, or give stock this year. Writing a will is free and takes about 20 minutes.',
+          primaryLabel: 'Write your free will', primaryHref: FREEWILL,
+          secondaryLabel: 'Talk to our team', secondaryHref: '#contact',
+          image: img(mobile ? 'eg-m-hero.jpg' : 'eg-hero.jpg'),
+          imageAlt: 'Two brothers in hairnets hold sealed MannaPack® meals at an FMSC packing event.'
+        }),
+
+        /* 2 · Give later: make your will for free */
+        h(F.SectionMediaAndCopy, {
+          breakpoint: 'auto', className: 'eg-will eg-wide', media: 'left', layout: 'split', showButton: false,
+          image: img('eg-will.jpg'),
+          imageAlt: 'A volunteer in a hairnet and a “Live Generously” T-shirt packs sealed meal bags into a box.',
+          header: { align: 'left', showEyebrow: true, eyebrow: 'GIVE LATER', showSupporting: true, heading: 'Make your will for free',
+            supporting: 'A gift in your will costs nothing today.\n\nFreeWill helps you write your will online in about 20 minutes, for free. Including FMSC is up to you.\n\nAlready have a will? Your attorney can add FMSC with a short amendment.' }
+        }, h(F.Button, { className: 'eg-willbtn', variant: 'gold', size: 'large', href: FREEWILL, fullWidth: mobile }, 'Write your free will')),
+
+        /* 3 · Name FMSC as a beneficiary */
+        h('section', { className: 'eg-section eg-section--subtle', id: 'beneficiary', 'aria-labelledby': 'eg-beneficiary' },
+          h('div', { className: 'eg-inner eg-stack' },
+            h(Header, { id: 'eg-beneficiary', heading: 'Name FMSC as a beneficiary', supporting: 'Use it for an IRA, 401(k) or life insurance. Your will doesn\'t change.' }),
+            h('div', { className: 'eg-panel' },
+              h('ol', { className: 'eg-steps' }, steps.map(function (s, i) {
+                return h(Step, { key: s[0], number: String(i + 1), title: s[0], description: s[1] });
+              }))),
+            h('div', { className: mobile ? 'eg-actions' : 'eg-actions eg-auto' },
+              h(F.Button, { variant: 'primary', size: 'large', href: '#contact' }, 'Tell FMSC your plans')))),
+
+        /* 4 · Video */
+        h(Video),
+
+        /* 5 · Give now */
+        h('section', { className: 'eg-section eg-section--subtle', id: 'give-now', 'aria-labelledby': 'eg-give-now' },
+          h('div', { className: 'eg-inner eg-stack' },
+            h(Header, { id: 'eg-give-now', eyebrow: 'GIVE NOW', heading: 'Give from an IRA, stock or a donor advised fund',
+              supporting: 'These gifts go to work this year rather than through your estate. Your tax advisor can tell you which fits your situation.' }),
+            h('ul', { className: 'eg-cards' }, giveNow.map(function (c) {
+              return h('li', { key: c[0] }, h(F.BadgeCard, { container: 'card', align: 'left', illustration: img(c[3]), title: c[0], body: c[1], showLink: true, linkLabel: c[2], linkHref: '#contact' }));
+            })),
+            h('div', { className: 'eg-notes' },
+              h('p', { className: 'eg-secondary body-base' }, 'Transfers often arrive without a name attached. Email the planned giving team with your name, the type of gift and the amount, so FMSC can match it to you and send your receipt.'),
+              h(F.ArrowLink, { label: 'Email the planned giving team', href: EMAIL })))),
+
+        /* 6 · Talk with our planned giving team */
+        h('section', { className: 'eg-section', id: 'contact', 'aria-labelledby': 'eg-contact' },
+          h('div', { className: 'eg-inner eg-stack' },
+            h(Header, { id: 'eg-contact', heading: 'Talk with our planned giving team',
+              supporting: 'Most estate gifts get worked out in a conversation. Call or email with questions. It helps to have your current will or beneficiary form handy.' }),
+            h('div', { className: 'eg-contact' },
+              h(LegacyForm),
+              h('div', { className: 'eg-side' },
+                h(F.ContactCard, { breakpoint: 'auto', name: 'Planned giving team', title: 'Feed My Starving Children',
+                  initials: h(F.Icon, { name: 'user', size: 32 }), phone: '763-404-7416', email: 'plannedgiving@fmsc.org', emailLabel: 'plannedgiving@fmsc.org' }),
+                h('div', { className: 'eg-card eg-attorney' },
+                  h('h3', { className: 'eg-card-title heading-h4' }, 'For your attorney or advisor'),
+                  h('dl', { className: 'eg-details' }, details.map(function (d) {
+                    return h('div', { key: d[0] }, h('dt', { className: 'label-small' }, d[0]), h('dd', { className: 'body-base' }, d[1]));
+                  })),
+                  h('div', { className: 'eg-divider', 'aria-hidden': 'true' }),
+                  h('p', { className: 'eg-secondary body-small' }, 'FMSC can\'t give tax or legal advice, so talk with your own attorney or financial advisor.')))))),
+
+        /* 7 · CTA band */
+        h(F.CTABand, {
+          breakpoint: 'auto', className: 'eg-cta',
+          eyebrow: '',
+          headline: 'Start with a free will',
+          subtext: 'It takes about 20 minutes, and including FMSC is up to you.',
+          primaryLabel: 'Write your free will', primaryHref: FREEWILL,
+          showSecondaryButton: false,
+          showTrustStrip: false, showStatsStrip: false
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(EstateGiftPage));
+</script>
+</body>
+</html>

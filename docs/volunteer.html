@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volunteer · FMSC</title>
+<meta name="description" content="Find a packing event, see what a shift looks like and bring a group to pack MannaPack® meals with Feed My Starving Children.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .vo-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .vo-section--subtle { background: var(--background-subtle); }
+  .vo-inner { width: 100%; max-width: var(--content-width); }
+  .vo-stack { display: flex; flex-direction: column; gap: var(--section-gap); }
+  .vo-header .fm-section-header__supporting { max-width: 730px; }
+
+  /* Finder card has no in-between layout: when the row can't keep the search field usable, give it its own line. */
+  .vo-finder { container-type: inline-size; width: 100%; }
+  /* Figma Finder card carries a 1px border/subtle stroke inside its layout (182 tall); the DS card has none */
+  .vo-finder .fm-finder-card { border: 1px solid var(--border-subtle); }
+  @container (max-width: 1040px) {
+    .vo-finder .fm-finder-card:not(.fm-finder-card--mobile) .fm-finder-card__fields { flex-wrap: wrap; }
+    .vo-finder .fm-finder-card:not(.fm-finder-card--mobile) .fm-finder-card__search { flex: 1 1 100%; }
+    .vo-finder .fm-finder-card:not(.fm-finder-card--mobile) .fm-finder-card__filter { flex: 1 1 160px; }
+  }
+
+  /* Find a packing event — results */
+  .vo-results { display: flex; flex-direction: column; gap: var(--space-sm); }
+  .vo-result { height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); padding: var(--space-md) var(--space-lg) var(--space-sm); background: var(--background-surface); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-md); }
+  /* (Figma result cards are 184 tall: the 1px stroke sits in the layout, as on mobile.) */
+  .vo-result__info { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2xs); flex: 1 1 auto; }
+  .vo-result__meta { color: var(--content-secondary); }
+  .vo-result .fm-arrow-link { min-height: 44px; }
+
+  /* Host a MobilePack event */
+  .vo-host { display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg); padding: var(--space-lg); background: var(--background-brand-subtle); border-radius: var(--radius-lg); flex-wrap: wrap; }
+  .vo-host__copy { display: flex; flex-direction: column; gap: var(--space-xs); flex: 1 1 400px; max-width: 821px; }
+  .vo-host__copy p { color: var(--content-secondary); max-width: 607px; }
+
+  /* What a shift looks like */
+  .vo-left { display: flex; flex-direction: column; gap: var(--section-gap); }
+  .vo-steps { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--space-md); }
+  .vo-steps .fm-step-item { width: 100%; }
+  .vo-block { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); }
+  .vo-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--space-md); color: var(--content-secondary); }
+  .vo-list li { display: flex; gap: var(--space-sm); }
+  .vo-list li::before { content: "•"; flex: none; width: var(--space-xs); }
+  .vo-list strong { color: var(--content-primary); }
+  .vo-photo { position: relative; overflow: hidden; border-radius: var(--radius-lg); min-height: 100%; }
+  .vo-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .fm-split--stretch .vo-photo { min-height: 480px; }
+
+  /* Figma splits these rows 600/576 rather than 50/50; same stacking point as LayoutSplit. */
+  @container (min-width: 840px) {
+    .vo-split--wide-left .fm-split__inner { grid-template-columns: minmax(0, 600fr) minmax(0, 576fr); }
+    .vo-split--wide-right .fm-split__inner { grid-template-columns: minmax(0, 576fr) minmax(0, 600fr); }
+  }
+  /* At the full 1200 column the shift photo keeps the frame's 576×672 crop; the policies link (clipped by the frame's
+     fixed-height Row) runs below it. Narrower, the photo stretches to the column as before. */
+  @container (min-width: 1200px) {
+    .vo-split--wide-left .vo-photo { align-self: start; min-height: 0; aspect-ratio: 576 / 672; }
+  }
+
+  /* Who can pack */
+  .vo-table { width: 100%; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-subtle); }
+  .vo-table .fm-dtable, .vo-table .fm-dtable__table { width: 100%; }
+  .vo-table th:first-child, .vo-table td:first-child { padding-left: var(--space-lg); }
+  .vo-note { color: var(--content-secondary); max-width: 559px; }
+
+  /* Bring a group */
+  .vo-group-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg); flex-wrap: wrap; }
+  .vo-group-head .fm-section-header { flex: 1 1 480px; max-width: 792px; }
+  .vo-signup { container-type: inline-size; display: flex; flex-direction: column; gap: var(--space-xl); padding: var(--space-xl) var(--space-lg); background: var(--background-brand-subtle); border-radius: var(--radius-lg); }
+  .vo-signup .fm-step-item { width: 100%; }
+  .vo-signup__steps { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
+  /* Three steps or one column — never a 2 + 1 row with step 3 stranded. */
+  @container (max-width: 720px) { .vo-signup__steps { grid-template-columns: minmax(0, 1fr); } }
+  .vo-audience .fm-badge-card { width: 100%; height: 100%; }
+  .vo-audience .fm-badge-card__link { margin-top: auto; }
+
+  /* FAQ: Figma answers are a 607px text box and each item's 1px top rule adds to its height (97px closed). */
+  .vo-faq .fm-section-faq__answer { max-width: 607px; }
+  .vo-faq .fm-section-faq__item { box-shadow: none; border-top: 1px solid var(--border-subtle); }
+
+  /* CTA band: Figma hides the eyebrow. */
+  .vo-cta .fm-cta-band__eyebrow:empty { display: none; }
+  /* Trust strip: let the three groups wrap instead of overflowing below 1200px. */
+  .vo-cta.fm-cta-band--desktop .fm-cta-band__trust { width: 100%; flex-wrap: wrap; justify-content: center; }
+  .vo-cta.fm-cta-band--desktop .fm-cta-band__group { flex: 1 1 12rem; width: auto; max-width: 384px; }
+  /* Figma sets the CTA subtext in content/on-brand (white); DS default blue-200 is ~4.4:1 on FMSC Blue, under AA. */
+  .vo-cta .fm-cta-band__subtext { color: var(--content-on-brand); }
+  /* Figma footer legal + address run 968px wide; the DS caps the column narrower. */
+  .fm-footer--desktop .fm-footer__legal-copy { max-width: 968px; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .vo-results { gap: var(--space-md); }
+    .vo-results .fm-grid { gap: var(--grid-gap); }
+    /* Figma mobile cards are 174 tall: the 1px stroke sits in the layout. */
+    .vo-result { padding: var(--card-pad); gap: var(--space-sm); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-md); }
+    .vo-result__info { gap: var(--space-xs); }
+    .vo-host { flex-direction: column; align-items: stretch; gap: var(--space-md); padding: var(--card-pad); }
+    .vo-host__copy { flex: none; max-width: none; }
+    .vo-host .fm-btn { width: 100%; }
+    .vo-photo--m { min-height: 0; aspect-ratio: 361 / 240; }
+    .vo-left { gap: var(--section-gap); }
+    .vo-block .fm-arrow-link { min-height: 44px; }
+    .vo-list { gap: var(--space-md); }
+    .vo-list li { gap: var(--space-sm); }
+    .vo-split--wide-right .fm-split__inner { gap: var(--section-gap); }
+    .vo-table th:first-child, .vo-table td:first-child { padding-left: var(--space-md); }
+    .vo-note { max-width: none; }
+    .vo-group-head { flex-direction: column; align-items: stretch; gap: var(--section-gap); }
+    .vo-group-head .fm-section-header { flex: none; max-width: none; }
+    .vo-group-head .fm-btn { width: 100%; }
+    .vo-signup { gap: var(--space-md); padding: var(--card-pad); }
+    .vo-signup__steps { gap: var(--space-md); }
+    .vo-audience .fm-grid { gap: var(--space-md); }
+    .vo-faq .fm-section-faq__answer { max-width: none; }
+    /* DS fix: Footer Mobile keeps the desktop flex-basis (140px) on its stacked columns, which becomes height. */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+  var helpItems = ['Volunteer at a packing event', 'Donate once or monthly', 'Start a fundraiser', 'Shop FMSC MarketPlace™', 'Host a MobilePack™ event', 'Attend a fundraising event', 'Plan an estate gift', 'Corporate partnerships']
+    .map(function (l) { return { label: l }; });
+
+  /* SAMPLE DATA (Figma): counts, distances and dates are placeholders for the usability test. */
+  /* miles and from/to mirror each card's meta line; the finder filters on them. */
+  var results = [
+    { type: 'permanent', tag: 'Permanent site', title: 'Coon Rapids, MN', meta: '6 miles away · 192 packing times open', site: 'coon-rapids', miles: 6 },
+    { type: 'permanent', tag: 'Permanent site', title: 'Eagan, MN', meta: '15 miles away · 183 packing times open', site: 'eagan', miles: 15 },
+    { type: 'permanent', tag: 'Permanent site', title: 'Chanhassen, MN', meta: '18 miles away · 192 packing times open', site: 'chanhassen', miles: 18 },
+    { type: 'mobilepack', tag: 'MobilePack event', title: 'Rochester, MN', meta: '85 miles away · Oct. 3–5 · Spots open', site: 'rochester-mobilepack', miles: 85, from: new Date(2026, 9, 3), to: new Date(2026, 9, 5) }
+  ];
+
+  /* ---- Packing-event search over the sample cards (Jonny, Oct. 22, 2026: filter the sample events) ----
+     The persona's ZIP (55433) and the homepage's (55421) count as "near home": every card shows and Distance
+     filters on each card's miles. A city or site name narrows the cards by name; that site is the place searched
+     from, so Distance doesn't drop it. Permanent sites pack year-round and always pass the date filters. */
+  var TODAY = new Date(2026, 8, 1); /* prototype "today", Sept. 1, 2026 */
+  var HOME_ZIPS = ['55433', '55421'];
+  var DEFAULT_Q = '55433';
+  var DEFAULT_MILES = 150; /* Figma placeholder "150 miles" */
+  var distanceOptions = ['10 miles', '25 miles', '50 miles', '100 miles', '300 miles'];
+  var startOptions = [{ value: 'next-week', label: 'Next week' }, { value: 'next-month', label: 'Next month' }];
+  var endOptions = [{ value: 'this-week', label: 'This week' }, { value: 'this-month', label: 'This month' }, { value: 'next-month', label: 'Next month' }];
+  var EMPTY = { q: DEFAULT_Q, dist: '', start: '', end: '' };
+  function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  function startDate(v) {
+    if (v === 'next-week') return addDays(TODAY, ((8 - TODAY.getDay()) % 7) || 7); /* next Monday */
+    if (v === 'next-month') return new Date(TODAY.getFullYear(), TODAY.getMonth() + 1, 1);
+    return TODAY;
+  }
+  function endDate(v) {
+    if (v === 'this-week') return addDays(TODAY, (7 - TODAY.getDay()) % 7); /* Sunday */
+    if (v === 'this-month') return new Date(TODAY.getFullYear(), TODAY.getMonth() + 1, 0);
+    if (v === 'next-month') return new Date(TODAY.getFullYear(), TODAY.getMonth() + 2, 0);
+    return null;
+  }
+  function norm(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+  function miles(v) { var n = parseInt(v, 10); return isNaN(n) ? DEFAULT_MILES : n; }
+  function classify(q) {
+    var n = norm(q);
+    if (!n) return { kind: 'all' };
+    var digits = n.replace(/ /g, '');
+    if (/^\d+$/.test(digits)) return HOME_ZIPS.some(function (z) { return z.indexOf(digits.slice(0, 5)) === 0; }) ? { kind: 'home' } : { kind: 'none' };
+    return { kind: 'name', n: n };
+  }
+  function matches(r, f) {
+    var c = classify(f.q);
+    if (c.kind === 'none') return false;
+    if (c.kind === 'name' && norm(r.title + ' minnesota ' + r.site).indexOf(c.n) < 0) return false;
+    if (c.kind === 'home' && r.miles > miles(f.dist)) return false;
+    if (r.from) { var e = endDate(f.end); if (r.to < startDate(f.start) || (e && r.from > e)) return false; }
+    return true;
+  }
+  function scopeText(f) {
+    var q = String(f.q || '').trim();
+    if (q === DEFAULT_Q && !f.dist && !f.start && !f.end) return 'Within 150 miles of 55433, closest first. We guessed your location — clear the ZIP code to search everywhere.';
+    if (!q) return 'All sites and events, closest first.';
+    return 'Within ' + miles(f.dist) + ' miles of ' + q + ', closest first.' + (q === DEFAULT_Q ? ' We guessed your location — clear the ZIP code to search everywhere.' : '');
+  }
+  /* Homepage Volunteer module hands its search over as ?where=&within=&when= (When: Any date, This week, This month, Next month). */
+  function searchFromURL() {
+    var p; try { p = new URLSearchParams(location.search); } catch (e) { return null; }
+    if (!p.has('where') && !p.has('within') && !p.has('when')) return null;
+    var f = { q: p.has('where') ? p.get('where') : DEFAULT_Q, dist: '', start: '', end: '' };
+    var w = p.get('within') || '';
+    if (distanceOptions.indexOf(w) >= 0) f.dist = w;
+    var when = norm(p.get('when'));
+    if (when === 'this week') f.end = 'this-week';
+    else if (when === 'this month') f.end = 'this-month';
+    else if (when === 'next month') { f.start = 'next-month'; f.end = 'next-month'; }
+    return f;
+  }
+  var shiftSteps = [
+    ['Check in', 'Check in at the front desk, stow your things in a locker and find your table. Say hello to your team and members of our staff.'],
+    ['Orientation', 'Get a briefing on how the line works and where the food goes. Everyone goes through it, including volunteers who have packed before.'],
+    ['Pack MannaPack® meals', 'You’ll wear a hairnet. Scoop rice, soy, dried vegetables and a vitamin blend into a bag, weigh it, seal it, pass it down the line.'],
+    ['Box and stack', 'Sealed bags go into boxes and the boxes get stacked on pallets, ready for a food distribution partner to ship.']
+  ];
+  var wear = [
+    'Clean, comfortable clothes.',
+    'Closed-toed shoes if you’re working in the warehouse.',
+    'No jewelry in the packing room — FDA rules for food production.',
+    'Wedding bands and medical alert bracelets are fine.',
+    'FMSC hands out the hairnets.',
+    'Lockers are limited, so leave what you can at home.'
+  ];
+  var know = [
+    ['If standing for long periods is difficult.', 'Anyone who needs to sit can label the bags before they’re filled.'],
+    ['Special needs groups, we’d love to host you.', 'Please call the Site Manager before you register online and they’ll set up a time that fits your group.'],
+    ['Stay home if you’re feeling sick or unwell.', 'If you have new or unexplained symptoms of a contagious illness please stay home. Seasonal allergies and known non-contagious conditions are fine.'],
+    ['Accessibility.', 'All eight permanent sites are accessible.']
+  ];
+  var groupSteps = [
+    ['Reserve your spots', 'Book the number of attendees you expect for your group.'],
+    ['Send the join link', 'Share the join link in an email or a group chat you already use.'],
+    ['See who’s attending', 'Attendees create an account and sign up. You’ll see who’s coming.']
+  ];
+  var audiences = [
+    ['Churches', 'Sunday school and confirmation classes, mission teams, groups of every age. Some churches designate the meals they pack for a country or mission program they already support.', 'in-country-church.svg', 'Start with your church', 'signup-1.html?path=d'],
+    ['Schools', 'Elementary through high school. Students see exactly how many meals their group produced by the end of the shift.', 'volunteers-team-raise.svg', 'Start with your school', 'signup-1.html?path=d'],
+    ['Workplaces', 'Team building with something to show for it. Small teams and whole companies both fit.', 'careers-team.svg', 'Start with your team', 'corporate-partnerships.html#team'],
+    ['Families with kids', 'Anyone 5 and up can pack, with an adult packing alongside them.', 'in-country-home-heart.svg', 'Bring your family', 'signup-1.html?path=c']
+  ];
+  var faqs = [
+    { question: 'Do I have to donate to volunteer?', answer: 'No. Donations aren’t required to pack. The one exception is a session marked Pack and Pledge, which does require one — those are labeled in the search results before you reserve. FMSC receives no government aid and sends meals as funding comes in, which is why many groups fundraise ahead of a shift.' },
+    { question: 'Does FMSC track my community service hours?', answer: 'Most FMSC sites sign off on community service hours. Each one verifies them a little differently, so check with the site where you’re packing — the contact is on that site’s page. Your hours land in your My FMSC account after the shift, with the date, the site and the total.' },
+    { question: 'I have a food allergy. Can I still pack?', answer: 'Rice, soy, dried vegetables and a vitamin blend are open to the air in the packing room. FMSC will send you the full ingredient list before you come so you can decide. Ask the site about roles outside the packing room.' },
+    { question: 'How do I change or cancel a reservation?', answer: 'Sign in to My FMSC and open your reservations. Group leaders can cancel the whole group or drop one person. Cancel as early as you can, so the spot goes back into the pool for someone else.' },
+    { question: 'Can we bring a birthday party?', answer: 'Yes, as long as everyone meets the minimum age of 5. Birthday volunteers get an FMSC T-shirt.' },
+    { question: 'What if the session I want is full?', answer: 'Keep checking. Groups trim their numbers in the week before a shift and spots open back up. You can also widen the date range or the distance in the search above.' }
+  ];
+
+  function Header(p) {
+    return h(F.SectionHeader, { breakpoint: 'auto', className: 'vo-header', align: 'left', showEyebrow: false, showSupporting: !!p.supporting,
+      heading: h('span', { id: p.id }, p.heading), supporting: p.supporting, headingLevel: p.level });
+  }
+
+  /* DS StepItem has no Mobile variant: below 600px render the same markup with the mobile H4 (18/24) title. */
+  function Step(p) {
+    var mobile = F.useIsMobile();
+    if (!mobile) return h(F.StepItem, { as: 'li', indicator: 'number', number: p.number, title: p.title, description: p.description, titleAs: p.titleAs });
+    return h('li', { className: 'fm-step-item fm-step-item--number' },
+      h('span', { className: 'fm-step-item__number body-large-mobile', 'aria-hidden': 'true' }, p.number),
+      h('div', { className: 'fm-step-item__copy' },
+        h(p.titleAs, { className: 'fm-step-item__title heading-h4-mobile' }, h('span', { className: 'fm-visually-hidden' }, 'Step ' + p.number + ': '), p.title),
+        h('p', { className: 'fm-step-item__desc body-base' }, p.description)));
+  }
+
+  /* DS BadgeCard titles are always Heading/H4 (20/26); the mobile frame uses the mobile H4 (18/24).
+     Swap the DS class for heading-h4-mobile below 600px (and back above it). */
+  function useMobileCardTitles(mobile) {
+    React.useLayoutEffect(function () {
+      document.querySelectorAll('main .fm-badge-card__title').forEach(function (el) {
+        el.classList.toggle('heading-h4-mobile', mobile); el.classList.toggle('heading-h4', !mobile);
+      });
+    }, [mobile]);
+  }
+
+  function Results(p) {
+    var mobile = F.useIsMobile();
+    var sel = p.sel, setSel = p.setSel;
+    var types = ['All sites', 'Permanent sites', 'MobilePack events'];
+    var shown = results.filter(function (r) { return (sel === 1 || (sel === 2 ? r.type === 'permanent' : r.type === 'mobilepack')) && matches(r, p.search); });
+    return h('div', { className: 'vo-results' },
+      mobile
+        ? h(F.Dropdown, { label: 'Event type', showLabel: true, options: types, value: types[sel - 1], onChange: function (v) { setSel(types.indexOf(v) + 1); } })
+        : h(F.SegmentedControl, { label: 'Event type', options: types, selected: sel, onChange: function (n) { setSel(n); } }),
+      shown.length ? h(F.LayoutGrid, { columns: 4 }, shown.map(function (r) {
+        return h('article', { key: r.title, className: 'vo-result' },
+          h('div', { className: 'vo-result__info' },
+            h(F.Tag, { color: r.type === 'mobilepack' ? 'brand' : 'neutral', label: r.tag }),
+            h('h3', { className: mobile ? 'heading-h4-mobile' : 'heading-h4' }, r.title),
+            h('p', { className: 'vo-result__meta body-small' }, r.meta)),
+          /* Next screen in the test flow: "Sign up — 1 Pick a packing time". */
+          h(F.ArrowLink, { label: 'View packing times', href: 'signup-1.html?path=a&site=' + r.site, 'aria-label': 'View packing times in ' + r.title }));
+      }))
+      : h(F.EmptyState, { breakpoint: 'auto', className: 'vo-empty', icon: 'search', headline: 'No packing events match your search',
+          supportingText: 'Try another city or site name, a wider distance or different dates.', showSecondary: false,
+          primaryAction: h(F.Button, { variant: 'secondary', size: 'medium', fullWidth: mobile, onClick: p.onShowAll }, 'Show all events') }));
+  }
+
+  /* Finder card + results: the search runs on Search events (or Enter), on clearing the field and on any filter change. */
+  function Finder() {
+    var initial = React.useState(function () { return searchFromURL(); })[0];
+    var _f = React.useState(initial || EMPTY), form = _f[0], setForm = _f[1];
+    var _a = React.useState(initial || EMPTY), applied = _a[0], setApplied = _a[1];
+    var _s = React.useState(1), sel = _s[0], setSel = _s[1];
+    function update(k, v, run) {
+      var next = Object.assign({}, form); next[k] = v; setForm(next);
+      if (run) setApplied(next);
+    }
+    function filter(label, placeholder, key, options) {
+      return { label: label, placeholder: placeholder, options: options, value: form[key], name: key,
+        onChange: function (e) { update(key, e.target.value, true); } };
+    }
+    function showAll() {
+      var all = { q: '', dist: '', start: '', end: '' };
+      setForm(all); setApplied(all); setSel(1);
+    }
+    return h(Fragment, null,
+      h('div', { className: 'vo-finder' }, h(F.FinderCard, {
+        breakpoint: 'auto',
+        searchValue: form.q,
+        onSearchChange: function (v, e) { update('q', v, e === null); },
+        filters: [
+          filter('Distance', '150 miles', 'dist', distanceOptions),
+          filter('Start date', 'Today', 'start', startOptions),
+          filter('End date', 'Any date', 'end', endOptions)
+        ],
+        onSubmit: function () { setApplied(form); },
+        resultsScope: scopeText(applied)
+      })),
+      h(Results, { search: applied, sel: sel, setSel: setSel, onShowAll: showAll }));
+  }
+
+  function VolunteerPage() {
+    var mobile = F.useIsMobile();
+    useMobileCardTitles(mobile);
+    var hx = function (d) { return mobile ? d + '-mobile' : d; };
+    var shiftPhoto = function (m) {
+      return h('div', { className: 'vo-photo' + (m ? ' vo-photo--m' : '') }, h('img', { src: img(m ? 'volunteer-m-shift.jpg' : 'volunteer-shift.jpg'), alt: 'A smiling volunteer in a hairnet and team T-shirt flashes peace signs at a packing table.' }));
+    };
+    var steps = h('ol', { className: 'vo-steps' }, shiftSteps.map(function (s, i) {
+      return h(Step, { key: s[0], number: String(i + 1), title: s[0], description: s[1], titleAs: 'h3' });
+    }));
+    var wearBlock = h('div', { className: 'vo-block' },
+      h('h3', { className: hx('heading-h3') }, 'What to wear'),
+      h('ul', { className: 'vo-list body-base' }, wear.map(function (w) { return h('li', { key: w }, h('span', null, w)); })),
+      /* Desktop frame has this link too, but its fixed-height Row clips it out of view, so desktop matches Figma and hides it
+         (Figma is the source of truth; the clipping is logged in the Figma backlog). */
+      mobile ? h(F.ArrowLink, { label: 'Read the volunteering policies', href: '#' }) : null);
+    /* Figma mobile lists the last two questions the other way round. */
+    var faqItems = mobile ? faqs.slice(0, 4).concat([faqs[5], faqs[4]]) : faqs;
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'volunteer' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: 'auto',
+          type: 'standard',
+          eyebrow: 'Volunteer',
+          h1: 'Pack meals at a site near you',
+          body: 'Volunteers hand-pack MannaPack® meals at eight permanent sites and at FMSC MobilePack™ events across the country. A shift runs two hours. Reserve on your own or bring a group — either way, you need a reservation before you come.',
+          primaryLabel: 'Volunteer', primaryHref: '#vo-find',
+          secondaryLabel: 'Donate', secondaryHref: 'donate.html',
+          image: img(mobile ? 'volunteer-m-hero.jpg' : 'volunteer-hero.jpg'),
+          imageAlt: 'Volunteers in hairnets carry boxes and pack meals at long tables in a warehouse.'
+        }),
+
+        /* 2 · Find a packing event */
+        h('section', { className: 'vo-section', 'aria-labelledby': 'vo-find' },
+          h('div', { className: 'vo-inner vo-stack' },
+            h(Header, { id: 'vo-find', heading: 'Find a packing event',
+              supporting: 'Eight permanent sites pack Monday through Saturday year-round. FMSC MobilePack™ events run for a few days at a time, and registration usually opens four to six weeks ahead.' }),
+            h(Finder),
+            h('div', { className: 'vo-host' },
+              h('div', { className: 'vo-host__copy' },
+                h('h3', { className: hx('heading-h4') }, 'Host your own MobilePack™ event'),
+                h('p', { className: 'body-base' }, 'An FMSC MobilePack™ event brings the packing line to your church, school or town. Hosting means funding 100,000 MannaPack® meals, recruiting volunteers to pack them and providing a venue FMSC approves. Start about 12 weeks ahead of the date you want.')),
+              h(F.Button, { variant: 'primary', size: 'medium', href: 'host-mobilepack.html' }, 'Host an FMSC MobilePack™ event')))),
+
+        /* 3 · What a shift looks like */
+        h('section', { className: 'vo-section vo-section--subtle', 'aria-labelledby': 'vo-shift' },
+          h('div', { className: 'vo-inner vo-stack' },
+            h(Header, { id: 'vo-shift', heading: 'What a shift looks like',
+              supporting: 'A shift lasts two hours including orientation. Arrive 10–15 minutes early to check in.' }),
+            /* Mobile frame: photo first, then the steps and What to wear. */
+            mobile ? h(Fragment, null, shiftPhoto(true), steps, wearBlock)
+              : h(F.LayoutSplit, { align: 'stretch', className: 'vo-split--wide-left' },
+                  h('div', { className: 'vo-left' }, steps, wearBlock),
+                  shiftPhoto(false)))),
+
+        /* 4 · Who can pack */
+        h('section', { className: 'vo-section', 'aria-labelledby': 'vo-who' },
+          h('div', { className: 'vo-inner vo-stack' },
+            h(Header, { id: 'vo-who', heading: 'Who can pack',
+              supporting: 'The minimum age is 5. Children under 5 aren’t allowed in the packing area, and there are no exceptions. Everyone under 18 packs alongside an adult who packs too.' }),
+            h(F.LayoutSplit, { align: 'start', className: 'vo-split--wide-right' },
+              h('div', { className: 'vo-block' },
+                h('h3', { className: hx('heading-h3') }, 'Adult-to-student ratios'),
+                h('div', { className: 'vo-table' },
+                  /* Figma mobile keeps the two-column table; the DS Mobile variant stacks rows into cards. */
+                  h(F.DataTable, {
+                    breakpoint: 'desktop',
+                    caption: 'Adult-to-student ratios by grade', showPagination: false,
+                    columns: [{ key: 'grades', label: 'Grades', cells: 'strong', width: '50%' }, { key: 'ratio', label: 'Students per adult', cells: 'text', width: '50%' }],
+                    rows: [{ grades: 'K–2', ratio: '1' }, { grades: '3–6', ratio: '3' }, { grades: '7–12', ratio: '4' }]
+                  })),
+                h('p', { className: 'vo-note body-small' }, 'FMSC recommends third grade and up for youth groups. High school groups need at least half their chaperones to be non-student adults — teachers, advisers or parents — and a few 18-year-olds can fill in.')),
+              h('div', { className: 'vo-block' },
+                h('h3', { className: hx('heading-h3') }, 'What to know'),
+                h('ul', { className: 'vo-list body-base' }, know.map(function (k) {
+                  return h('li', { key: k[0] }, h('span', null, h('strong', { className: 'label-base' }, k[0]), ' ', k[1]));
+                })))))),
+
+        /* 5 · Bring a group */
+        h('section', { className: 'vo-section vo-section--subtle', 'aria-labelledby': 'vo-group' },
+          h('div', { className: 'vo-inner vo-stack' },
+            h('div', { className: 'vo-group-head' },
+              h(Header, { id: 'vo-group', heading: 'Bring a group',
+                supporting: 'We’d love to host your group to pack food. Working together helps us get to know each other and bond over our shared experience and impact.' }),
+              h(F.Button, { variant: 'primary', size: 'medium', href: 'signup-1.html?path=b' }, 'Start a group reservation')),
+            h('div', { className: 'vo-signup' },
+              mobile ? h('h3', { id: 'vo-signup', className: 'heading-h4-mobile' }, 'How group sign up works')
+                : h(Header, { id: 'vo-signup', heading: 'How group sign up works', level: 3 }),
+              h('ol', { className: 'vo-signup__steps' }, groupSteps.map(function (s, i) {
+                return h(Step, { key: s[0], number: String(i + 1), title: s[0], description: s[1], titleAs: 'h4' });
+              }))),
+            h('div', { className: 'vo-audience' },
+              h(F.LayoutGrid, { columns: 4 }, audiences.map(function (a) {
+                return h(F.BadgeCard, { key: a[0], container: 'card', align: 'left', illustration: img(a[2]), title: a[0], body: a[1], linkLabel: a[3], linkHref: a[4] });
+              }))))),
+
+        /* 6 · Common questions */
+        h(F.SectionFAQ, {
+          breakpoint: 'auto',
+          className: 'vo-faq',
+          header: { align: 'left', showEyebrow: false, showSupporting: false, heading: 'Common questions' },
+          items: faqItems, showLink: true, linkLabel: 'See all FMSC FAQs', linkHref: '#'
+        }),
+
+        /* 7 · CTA band */
+        h(F.CTABand, {
+          breakpoint: 'auto',
+          className: 'vo-cta',
+          eyebrow: '',
+          headline: 'Be someone’s miracle.',
+          subtext: 'Create an FMSC account to keep your shift reservations, volunteer hours, family members, donations, and tax receipts in one place. Every gift, shift, and purchase adds to one lifetime total.',
+          primaryLabel: 'Track your Impact', primaryHref: 'create-account.html',
+          secondaryLabel: 'Sign In', secondaryHref: 'sign-in.html',
+          showTrustStrip: true,
+          trustIllustrations: [img('donations-recurring.svg'), img('food-mannapack-bag.svg'), img('volunteers-celebrate.svg')]
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        /* Figma footer copy differs from the DS defaults ("Our finances", "Host an FMSC MobilePack™ event"). */
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(VolunteerPage));
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giving · FMSC</title>
+<meta name="description" content="Your FMSC giving: set up a monthly gift, check whether your employer matches gifts, and find every gift and tax statement here.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js.
+     Figma: "Account/Giving — New account" (desktop 4656:66367, mobile 4656:97104). */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .ag-muted { color: var(--content-secondary); }
+  .ag-link { color: var(--content-link); text-decoration: none; }
+  .ag-link:hover { text-decoration: underline; }
+  /* Figma draws the 48px (40px mobile) empty-state icons with a 2px stroke; the DS scales the 24px icon's stroke up. */
+  .fm-empty-state__icon svg * { vector-effect: non-scaling-stroke; }
+
+  /* Monthly gift + Double the Donation: two cards side by side, one column under 800px of content.
+     Figma fixes this row at 427 tall; the monthly gift's empty state grows to fill it and centres its content. */
+  .ag-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(427px, auto); gap: var(--space-lg); align-items: stretch; }
+  @container ac-content (max-width: 799.98px) { .ag-pair { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; } }
+  .ag-monthly > .fm-empty-state { flex: 1 1 auto; justify-content: center; }
+
+  /* 2 · Double the Donation */
+  .ag-source { display: flex; align-items: center; gap: var(--space-2xs); }
+  .ag-source img { flex: none; width: 24px; height: 25px; }
+
+  /* 5 · Questions about your giving: the first (open) item has no rule above it */
+  /* Figma draws the rule above each collapsed item in the layout (+1px each item; the DS uses an inset shadow). */
+  .ag-faq .fm-disclosure-item { box-shadow: none; border-top: 1px solid var(--border-subtle); }
+  .ag-faq .ac-card__header + .fm-disclosure-item { border-top: 0; }
+  /* Figma: chevron at the right edge of the row (the question stays capped at 771px). */
+  .ag-faq .fm-disclosure-item__row { justify-content: space-between; }
+  /* Figma colours the "i" of info@fmsc.org grey (only "nfo@fmsc.org" is link blue); reproduced as drawn. */
+  .ag-faq__email a .ag-muted { color: var(--content-secondary); }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    /* Figma mobile card headers are 56 tall (except "What you've given", 52). */
+    .ac-shell__content .ac-card__header { min-height: 56px; }
+    .ac-shell__content .ag-given .ac-card__header { min-height: 0; }
+    .ag-pair { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; gap: var(--section-gap); }
+    .ag-source { min-height: 40px; }
+    .ag-source p { flex: 1 1 0; min-width: 0; }
+    /* Figma mobile FAQ questions are Heading/H4 mobile (18/24); the DS DisclosureItem has no mobile type. */
+    .ag-faq .fm-disclosure-item__question { font-size: 18px; line-height: 24px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+  var img = function (n) { return 'img/' + n; };
+
+  /* Same questions and answers as the Giving page (Figma shows the first one open). */
+  var faqs = [
+    ['A gift is missing from this list', 'Gifts by check or stock can take up to three weeks to appear. Gifts made under a different email or name are matched when we can, and sometimes we cannot — tell us and we will link them.'],
+    ['Does this work as my tax statement?', 'No. Use the year-end statement above, which carries our tax ID and excludes anything not deductible.'],
+    ['I need to correct the name or address on a past gift', 'Email donor care with the gift date and amount. The receipt is reissued with the correction.'],
+    ['What happens to a gift I designated to a program?', 'It funds that program first. If that program is already fully funded, the gift goes where the need is greatest rather than sitting unused.'],
+    /* Figma's answer ends in a "[CONFIRM]" placeholder; kept exactly as drawn. */
+    ['Who do I contact about one particular gift?', 'Donor care, at donorcare@fmsc.org or 763-504-2919. Quote the gift date and amount. [CONFIRM]']
+  ];
+
+  function Giving() {
+    var mobile = F.useIsMobile();
+    var q = React.useState(''), employer = q[0], setEmployer = q[1];
+    return h(window.AccountShell, { current: 'giving' },
+
+      /* Account page header. Figma mobile adds the one-line description; desktop shows the title only. */
+      h(F.AccountPageHeader, { breakpoint: 'auto', title: 'Your giving', showBreadcrumb: false, showTag: false, showStats: false, showAction: false,
+        showDescription: mobile, description: 'No gifts yet.' }),
+
+      /* 1 · Your monthly gift + 2 · Employer lookup */
+      h('div', { className: 'ag-pair' },
+        h(UI.Card, { className: 'ag-monthly', mask: img('donations-recurring.svg'), title: 'Your monthly gift' },
+          h(F.EmptyState, { breakpoint: 'auto', illustration: img('donations-recurring.svg'), headline: 'No monthly gift set up',
+            supportingText: '$29 a month covers about 100 meals. You can change or stop it whenever you want.',
+            primaryLabel: 'Set up a monthly gift', primaryHref: 'donate.html?freq=monthly#do-give',
+            secondaryLabel: 'Give once instead', secondaryHref: 'donate.html?freq=once#do-give' })),
+        h(UI.Card, { icon: 'search', title: 'Double the Donation' },
+          h('p', { className: 'body-base ag-muted' }, 'Thousands of employers match their staff’s giving, and many match volunteer hours too.'),
+          h(F.Search, { label: 'Search for company', placeholder: 'Search for company', value: employer,
+            onChange: function (e) { setEmployer(e.target.value); }, onClear: function () { setEmployer(''); } }),
+          h('div', { className: 'ag-source' },
+            h('img', { src: img('donate-double-the-donation.svg'), alt: '' }),
+            h('p', { className: 'body-small ag-muted' }, 'All information provided by Double the Donation')))),
+
+      /* 3 · What you've given */
+      h(UI.Card, { className: 'ag-given', icon: 'file-text', title: 'What you’ve given' },
+        h(F.EmptyState, { breakpoint: 'auto', icon: 'file-text', headline: 'No gifts yet',
+          supportingText: 'Every gift shows up here with the date, the amount and how many meals it paid for.',
+          showSecondary: false, primaryLabel: 'Give a gift', primaryHref: 'donate.html' })),
+
+      /* 4 · Receipts and tax statements */
+      h(UI.Card, { icon: 'certificate', title: 'Receipts and tax statements' },
+        h(F.EmptyState, { breakpoint: 'auto', icon: 'certificate', headline: 'No statements yet',
+          supportingText: 'Your first statement covers the year you gave, and lands in January.', showActions: false })),
+
+      /* 5 · Questions about your giving */
+      h(UI.Card, { className: 'ag-faq', icon: 'message', title: 'Questions about your giving' },
+        faqs.map(function (f, i) {
+          return h(F.DisclosureItem, { key: f[0], question: f[0], answer: f[1], defaultExpanded: i === 0 });
+        }),
+        h('p', { className: 'body-base ag-muted ag-faq__email' }, 'Please email ', h('a', { className: 'ag-link fm-focusable', href: 'mailto:info@fmsc.org' }, h('span', { className: 'ag-muted' }, 'i'), 'nfo@fmsc.org'), ' with any additional questions.')));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Giving));
+</script>
+</body>
+</html>

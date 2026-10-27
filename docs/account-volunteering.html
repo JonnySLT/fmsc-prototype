@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volunteering · FMSC</title>
+<meta name="description" content="Your FMSC volunteering: hours and shifts packed, your shift history and a downloadable record of your volunteer hours.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+
+  /* 6 · Shift history: card header and the two filters share one row (Figma "Filters"). */
+  .av-filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); padding-bottom: var(--space-sm); }
+  .av-filters .ac-card__header { flex: 1 1 auto; min-width: 0; }
+  .av-filter { flex: 0 0 240px; min-width: 0; }
+
+  /* Shift table: Figma frames the table and pager in a 1px border-subtle box. */
+  .av-table { width: 100%; overflow: hidden; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); }
+  .av-table .fm-dtable__table { width: 100%; }
+  /* Figma pads the first column off the header fill (24) and puts each sort indicator at the column's right edge. */
+  .av-table .fm-table-header:first-child, .av-table .fm-table-cell:first-child { padding-left: var(--space-lg); }
+  .av-table .fm-table-header__in, .av-table .fm-table-header__sort { flex: 1 1 auto; justify-content: space-between; }
+  .av-table .fm-table-header__sort { width: 100%; }
+  .av-table .fm-table-cell__link { white-space: nowrap; }
+  /* 44px hit areas without moving the layout: row links and sort buttons. */
+  .av-table .fm-table-cell__link, .av-table .fm-dtable__link { display: inline-block; padding: var(--space-sm) 0; margin: calc(-1 * var(--space-sm)) 0; }
+  .av-table .fm-table-header__sort { padding: calc(var(--space-sm) + var(--space-3xs)) 0; margin: calc(-1 * (var(--space-sm) + var(--space-3xs))) 0; }
+  .av-table .fm-table-cell--tagged .fm-table-cell__in { flex-wrap: wrap; gap: var(--space-xs) var(--space-md); }
+  /* Figma Tag Color=Neutral (the DS tagged cell draws the Brand tag). */
+  .av-table .fm-table-cell__tag, .av-table .fm-dtable__tag { background: var(--background-subtle); box-shadow: inset 0 0 0 1px var(--border-default); color: var(--content-secondary); }
+  /* Figma record rule sits in the layout (+1px each record); the DS draws it as an inset shadow. */
+  .av-table .fm-dtable__record { box-shadow: none; border-bottom: 1px solid var(--border-subtle); }
+  .av-table .fm-dtable__tag { display: inline-flex; padding: var(--space-2xs) var(--space-sm); border-radius: var(--radius-sm); }
+
+  /* 5 · Download an hours record: controls left, record preview right. */
+  .av-hours__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); }
+  .av-hours__main { display: flex; flex-direction: column; gap: var(--space-sm); min-width: 0; }
+  .av-muted { color: var(--content-secondary); }
+  .av-controls { display: flex; flex-direction: column; gap: var(--space-md); max-width: 450px; }
+  .av-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+  .av-include { display: flex; flex-direction: column; gap: var(--space-xs); }
+  .av-people { display: flex; flex-direction: column; gap: var(--space-xs); }
+  .av-person { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); padding: var(--space-xs) 0; }
+  .av-person + .av-person { padding-top: var(--space-md); border-top: 1px solid var(--border-subtle); }
+  .av-person .fm-checkbox { flex: none; }
+  .av-person__hours { flex: none; color: var(--content-secondary); }
+  .av-record-actions { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); padding-top: var(--space-md); }
+  /* Figma sets the whole contact line in grey caption text; the address stays a mailto link but looks like the line. */
+  .av-record-actions p a { color: inherit; text-decoration: none; }
+  .av-record-actions p a:hover { text-decoration: underline; }
+
+  /* Record preview (desktop only in Figma). */
+  .av-preview { display: flex; flex-direction: column; gap: var(--space-xs); padding-top: var(--space-2xl); min-width: 0; }
+  .av-sheet { flex: 1 1 auto; display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-lg); background: var(--background-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+  .av-sheet__rule { height: 1px; background: var(--border-subtle); }
+  .av-sheet__line { display: flex; justify-content: space-between; gap: var(--space-sm); color: var(--content-secondary); }
+  .av-sheet__line span:last-child { flex: none; }
+
+  /* Content column under 760px (roughly 820px viewport and narrower): filters drop under the title, the record preview stacks. */
+  @container ac-content (max-width: 759.98px) {
+    .av-filters .ac-card__header { flex-basis: 100%; }
+    .av-filter { flex: 1 1 0; }
+    .av-hours__grid { grid-template-columns: minmax(0, 1fr); }
+    .av-controls { max-width: none; }
+    .av-preview { padding-top: 0; }
+  }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .av-filters { flex-direction: column; align-items: stretch; flex-wrap: nowrap; padding-bottom: var(--space-md); }
+    .av-filter { flex: none; }
+    /* Figma mobile keeps the 12px header padding here (the shell drops it on mobile). */
+    .av-filters .ac-card__header, .av-hours .ac-card__header { padding-bottom: var(--space-sm); }
+    .av-hours .ac-card__header { min-height: 56px; }
+    .av-table { border-radius: var(--radius-xl); }
+    .av-dates { grid-template-columns: minmax(0, 1fr); }
+    /* Figma mobile person rows hug their content (Maya's rule spans her row only). */
+    .av-person { justify-content: flex-start; align-self: flex-start; }
+    .av-record-actions { align-items: stretch; }
+    .av-preview { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+
+  /* SAMPLE DATA (Figma): the usability-test persona Sarah's shifts, groups and hours. */
+  var shifts = [
+    /* The Nov. 15 shift has no event page of its own; it keeps opening the sample event page, as before. */
+    { date: 'Nov. 15, 2026', iso: '2026-11-15', upcoming: true, site: 'FMSC Chanhassen', city: 'Chanhassen, MN', mSite: 'FMSC Chanhassen', group: 'On your own', role: 'Volunteer', href: 'event-upcoming.html?res=sample' },
+    { date: 'Oct. 3, 2026', iso: '2026-10-03', upcoming: true, site: 'FMSC Coon Rapids', city: 'Coon Rapids, MN', mSite: 'FMSC Coon Rapids', group: 'Grace Church Youth Group', role: 'Admin', href: 'event-upcoming.html?res=sample' },
+    { date: 'Aug. 8, 2026', iso: '2026-08-08', site: 'FMSC Coon Rapids', city: 'Coon Rapids, MN', mSite: 'FMSC Coon Rapids', group: 'Grace Church Youth Group', role: 'Admin', href: 'event-past.html?shift=2026-08-08' },
+    { date: 'June 7, 2026', iso: '2026-06-07', site: 'Hope Church MobilePack™ event', city: 'Eagan, MN', mSite: 'Hope Church MobilePack™ event, Eagan, MN', group: 'Hope Church', role: 'Volunteer', href: 'event-past.html?shift=2026-06-07' },
+    { date: 'Feb. 22, 2026', iso: '2026-02-22', site: 'FMSC Chanhassen', city: 'Chanhassen, MN', mSite: 'FMSC Chanhassen', group: 'Grace Church Youth Group', role: 'Volunteer', href: 'event-past.html?shift=2026-02-22' }
+  ];
+  /* Shifts saved in the sign-up flow join the table as Upcoming rows (newest date first, like the table's sort). The Figma
+     count line ("1–5 of 19") counts them too. */
+  var RS = window.FMSCData.reservations;
+  var SAMPLE_TOTAL = 19, PAGE = 5;
+  var saved = RS.list().map(function (r) {
+    var d = RS.describe(r), st = d.site;
+    var mSite = st.kind === 'permanent' ? st.where : st.where + ', ' + st.city;
+    return { date: d.dateLong, iso: d.iso, upcoming: d.upcoming, site: st.where, city: st.city, mSite: mSite,
+      group: r.path === 'a' ? 'On your own' : r.group, role: r.path === 'a' ? 'Volunteer' : 'Admin', href: 'event-upcoming.html?res=' + encodeURIComponent(r.id), saved: true };
+  });
+  var allShifts = shifts.concat(saved).map(function (s, i) { return Object.assign({ order: i }, s); })
+    .sort(function (a, b) { return a.iso < b.iso ? 1 : a.iso > b.iso ? -1 : a.order - b.order; });
+  var groupOptions = ['All groups', 'On your own', 'Grace Church Youth Group', 'Hope Church'];
+  saved.forEach(function (s) { if (groupOptions.indexOf(s.group) < 0) groupOptions.push(s.group); });
+  var record = [
+    ['Aug. 8, 2026 · FMSC Coon Rapids', '2 hours'],
+    ['June 7, 2026 · Hope Church MobilePack™ event', '2 hours'],
+    ['Feb. 22, 2026 · FMSC Chanhassen', '2 hours'],
+    ['Nov. 9, 2025 · FMSC Coon Rapids', '2 hours'],
+    ['Sept. 20, 2025 · FMSC Eagan', '2 hours'],
+    ['Sept. 6, 2025 · FMSC Coon Rapids', '2 hours']
+  ];
+  var people = [
+    { name: 'Sarah Whitfield', hours: '12 hours in date range', checked: true },
+    { name: 'Maya Whitfield', hours: '6 hours in date range', checked: false }
+  ];
+
+  /* Column widths are the Figma 240/250/99/247/108 split of the 944px table, as shares so it narrows with the column. */
+  var columns = [
+    { key: 'date', label: 'Date', cells: 'tagged', width: '25.4%', sort: 'descending' },
+    { key: 'site', label: 'Site', cells: 'stacked', width: '26.5%', sort: 'unsorted' },
+    { key: 'hours', label: 'Hours', cells: 'text', width: '10.5%', sort: 'unsorted', mobileJoin: 'date' },
+    { key: 'group', label: 'Group and role', cells: 'stacked', width: '26.2%', sort: 'unsorted' },
+    { key: 'details', label: 'Details', cells: 'link', width: '11.4%', header: { showLabel: false } }
+  ];
+  /* Records (stacked) view: Figma mobile joins site and city, and lowercases the role after the group. */
+  function rows(records, list) {
+    return list.map(function (s) {
+      return {
+        date: { value: s.date, tag: s.upcoming ? 'Upcoming' : false },
+        site: records ? { value: s.mSite } : { value: s.site, secondary: s.city },
+        hours: '2 hours',
+        group: records ? { value: s.group, secondary: s.role.toLowerCase() } : { value: s.group, secondary: s.role },
+        details: { value: h(React.Fragment, null, 'Event details', h('span', { className: 'fm-visually-hidden' }, ', ' + s.date)), href: s.href }
+      };
+    });
+  }
+
+  function Filter(p) {
+    return h('div', { className: 'av-filter' }, h(F.Dropdown, { label: p.label, options: p.options, value: p.value, onChange: function (nv) { p.onChange(nv); } }));
+  }
+
+  function DateField(p) {
+    return h(F.Dropdown, { label: p.label, showLabel: true, options: p.options, value: p.value, onChange: function (nv) { p.onChange(nv); } });
+  }
+
+  function Person(p) {
+    return h('div', { className: 'av-person' },
+      h(F.Checkbox, { label: window.FMSCData.profile.display(p.name), checked: p.checked, onChange: function (e) { p.onChange(e.target.checked); } }),
+      h('p', { className: 'av-person__hours body-small' }, p.hours));
+  }
+
+  /* Hours record preview: From/To narrow Sarah's record lines and the total; Include names who's on the record.
+     Maya's hours are known only as a total (6 hours, the Figma figure), so she adds to the total but gets no lines. */
+  var MONTHS_AP = window.FMSCData.MONTHS_AP;
+  function isoOf(text) {
+    var m = /^([A-Za-z.]+) (\d{1,2}), (\d{4})/.exec(text); if (!m) return '';
+    return m[3] + '-' + window.FMSCData.pad2(MONTHS_AP.indexOf(m[1]) + 1) + '-' + window.FMSCData.pad2(+m[2]);
+  }
+  var WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+  function hoursText(n) { return n + (n === 1 ? ' hour' : ' hours'); }
+  var MAYA_HOURS = 6;
+
+  function Volunteering() {
+    var mobile = F.useIsMobile();
+    /* The five-column table needs the content column at 1200px and wider; narrower, it shows the stacked records. */
+    var wide = F.useMediaQuery('(min-width: 1200px)');
+    var records = mobile || !wide;
+    /* Year and Group filters narrow the rows this prototype knows (the five Figma rows and saved shifts); with no
+       filter the count keeps the Figma total. */
+    var y = React.useState('All years'), year = y[0], setYear = y[1];
+    var g = React.useState('All groups'), grp = g[0], setGrp = g[1];
+    var filtered = allShifts.filter(function (s) {
+      return (year === 'All years' || s.iso.slice(0, 4) === year) && (grp === 'All groups' || s.group === grp);
+    });
+    var unfiltered = year === 'All years' && grp === 'All groups';
+    var shown = filtered.slice(0, PAGE);
+    var total = unfiltered ? SAMPLE_TOTAL + saved.length : filtered.length;
+    var count = '1–' + shown.length + ' of ' + total;
+    var fr = React.useState('Sept. 1, 2025'), from = fr[0], setFrom = fr[1];
+    var tt = React.useState('June 30, 2026'), to = tt[0], setTo = tt[1];
+    /* Figma draws Maya unchecked on desktop and checked on mobile: until the visitor ticks or unticks her, her box follows
+       the breakpoint. */
+    var inc = React.useState({ 'Sarah Whitfield': true, 'Maya Whitfield': null }), incRaw = inc[0], setInclude = inc[1];
+    var include = Object.assign({}, incRaw, { 'Maya Whitfield': incRaw['Maya Whitfield'] == null ? mobile : incRaw['Maya Whitfield'] });
+    var lo = isoOf(from), hi = isoOf(to);
+    /* Figma's default preview (Sept. 1, 2025 to June 30, 2026) also lists the Aug. 8, 2026 shift; the default range keeps
+       the frame as drawn, and any other range filters by date. */
+    var figmaRange = from === 'Sept. 1, 2025' && to === 'June 30, 2026';
+    var inRange = figmaRange ? record : record.filter(function (r) { var d = isoOf(r[0]); return d >= lo && d <= hi; });
+    var sarahHours = inRange.length * 2;
+    var lines = include['Sarah Whitfield'] ? inRange : [];
+    var total = (include['Sarah Whitfield'] ? sarahHours : 0) + (include['Maya Whitfield'] ? MAYA_HOURS : 0);
+    var named = people.filter(function (p) { return include[p.name]; }).map(function (p) { return window.FMSCData.profile.display(p.name); });
+    var who = named.length ? named.join(' and ') : 'No one selected';
+    var hoursFor = { 'Sarah Whitfield': hoursText(sarahHours) + ' in date range', 'Maya Whitfield': people[1].hours };
+    var nLines = lines.length;
+    var previewLabel = 'Preview of the record: ' + who + ', ' + from + ' to ' + to + ', ' + (WORDS[nLines] || nLines) + (nLines === 1 ? ' shift' : ' shifts') + ', ' + hoursText(total) + ' in total';
+    return h(window.AccountShell, { current: 'volunteering' },
+
+      /* Account page header */
+      h(F.AccountPageHeader, {
+        breakpoint: 'auto', title: 'Your volunteering', showStats: true, showStat3: true,
+        stats: [{ value: '12', label: 'hours in 2026' }, { value: '6', label: 'shifts packed in 2026' }, { value: '34', label: 'hours since 2019' }]
+      }),
+
+      /* 6 · Shift history */
+      h('section', { className: 'ac-card av-shifts', 'aria-labelledby': 'av-shifts-title' },
+        h('div', { className: 'av-filters' },
+          h(UI.CardHeader, { icon: 'list-check', title: 'Shifts', id: 'av-shifts-title' }),
+          h(Filter, { label: 'Year', options: ['All years', '2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019'], value: year, onChange: setYear }),
+          h(Filter, { label: 'Group', options: groupOptions, value: grp, onChange: setGrp })),
+        shown.length
+          ? h(F.DataTable, {
+              breakpoint: records ? 'mobile' : 'desktop', className: 'av-table', caption: 'Your shifts',
+              columns: columns, rows: rows(records, shown), count: count,
+              pagination: { ariaLabel: 'Shift pages', previousLabel: 'Previous shifts', nextLabel: 'Next shifts' }
+            })
+          : h('p', { className: 'body-base av-muted', role: 'status' }, 'No shifts match these filters. Try another year or group.')),
+
+      /* 5 · Download an hours record */
+      h('section', { className: 'ac-card av-hours', 'aria-labelledby': 'av-hours-title' },
+        h('div', { className: 'av-hours__grid' },
+          h('div', { className: 'av-hours__main' },
+            h(UI.CardHeader, { icon: 'download', title: 'Download an hours record', id: 'av-hours-title' }),
+            h('p', { className: 'body-base av-muted' }, 'A PDF listing your shifts, the dates and the hours on each.'),
+            h('div', { className: 'av-controls' },
+              h('div', { className: 'av-dates' },
+                h(DateField, { label: 'From', value: from, onChange: setFrom, options: ['Jan. 1, 2019', 'Jan. 1, 2025', 'Sept. 1, 2025', 'Jan. 1, 2026'] }),
+                h(DateField, { label: 'To', value: to, onChange: setTo, options: ['Dec. 31, 2025', 'June 30, 2026', 'Dec. 31, 2026'] })),
+              h('div', { className: 'av-include', role: 'group', 'aria-labelledby': 'av-include-label' },
+                h('p', { className: 'label-small', id: 'av-include-label' }, 'Include'),
+                h('div', { className: 'av-people' }, people.map(function (p) {
+                  return h(Person, { key: p.name, name: p.name, hours: hoursFor[p.name], checked: !!include[p.name],
+                    onChange: function (v) { var n = Object.assign({}, include); n[p.name] = v; setInclude(n); } });
+                }))),
+              h('div', { className: 'av-record-actions' },
+                h(F.Button, { variant: 'secondary', size: 'medium', href: '#', fullWidth: mobile }, 'Download your hours'),
+                h('p', { className: 'caption av-muted' }, 'Need something this record doesn’t cover? Email ',
+                  h('a', { className: 'fm-focusable', href: 'mailto:volunteer@fmsc.org' }, 'volunteer@fmsc.org'))))),
+          mobile ? null : h('div', { className: 'av-preview' },
+            h('div', { className: 'av-sheet', role: 'img', 'aria-label': previewLabel },
+              h('p', { className: 'caption av-muted', 'aria-hidden': 'true' }, 'FEED MY STARVING CHILDREN'),
+              h('p', { className: 'label-small', 'aria-hidden': 'true' }, 'Record of volunteer service'),
+              h('p', { className: 'caption av-muted', 'aria-hidden': 'true' }, who + ' · ' + from + ' to ' + to),
+              h('div', { className: 'av-sheet__rule' }),
+              lines.map(function (r) {
+                return h('p', { key: r[0], className: 'av-sheet__line caption', 'aria-hidden': 'true' }, h('span', null, r[0]), h('span', null, r[1]));
+              }),
+              h('p', { className: 'caption', 'aria-hidden': 'true' }, 'Total · ' + hoursText(total))),
+            h('p', { className: 'caption av-muted' }, 'Feed My Starving Children is a 501(c)(3), tax ID 41-1601449.')))));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Volunteering));
+</script>
+</body>
+</html>

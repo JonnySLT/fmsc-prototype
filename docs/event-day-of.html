@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event details · Today · FMSC</title>
+<meta name="description" content="Your FMSC packing shift today, Saturday, Oct. 3, at FMSC Coon Rapids: check your group in, how to get there, what to expect and who else can join.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js.
+     Built from Figma "Desktop/Event details — Day of" (4656:66009) and "Mobile/Event details — Day of" (4656:96752);
+     the shared blocks (reservation, getting there, what to expect, invite) follow event-upcoming.html. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Event details sit below an account page: Figma "Account shell" here has no subnav rail or account menu. */
+  .ev-page .ac-shell__rail, .ev-page .ac-menu { display: none; }
+  .ev-page .ac-shell__content { padding-left: 0; }
+  .ev-page .ac-shell__inner { gap: 0; }
+
+  .ev-muted { color: var(--content-secondary); }
+  /* Figma breadcrumb and mobile back link use Body/Small Regular (the DS header sets them in Label/Small);
+     the Figma separator chevrons are content-primary (the DS draws them content-secondary). */
+  .ev-page .fm-account-header__crumb, .ev-page .fm-account-header__back { font-weight: 400; }
+  .ev-page .fm-account-header__sep { color: var(--content-primary); }
+  .ev-steps .fm-step-item__number { font-weight: 400; }
+  .ev-invite .fm-invite__track { box-shadow: none; border: 1px solid var(--border-control); }
+  /* "Link for this shift" opens the public event page (prototype link). */
+  .ev-invite .fm-invite__url { cursor: pointer; }
+
+  /* 1 · Reservation summary (Day of: two buttons, each hugging its label) */
+  .ev-res { display: flex; flex-direction: column; gap: var(--space-md); }
+  .ev-when, .ev-lines { display: flex; flex-direction: column; gap: var(--space-2xs); }
+  .ev-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+
+  /* 2 · Check-in */
+  .ev-checkin .ac-card__header { flex-wrap: wrap; }
+  .ev-checkin .ac-card__title { flex: 1 1 0; min-width: 0; }
+  .ev-checkin__status { display: flex; align-items: center; gap: var(--space-sm); }
+  .ev-checkin .fm-banner { min-height: 48px; padding: var(--space-sm) var(--space-container-x); border-radius: var(--radius-xl); }
+  .ev-checkin .fm-banner__copy { flex-wrap: nowrap; }
+  /* Figma banner message is Body/Small (the DS sets Body/Base): the message renders as a body-small span in a flex box. */
+  .ev-checkin .fm-banner__message { min-width: 0; display: flex; }
+  .ev-roster { width: 100%; overflow: hidden; border: 1px solid var(--border-default); border-radius: var(--radius-lg); }
+  .ev-roster .fm-dtable__table { width: 100%; table-layout: fixed; }
+  .ev-roster .fm-table-header:first-child, .ev-roster .fm-table-cell:first-child { padding-left: var(--space-lg); }
+  /* Row links: 44px hit area without moving the row. */
+  .ev-roster .fm-table-cell__link, .ev-roster .fm-dtable__link { display: inline-block; padding: var(--space-sm) 0; margin: calc(-1 * var(--space-sm)) 0; }
+  .ev-roster .fm-table-cell a { color: var(--content-link); text-decoration: none; }
+  .ev-roster .fm-table-cell a:hover { text-decoration: underline; }
+  .ev-roster .fm-table-cell__secondary a { display: inline-block; padding: var(--space-md) 0; margin: calc(-1 * var(--space-md)) 0; }
+  .ev-roster .fm-dtable__record { box-shadow: none; border-bottom: 1px solid var(--border-subtle); }
+  .ev-roster .fm-dtable__line:has(> span:only-child:empty), .ev-roster .fm-dtable__link-wrap:has(> a:empty) { display: none; }
+  /* Figma record: the action (link or button) closes the record; the button row has no extra bottom padding. */
+  .ev-roster .fm-dtable__button { padding-bottom: 0; }
+  .ev-roster .fm-dtable__button:not(:has(.fm-btn__label:not(:empty))) { display: none; }
+
+  /* 3 · Getting there */
+  .ev-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); align-items: start; }
+  .ev-loc { display: flex; flex-direction: column; gap: var(--space-md); min-width: 0; }
+  .ev-addr { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3xs); }
+  .ev-map { position: relative; overflow: hidden; height: 210px; border-radius: 19.56px; background: var(--background-subtle); }
+  .ev-map picture { display: contents; }
+  .ev-map img { width: 100%; height: 100%; object-fit: cover; }
+  .ev-map__pin { position: absolute; left: calc(50% + 15.6px); top: calc(50% - 10.3px); width: 34px; height: 34px; color: var(--brand-primary); }
+  .ev-facts { display: flex; flex-direction: column; gap: var(--space-md); }
+  .ev-fact { display: flex; flex-direction: column; gap: var(--space-3xs); }
+
+  /* 4 · What to expect */
+  .ev-steps { display: flex; flex-direction: column; gap: var(--space-md); list-style: none; padding: 0; margin: 0; }
+  .ev-wear { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); min-width: 0; }
+  .ev-bullets { display: flex; flex-direction: column; gap: var(--space-md); list-style: none; padding: 0; }
+  .ev-bullets li { display: flex; gap: var(--space-sm); color: var(--content-secondary); }
+  .ev-bullets li::before { content: "•"; flex: none; width: 8px; }
+
+  /* 5 · Invite people to this shift */
+  .ev-head { display: flex; flex-direction: column; gap: var(--space-3xs); flex: 1 1 0; min-width: 0; }
+  .ev-invite .ac-card__header { align-items: center; }
+  .ev-group { border: 1px solid var(--border-default); border-radius: var(--radius-md); overflow: hidden; }
+  .ev-group__head { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-lg); background: var(--background-subtle); border-bottom: 1px solid var(--border-default); }
+  .ev-group__titles { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--space-xs); }
+  .ev-toggle { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--content-primary); cursor: pointer; }
+  .ev-toggle:hover { background: var(--background-canvas); }
+  .ev-group--closed .ev-group__head { border-bottom: 0; }
+  .ev-group__body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); padding: var(--space-lg); }
+  .ev-search { width: 360px; max-width: 100%; }
+  .ev-select-all { align-self: stretch; }
+  .ev-people { align-self: stretch; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .ev-people__col { display: flex; flex-direction: column; gap: var(--space-sm); min-width: 0; }
+  .ev-group__body .fm-pagination { padding-left: 0; padding-right: 0; }
+  .ev-invite .fm-invite:not(.fm-invite--mobile) { width: 100%; }
+  .fm-check--disabled .fm-check__input:checked + .fm-check__box { background: var(--border-control); box-shadow: inset 0 0 0 1.5px var(--border-subtle); }
+  .ev-invite-head { display: flex; flex-direction: column; gap: var(--space-3xs); }
+  .ev-invite-head .ev-muted { max-width: 607px; }
+
+  @container ac-content (max-width: 759.98px) {
+    .ev-two, .ev-people { grid-template-columns: minmax(0, 1fr); }
+    .ev-steps + .ev-wear, .ev-loc + .ev-facts { margin-top: var(--space-md); }
+  }
+  @container ac-content (max-width: 639.98px) { .ev-actions { flex-direction: column; } .ev-actions .fm-btn { width: 100%; } }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .ev-page .ac-card__header { padding-bottom: var(--space-sm); }
+    .ev-res { gap: var(--space-xs); }
+    .ev-actions { flex-direction: column; gap: var(--space-md); padding-top: var(--space-xs); }
+    .ev-actions .fm-btn { width: 100%; }
+    .ev-checkin__status { flex-direction: column; align-items: flex-start; gap: 0; }
+    .ev-checkin .fm-banner { min-height: 64px; padding: var(--space-sm) var(--space-md); }
+    .ev-checkin .fm-banner__message { flex: 1 1 0; text-align: left; }
+    .ev-roster { border: 0; border-radius: 0; overflow: visible; }
+    .ev-roster .fm-dtable__record { padding-left: var(--space-md); padding-right: var(--space-md); }
+    .ev-invite.ac-card { gap: var(--space-md); }
+    .ev-invite .ac-card__header { padding-bottom: var(--space-sm); }
+    .ev-group__head { padding: var(--space-md); gap: 0; }
+    .ev-group__body { padding: var(--space-md); }
+    .ev-search { width: 100%; }
+    .ev-group__body .fm-btn { width: 100%; }
+    .ev-map { height: 174px; border-radius: 22.17px; }
+    .ev-map__pin { left: calc(50% + 79.5px); top: calc(50% - 9.3px); width: 28px; height: 28px; }
+    /* Figma mobile Step items: title Heading/H4 mobile (18/24), number Body/Large mobile (17/26). */
+    .ev-steps .fm-step-item__title { font-size: 18px; line-height: 24px; }
+    .ev-steps .fm-step-item__number { font-size: 17px; line-height: 26px; }
+    .ev-steps + .ev-wear { margin-top: 0; }
+    .ev-expect .ev-two { gap: var(--space-sm); }
+    .ev-lines { gap: var(--space-xs); }
+    .ev-loc + .ev-facts { margin-top: 0; }
+    .ev-getting .ev-two { gap: var(--space-md); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+  var D = window.FMSCData;
+  document.body.classList.add('ev-page');
+  function name(n) { return D && D.profile ? D.profile.display(n) : n; }
+
+  /* SAMPLE DATA (Figma): Sarah's shift today, Saturday, Oct. 3, at FMSC Coon Rapids with Grace Church Youth Group.
+     Check-in roster, first page of 8 (4 already checked in). */
+  var roster = [
+    { name: 'Caleb Okafor', role: 'Under 18 · guest', status: 'Waiting on guardian', link: 'Resend request' },
+    { name: 'Carol Whitfield', role: 'Guest · no FMSC account', status: 'Needs a signed waiver', link: 'Send waiver' },
+    { name: 'Jake Sorensen', role: 'Member', phone: '763-555-0164', email: 'jake.sorensen@gmail.com', status: 'Not checked in yet', canCheck: true },
+    { name: 'Priya Nair', role: 'Member', phone: '651-555-0179', email: 'priya.nair@gmail.com', status: 'Not checked in yet', canCheck: true },
+    { name: 'Sarah Whitfield', role: 'Admin · you', phone: (D && D.profile ? D.profile.fieldOr('phone', '612-555-0187') : '612-555-0187'),
+      email: (D && D.profile ? D.profile.primaryEmail() : 'sarah.whitfield@gmail.com'), status: 'Checked in', checked: true }
+  ];
+  /* Figma column widths 508/260/200/180 of the 1148px table, as shares. */
+  var columns = [
+    { key: 'name', label: 'Name', cells: 'stacked', width: '44.3%' },
+    { key: 'contact', label: 'Contact', cells: 'stacked', width: '22.6%' },
+    { key: 'status', label: 'Status', cells: 'stacked', width: '17.4%' },
+    { key: 'action', label: 'Action', cells: 'link', width: '15.7%', header: { showLabel: false } }
+  ];
+  var mColumns = [
+    { key: 'name', label: 'Name', cells: 'text' },
+    { key: 'role', label: 'Role', cells: 'text' },
+    { key: 'contact', label: 'Contact', cells: 'text' },
+    { key: 'status', label: 'Status', cells: 'text' },
+    { key: 'action', label: 'Action', cells: 'link' },
+    /* The DS mobile record takes one cell type per column, so the Check in button gets its own column. */
+    { key: 'check', label: 'Check in', cells: 'button' }
+  ];
+
+  var group = [
+    [{ name: 'Dana Reyes', desc: 'Admin · next shift Nov. 14', base: 'Admin', open: true },
+     { name: 'Priya Nair', desc: 'Member · has a spot' },
+     { name: 'Sarah Whitfield', desc: 'Admin · you · has a spot' },
+     { name: 'Tom Whitfield', desc: 'Member · has a spot' }],
+    [{ name: 'Ben Ortiz', desc: 'Member · has a spot' },
+     { name: 'Jake Sorensen', desc: 'Member · has a spot' },
+     { name: 'Carol Whitfield', desc: 'Guest · no FMSC account · has a spot' },
+     { name: 'Maya Whitfield', desc: 'Under 18 · your child · has a spot' }]
+  ];
+  var people = group[0].concat(group[1]);
+  var steps = [
+    ['Check in', 'Check in on this page or at the front desk, then stow your things in a locker and find your table. Say hello to your team and members of our staff.'],
+    ['Orientation', 'Get a briefing on how the line works and where the food goes. Everyone goes through it, including volunteers who have packed before.'],
+    ['Pack MannaPack® meals', 'You\'ll wear a hairnet. Scoop rice, soy, dried vegetables and a vitamin blend into a bag, weigh it, seal it, pass it down the line.'],
+    ['Box and stack', 'Sealed bags go into boxes and the boxes get stacked on pallets, ready for a food distribution partner to ship.']
+  ];
+  var wear = ['Clean, comfortable clothes.', 'Closed-toed shoes if you\'re working in the warehouse.', 'No jewelry in the packing room — FDA rules for food production.', 'Wedding bands and medical alert bracelets are fine.', 'FMSC hands out the hairnets.', 'Lockers are limited, so leave what you can at home.'];
+  var arrival = [
+    ['Entrance', 'Use the east entrance, under the blue awning. The main doors stay locked outside office hours.'],
+    ['Parking', 'Park anywhere in the front lot. Leave the row nearest the loading dock clear — trucks use it during shifts.'],
+    ['Doors', 'Doors open 8:45 a.m. for a 9 a.m. start. Come 10 or 15 minutes early to check in and find your table.'],
+    ['Accessibility', 'Step-free entrance and accessible restrooms. Seated packing is available at every table — ask when you check in.'],
+    ['Site phone', '763-951-7308']
+  ];
+  var SPOTS = 12, CLAIMED = 8, CHECKED_TOTAL = 8, CHECKED_OTHERS = 3; /* 4 of 8 checked in: Sarah plus 3 on page 2 */
+
+  /* ---------- Check-in roster ---------- */
+  function rosterRows(records, checked, onCheck) {
+    return roster.map(function (p) {
+      var done = p.checked || checked[p.name];
+      var status = done ? 'Checked in' : p.status;
+      var label = name(p.name);
+      if (records) {
+        return { name: label, role: p.role, contact: p.phone ? p.phone + ' · ' + p.email : '', status: status,
+          action: p.link ? { value: p.link, href: '#' } : '',
+          check: p.canCheck && !done ? { buttonLabel: 'Check in', onClick: function () { onCheck([p.name]); } } : { value: '' } };
+      }
+      var action;
+      if (p.link) action = { value: h(React.Fragment, null, p.link, h('span', { className: 'fm-visually-hidden' }, ' for ' + label)), href: '#' };
+      else if (p.canCheck && !done) action = { type: 'button', buttonLabel: 'Check in', onClick: function () { onCheck([p.name]); } };
+      else action = { value: ' ', type: 'text' };
+      return {
+        name: { value: label, secondary: p.role },
+        contact: p.phone ? { value: p.phone, secondary: h('a', { className: 'fm-focusable', href: 'mailto:' + p.email }, p.email) } : { value: '', type: 'text' },
+        status: { value: status, type: 'text' },
+        action: action
+      };
+    });
+  }
+
+  /* ---------- Invite: group list (same behaviour as event-upcoming.html) ---------- */
+  function Person(p) {
+    if (!p.open) return h(F.Checkbox, { label: name(p.name), description: p.desc, checked: true, disabled: true });
+    return h(F.Checkbox, { label: name(p.name), description: p.desc, checked: !!p.picked, disabled: !p.picked && p.full ? true : undefined,
+      onChange: function (e) { p.onToggle(p.name, e.target.checked); } });
+  }
+  function GroupList(p) {
+    var mobile = p.mobile;
+    var o = React.useState(true), open = o[0], setOpen = o[1];
+    var pk = React.useState({}), picked = pk[0], setPicked = pk[1];
+    var q = React.useState(''), query = q[0], setQuery = q[1];
+    var everyone = p.people.map(function (x) { return p.addedNow[x.name] ? Object.assign({}, x, { open: false, desc: (x.base || x.desc) + ' · has a spot' }) : x; });
+    var listed = mobile ? everyone.slice(0, 5) : everyone;
+    var openPeople = listed.filter(function (x) { return x.open; });
+    var room = Math.max(0, p.room);
+    var nPicked = openPeople.filter(function (x) { return picked[x.name]; }).length;
+    var all = openPeople.length > 0 && openPeople.every(function (x) { return picked[x.name]; });
+    var needle = query.trim().toLowerCase();
+    function hit(x) { return !needle || name(x.name).toLowerCase().indexOf(needle) >= 0; }
+    function toggle(n, v) { var m = Object.assign({}, picked); m[n] = v; setPicked(m); }
+    function toggleAll(v) { var m = {}; openPeople.forEach(function (x, i) { m[x.name] = v && i < room; }); setPicked(m); }
+    function add() {
+      var names = openPeople.filter(function (x) { return picked[x.name]; }).slice(0, room).map(function (x) { return x.name; });
+      if (names.length) { p.onAdd(names); setPicked({}); }
+    }
+    var waiting = everyone.filter(function (x) { return x.open; }).length;
+    var status = waiting === 1 ? '1 person doesn’t have a spot yet.' : waiting ? waiting + ' people don’t have a spot yet.' : 'Everyone in this list has a spot.';
+    var bodyId = 'ev-group-body';
+    function person(x) { return h(Person, Object.assign({ key: x.name, picked: picked[x.name], full: nPicked >= room, onToggle: toggle }, x)); }
+    var half = Math.ceil(everyone.length / 2);
+    var cols = [everyone.slice(0, half), everyone.slice(half)].map(function (c) { return c.filter(hit); });
+    var none = !listed.filter(hit).length;
+    return h('div', { className: 'ev-group' + (open ? '' : ' ev-group--closed') },
+      h('div', { className: 'ev-group__head' },
+        h('div', { className: 'ev-group__titles' },
+          h('h3', { className: 'label-base', id: 'ev-group-title' }, 'From Grace Church Youth Group'),
+          h('p', { className: 'body-small ev-muted', 'aria-live': 'polite' }, status)),
+        h('button', { type: 'button', className: 'ev-toggle fm-focusable', 'aria-expanded': open ? 'true' : 'false', 'aria-controls': bodyId,
+          'aria-label': (open ? 'Collapse' : 'Expand') + ' group list', onClick: function () { setOpen(!open); } },
+          h(F.Icon, { name: open ? 'chevron-up' : 'chevron-down', size: 24 }))),
+      open ? h('div', { className: 'ev-group__body', id: bodyId, role: 'group', 'aria-labelledby': 'ev-group-title' },
+        h('div', { className: 'ev-search' }, h(F.Search, { label: 'Find someone in your group', placeholder: 'Find someone in your group', value: query,
+          onChange: function (e) { setQuery(e.target.value); }, onClear: function () { setQuery(''); } })),
+        mobile
+          ? h('div', { className: 'ev-people__col ev-select-all' },
+              h(F.Checkbox, { label: 'Select all', description: 'Only people who can still join', checked: all, onChange: function (e) { toggleAll(e.target.checked); } }),
+              listed.filter(hit).map(person))
+          : h(React.Fragment, null,
+              h('div', { className: 'ev-select-all' }, h(F.Checkbox, { label: 'Select all', description: 'Only people who can still join', checked: all, onChange: function (e) { toggleAll(e.target.checked); } })),
+              none ? null : h('div', { className: 'ev-people' }, cols.map(function (col, i) {
+                return h('div', { key: i, className: 'ev-people__col' }, col.map(person));
+              }))),
+        none ? h('p', { className: 'body-small ev-muted', role: 'status' }, 'No one in this list matches “' + query.trim() + '”.') : null,
+        h(F.Pagination, { count: mobile ? '1–5 of 9 people' : '1–8 of 9 people', ariaLabel: 'Group member pages', previousLabel: 'Previous people', nextLabel: 'Next people' }),
+        h(F.Button, { variant: 'secondary', size: 'medium', type: 'button', onClick: add }, 'Add selected')) : null);
+  }
+
+  /* "Link for this shift" opens the public event page (Jonny, Oct. 27, 2026). The field stays a read-only input
+     (DS Invite); a click or Enter on it navigates. */
+  function linkToSummary(e) {
+    var t = e.target;
+    if (!t || !t.classList || !t.classList.contains('fm-invite__url')) return;
+    if (e.type === 'keydown' && e.key !== 'Enter') return;
+    location.href = 'event-summary.html';
+  }
+
+  function DayOf() {
+    var mobile = F.useIsMobile();
+    var wide = F.useMediaQuery('(min-width: 1024px)');
+    var records = mobile || !wide;
+    var h4 = mobile ? 'heading-h4-mobile' : 'heading-h4';
+    var h3 = mobile ? 'heading-h3-mobile' : 'heading-h3';
+    var ck = React.useState({}), checked = ck[0], setChecked = ck[1];
+    function onCheck(names) { var n = Object.assign({}, checked); names.forEach(function (x) { n[x] = true; }); setChecked(n); }
+    var nChecked = 1 + CHECKED_OTHERS + roster.filter(function (p) { return checked[p.name]; }).length;
+    var checkable = roster.filter(function (p) { return p.canCheck && !checked[p.name]; }).map(function (p) { return p.name; });
+    var ad = React.useState([]), addedNow = ad[0], setAddedNow = ad[1];
+    var addedMap = {}; addedNow.forEach(function (n) { addedMap[n] = true; });
+    var claimed = CLAIMED + addedNow.length, openSpots = SPOTS - claimed;
+    function onAdd(names) { setAddedNow(addedNow.concat(names.filter(function (n) { return !addedMap[n]; }))); }
+    var status = openSpots > 0
+      ? openSpots + ' of ' + SPOTS + ' spots are open. Anyone you invite joins Grace Church Youth Group and takes one of these spots.'
+      : 'All ' + SPOTS + ' spots are claimed. Add spots from your reservation to invite more people.';
+    var ref = React.useRef(null);
+    React.useEffect(function () {
+      var el = ref.current && ref.current.querySelector('.fm-invite__url');
+      if (el) { el.setAttribute('title', 'Open the event page'); el.setAttribute('aria-description', 'Press Enter to open the event page'); }
+    });
+
+    return h(window.AccountShell, { current: 'volunteering' },
+
+      h(F.AccountPageHeader, {
+        breakpoint: 'auto', title: 'Event details for Saturday, Oct. 3', showBreadcrumb: true,
+        breadcrumb: [{ label: 'My account', href: 'account-dashboard.html' }, { label: 'Volunteering', href: 'account-volunteering.html' }, { label: 'Event details' }],
+        backTo: { label: 'Volunteering', href: 'account-volunteering.html' },
+        showTag: true, tagLabel: 'Today',
+        showDescription: true, description: 'FMSC Coon Rapids · 9–11 a.m. · with Grace Church Youth Group'
+      }),
+
+      /* 1 · Reservation summary */
+      h('section', { className: 'ac-card', 'aria-label': 'Your reservation' },
+        h('div', { className: 'ev-res' },
+          h('div', { className: 'ev-when' },
+            h('p', { className: 'label-small' }, 'Oct. 3'),
+            h('h2', { className: mobile ? h4 : h3 }, 'Coon Rapids, MN')),
+          h('div', { className: 'ev-lines' },
+            h('p', { className: 'body-base ev-muted' }, 'Arrive 8:45 a.m. · packing 9–11 a.m.'),
+            h('p', { className: 'body-base ev-muted', 'aria-live': 'polite' }, claimed + ' of ' + SPOTS + ' spots claimed')),
+          h('div', { className: 'ev-actions' },
+            h(F.Button, { variant: 'secondary', size: 'medium', icon: 'settings', href: 'signup-1.html?path=b&site=coon-rapids' }, 'Change reservation'),
+            /* Cancel reservation is inert (Jonny, Oct. 22, 2026). */
+            h(F.Button, { variant: 'secondary', size: 'medium', icon: 'calendar-x', href: '#' }, 'Cancel reservation')))),
+
+      /* 2 · Check-in */
+      h('section', { className: 'ac-card ev-checkin', 'aria-labelledby': 'ev-checkin-title' },
+        h('div', { className: 'ac-card__header' },
+          h(UI.Badge, { icon: 'user-check' }),
+          h('h2', { className: 'ac-card__title ' + h4, id: 'ev-checkin-title' }, 'Check-in'),
+          mobile ? null : h('div', { className: 'ev-checkin__status' },
+            h('p', { className: 'label-small', 'aria-live': 'polite' }, nChecked + ' of ' + CHECKED_TOTAL + ' checked in'),
+            h(F.ArrowLink, { label: 'Check in everyone in my group', showArrow: false, href: '#', onClick: function (e) { e.preventDefault(); onCheck(checkable); } }))),
+        mobile ? h('div', { className: 'ev-checkin__status' },
+          h('p', { className: 'label-small', 'aria-live': 'polite' }, nChecked + ' of ' + CHECKED_TOTAL + ' checked in'),
+          h(F.ArrowLink, { label: 'Check in everyone in my group', showArrow: false, href: '#', onClick: function (e) { e.preventDefault(); onCheck(checkable); } })) : null,
+        h(F.Banner, { tone: 'brand', icon: 'map-pin', message: h('span', { className: 'body-small' }, 'You’re at FMSC Coon Rapids. Check-in is open.'), showAction: false, showDismiss: false, ariaLabel: 'Check-in status' }),
+        h(F.DataTable, {
+          breakpoint: records ? 'mobile' : 'desktop', className: 'ev-roster', caption: 'Check-in',
+          columns: records ? mColumns : columns, rows: rosterRows(records, checked, onCheck), count: '1–5 of 8 people',
+          pagination: { ariaLabel: 'People pages', previousLabel: 'Previous people', nextLabel: 'Next people' }
+        })),
+
+      /* 3 · Getting there */
+      h(UI.Card, { icon: 'map-pin', title: 'Getting there', id: 'ev-getting', className: 'ev-getting' },
+        h('div', { className: 'ev-two' },
+          h('div', { className: 'ev-loc' },
+            h('div', { className: 'ev-addr' },
+              h('p', { className: 'label-small' }, 'FMSC Coon Rapids'),
+              h('p', { className: 'body-base ev-muted' }, '401 93rd Ave. NW'),
+              h('p', { className: 'body-base ev-muted' }, 'Coon Rapids, MN 55433'),
+              h(F.ArrowLink, { type: 'external', label: 'Get directions', href: '#' })),
+            h('div', { className: 'ev-map' },
+              h('picture', null,
+                h('source', { media: '(max-width: 599.98px)', srcSet: 'img/ev-map-coon-rapids-mobile.svg' }),
+                h('img', { src: 'img/ev-map-coon-rapids-desktop.svg', alt: 'Map of the streets around FMSC Coon Rapids, with a pin on the site' })),
+              h(F.Icon, { name: 'map-pin', size: 34, className: 'ev-map__pin' }))),
+          h('div', { className: 'ev-facts' }, arrival.map(function (a) {
+            return h('div', { key: a[0], className: 'ev-fact' },
+              h('h3', { className: 'label-small' }, a[0]),
+              h('p', { className: 'body-base ev-muted' }, a[1]));
+          })))),
+
+      /* 4 · What to expect */
+      h(UI.Card, { icon: 'list-check', title: 'What to expect', id: 'ev-expect', className: 'ev-expect' },
+        h('div', { className: 'ev-two' },
+          h('ol', { className: 'ev-steps' }, steps.map(function (s, i) {
+            return h(F.StepItem, { key: s[0], as: 'li', indicator: 'number', number: String(i + 1), title: s[0], description: s[1], titleAs: 'h3' });
+          })),
+          h('div', { className: 'ev-wear' },
+            h('h3', { className: h3 }, 'What to wear'),
+            h('ul', { className: 'ev-bullets body-base' }, wear.map(function (w) { return h('li', { key: w }, w); })),
+            h(F.ArrowLink, { label: 'Read the volunteering policies', href: '#' })))),
+
+      /* 5 · Invite people to this shift */
+      h('section', { className: 'ac-card ev-invite', 'aria-labelledby': 'ev-invite-title', ref: ref, onClick: linkToSummary, onKeyDown: linkToSummary },
+        h('div', { className: 'ac-card__header' },
+          h(UI.Badge, { icon: 'user-plus' }),
+          h('div', { className: 'ev-head' },
+            h('h2', { className: 'ac-card__title ' + h4, id: 'ev-invite-title' }, 'Invite people to this shift'),
+            mobile ? null : h('p', { className: 'body-small ev-muted' }, status))),
+        h(GroupList, { mobile: mobile, people: people, addedNow: addedMap, room: openSpots, onAdd: onAdd }),
+        /* Figma mobile puts the status line under the group list. */
+        mobile ? h('p', { className: 'body-small ev-muted' }, status) : null,
+        h('div', { className: 'ev-invite-head' },
+          h('h3', { className: 'label-large' }, 'Invite everyone else'),
+          h('p', { className: 'body-base ev-muted' }, 'Send your link, share the code, or email them an invitation.')),
+        h(F.Invite, {
+          breakpoint: 'auto', guestTab: true, defaultTab: 'link',
+          linkLabel: 'Link for this shift', linkUrl: 'fmsc.org/join/grace-4821/oct-3', showLinkNote: false,
+          codeIntro: 'Joining on fmsc.org? Use this shift’s code:', code: 'GRACE-1003', showSettingsLink: false,
+          emailDescription: 'They get an email invitation to join Grace Church Youth Group on this shift.',
+          guestWhy: 'For someone without an email address. You claim the spot for them.'
+        })));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(DayOf));
+</script>
+</body>
+</html>

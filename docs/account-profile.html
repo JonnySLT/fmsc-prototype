@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profile and settings · FMSC</title>
+<meta name="description" content="Your FMSC profile and settings: contact details, email addresses, how you sign in, what we send you, and your data and privacy.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .as-muted { color: var(--content-secondary); }
+
+  /* Two cards side by side; one column when the content column is under 800px (1024 and down). */
+  .as-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); align-items: stretch; }
+
+  /* 1 · Your contact details: two field columns (About you | Where you live) */
+  .as-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); align-items: start; }
+  .as-group { display: flex; flex-direction: column; gap: var(--space-md); min-width: 0; }
+  .as-group__label { color: var(--content-primary); }
+  .as-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+  .as-group .fm-arrow-link { align-self: flex-end; }
+  .as-mailing { padding-top: var(--space-sm); }
+  .as-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-md); }
+  .as-status { color: var(--content-secondary); }
+
+  /* 2 · Your email addresses */
+  .as-emails { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-sm); }
+  .as-email { display: flex; flex-direction: column; padding: var(--space-md); border-radius: var(--radius-md); background: var(--background-subtle); }
+  .as-email__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); min-width: 0; }
+  .as-email__addr { min-width: 0; overflow-wrap: anywhere; color: var(--content-primary); }
+  .as-email__tag { flex: none; color: var(--content-secondary); }
+  /* 20px x drawn in Figma; hit area extended to 44px without moving the row. */
+  .as-remove { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: calc(-1 * var(--space-sm)); padding: 0; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--content-primary); cursor: pointer; }
+  .as-remove:hover { background: var(--background-surface); }
+  .as-add-wrap { display: flex; flex-direction: column; gap: var(--space-md); }
+  .as-add { display: flex; align-items: flex-end; gap: var(--space-sm); }
+  .as-add .fm-field { flex: 1 1 0; min-width: 0; }
+  .as-card-actions { display: flex; }
+
+  /* Setting rows (How you sign in, Your data and your privacy): rule above every row after the first */
+  .as-settings { display: flex; flex-direction: column; gap: var(--space-sm); }
+  .as-setting { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) 0; }
+  .as-setting + .as-setting { border-top: 1px solid var(--border-subtle); }
+  .as-setting--last { padding-bottom: 0; }
+  .as-setting--top { align-items: flex-start; }
+  .as-detail { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--space-3xs); }
+  .as-detail p:first-child { color: var(--content-primary); }
+  .as-setting .fm-btn { flex: none; }
+  /* Figma uses Secondary Small (36px); an invisible 4px band above and below gives a 44px target without moving anything. */
+  .as-card .fm-btn--small { position: relative; }
+  .as-card .fm-btn--small::after { content: ''; position: absolute; left: 0; right: 0; top: calc(-1 * var(--space-2xs)); bottom: calc(-1 * var(--space-2xs)); }
+  .fm-btn.as-danger { color: var(--feedback-error); box-shadow: inset 0 0 0 1px var(--feedback-error); }
+
+  /* 4 · What we send you */
+  .as-colhead { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: var(--space-md); color: var(--content-secondary); }
+  .as-choose { display: flex; flex-direction: column; gap: var(--space-xs); padding: var(--space-lg) 0; }
+  .as-choice { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: var(--space-md); align-items: start; min-height: 48px; }
+  .as-choice .fm-toggle { min-width: 0; }
+  .as-note { color: var(--content-secondary); }
+
+  /* Stack the pairs when the content column is under 800px (1024 and down); fields stack under 720px of content (900, and 768 and down). */
+  @container ac-content (max-width: 799.98px) {
+    .as-pair { grid-template-columns: minmax(0, 1fr); }
+  }
+  @container ac-content (max-width: 719.98px) {
+    .as-fields { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .as-pair { grid-template-columns: minmax(0, 1fr); gap: var(--section-gap); }
+    .as-fields { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
+    .as-duo { grid-template-columns: minmax(0, 1fr); gap: var(--space-sm); }
+    .as-actions { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .as-actions .fm-btn, .as-actions .fm-arrow-link { width: 100%; justify-content: center; }
+    .as-status { text-align: center; }
+    .as-email { gap: var(--space-xs); }
+    .as-card-actions .fm-btn { width: 100%; }
+    .as-setting { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .as-setting .fm-btn { width: 100%; }
+    .as-colhead, .as-choice { grid-template-columns: minmax(0, 1fr) 112px; }
+    .as-choose { padding: var(--space-md) 0; }
+    .as-choice { align-items: center; }
+    /* Figma mobile keeps the 12px under the card header (the shell drops it below 600). */
+    .as-card .ac-card__header { padding-bottom: var(--space-sm); }
+    /* Figma mobile fixes the devices detail block at 42px (its two lines need 46), so the button sits 8px under the text. */
+    .as-detail--devices { height: calc(var(--space-xl) + var(--space-sm) - var(--space-3xs)); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="account-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+  var useState = React.useState;
+
+  /* SAMPLE DATA (Figma): the usability-test persona Sarah's details, as the defaults of the profile store
+     (FMSCData.profile in flow-data.js, sessionStorage 'fmsc-profile'). "Save your details" writes the contact fields there;
+     adding or removing an email address saves the list straight away. The nav, dashboard, People, event rosters, hours
+     record, giving statement and sign-up confirmations read it. Nothing is sent anywhere. */
+  var PR = window.FMSCData.profile;
+  /* The stored profile, kept current when another card saves. */
+  function useProfile() {
+    var s = useState(PR.get), p = s[0], set = s[1];
+    React.useEffect(function () {
+      function on() { set(PR.get()); }
+      window.addEventListener(PR.EVENT, on);
+      return function () { window.removeEventListener(PR.EVENT, on); };
+    }, []);
+    return p;
+  }
+  var STATES = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
+  var SENDS = [
+    { key: 'shifts', label: 'Your shifts', desc: 'Reminders and changes', on: true, how: 'Both' },
+    { key: 'meals', label: 'Where your meals went', desc: 'When your food ships and lands', on: true, how: 'Email' },
+    { key: 'stories', label: 'Stories from the field', desc: 'About once a month', on: true, how: 'Email', marketing: true },
+    { key: 'appeals', label: 'Appeals and campaigns', desc: 'A few times a year', on: false, how: 'Email', marketing: true },
+    { key: 'market', label: 'FMSC MarketPlace™', desc: 'New goods and offers', on: false, how: 'Email', marketing: true }
+  ];
+
+  /* A "Saved" line that appears after a local save (announced politely). */
+  function Status(p) { return h('p', { className: 'as-status body-small', role: 'status' }, p.text || ''); }
+
+  function ContactCard() {
+    var mobile = F.useIsMobile();
+    /* Fields start from the store; edits collect in draft until "Save your details". */
+    var start = React.useRef(null); if (!start.current) start.current = PR.get();
+    var P0 = start.current, draft = React.useRef({});
+    var s = useState(!!P0.mailing), mailing = s[0], setMailing = s[1];
+    var sv = useState(''), saved = sv[0], setSaved = sv[1];
+    var touch = function () { if (saved) setSaved(''); };
+    var set = function (key) { return function (v) { draft.current[key] = v && v.target ? v.target.value : v; touch(); }; };
+    var field = function (label, key, extra) {
+      return h(F.Input, Object.assign({ label: label, defaultValue: P0[key], onChange: set(key) }, extra || {}));
+    };
+    function save() {
+      var d = Object.assign({}, draft.current);
+      /* A name can't be blank: an emptied name field keeps the saved name. */
+      ['firstName', 'lastName'].forEach(function (k) { if (k in d && !String(d[k]).trim()) delete d[k]; });
+      Object.keys(d).forEach(function (k) { d[k] = String(d[k]).trim(); });
+      PR.save(d); setSaved('Your details are saved.');
+    }
+    var addMailing = h(F.ArrowLink, { label: 'Add a mailing address', showArrow: false, href: '#mailing-address',
+      onClick: function (e) { e.preventDefault(); setMailing(true); setTimeout(function () { var el = document.getElementById('as-mailing-street'); if (el) el.focus(); }, 0); } });
+    return h(UI.Card, { className: 'as-card', icon: 'user', title: 'Your contact details' },
+      h('div', { className: 'as-fields' },
+        h('div', { className: 'as-group', role: 'group', 'aria-labelledby': 'as-about' },
+          h('p', { className: 'as-group__label label-small', id: 'as-about' }, 'About you'),
+          field('First name', 'firstName', { autoComplete: 'given-name' }),
+          field('Last name', 'lastName', { autoComplete: 'family-name' }),
+          field('Birthdate', 'birthdate', { icon: 'calendar-event', autoComplete: 'bday' }),
+          h('div', { className: 'as-duo' },
+            field('Phone', 'phone', { type: 'tel', autoComplete: 'tel' }),
+            h(F.Dropdown, { label: 'Phone type', showLabel: true, options: ['Mobile', 'Home', 'Work'], defaultValue: P0.phoneType, onChange: set('phoneType') }))),
+        h('div', { className: 'as-group', role: 'group', 'aria-labelledby': 'as-where' },
+          h('p', { className: 'as-group__label label-small', id: 'as-where' }, 'Where you live'),
+          field('Street address', 'street', { autoComplete: 'street-address' }),
+          field('City', 'city', { autoComplete: 'address-level2' }),
+          h('div', { className: 'as-duo' },
+            h(F.Dropdown, { label: 'State', showLabel: true, options: STATES, defaultValue: P0.state, onChange: set('state') }),
+            field('ZIP', 'zip', { autoComplete: 'postal-code', inputMode: 'numeric' })),
+          mailing ? field('Mailing address', 'mailing', { id: 'as-mailing-street', placeholder: 'Street, city, state and ZIP' }) : null,
+          !mobile && !mailing ? addMailing : null)),
+      h('div', { className: 'as-mailing' },
+        h('p', { className: 'body-small as-muted' }, 'Receipts and mail go to this address. Add a different one if your post goes elsewhere.')),
+      h('div', { className: 'as-actions' },
+        h(F.Button, { variant: 'primary', size: 'medium', type: 'button', onClick: save }, 'Save your details'),
+        mobile && !mailing ? addMailing : null,
+        saved ? h(Status, { text: saved }) : null));
+  }
+
+  function EmailCard() {
+    /* The list is the store's: adding or removing an address saves at once, and the primary address is the one the
+       nav, confirmations and sign-in rows use. */
+    var list = useProfile().emails;
+    function setList(next) { PR.save({ emails: next }); }
+    var a = useState(false), adding = a[0], setAdding = a[1];
+    var d = useState(''), draft = d[0], setDraft = d[1];
+    var mp = useState(false), makePrimary = mp[0], setMakePrimary = mp[1];
+    var mobile = F.useIsMobile();
+    function add() {
+      var v = draft.trim(); if (!v) return;
+      var same = function (x) { return x.addr.toLowerCase() === v.toLowerCase(); };
+      var next = list.some(same) ? list.slice() : list.concat([{ addr: v, meta: 'Nothing has come in under this yet' }]);
+      if (makePrimary) {
+        /* The new primary moves to the top and takes over sign-in and receipts. */
+        next = next.map(function (x) {
+          if (same(x)) return Object.assign({}, x, { primary: true, meta: 'Sign-in and receipts' });
+          return x.primary ? Object.assign({}, x, { primary: false, meta: 'Your previous primary address' }) : x;
+        });
+        next = next.filter(same).concat(next.filter(function (x) { return !same(x); }));
+      }
+      setList(next); setDraft(''); setMakePrimary(false); setAdding(false);
+    }
+    return h(UI.Card, { className: 'as-card', icon: 'mail', title: 'Your email addresses' },
+      h('p', { className: 'body-base as-muted' }, 'Gifts and shifts made under any of these belong to you.'),
+      h('ul', { className: 'as-emails', role: 'list' },
+        list.map(function (e) {
+          return h('li', { key: e.addr, className: 'as-email' },
+            h('div', { className: 'as-email__top' },
+              h('p', { className: 'as-email__addr label-small' }, e.addr),
+              e.primary ? h('span', { className: 'as-email__tag caption' }, 'Primary')
+                : h('button', { type: 'button', className: 'as-remove fm-focusable', 'aria-label': 'Remove ' + e.addr,
+                    onClick: function () { setList(list.filter(function (x) { return x.addr !== e.addr; })); } },
+                    h(F.Icon, { name: 'x', size: 20 }))),
+            h('p', { className: 'body-small as-muted' }, e.meta));
+        })),
+      h('p', { className: 'body-small as-muted' }, 'Removing an address leaves its gifts and shifts on your record.'),
+      adding
+        ? h('div', { className: 'as-add-wrap' },
+            h('div', { className: 'as-add' },
+              h(F.Input, { id: 'as-new-email', label: 'New email address', type: 'email', autoComplete: 'email', value: draft,
+                onChange: function (e) { setDraft(e.target.value); } }),
+              h(F.Button, { variant: 'secondary', size: 'medium', type: 'button', onClick: add }, 'Add')),
+            h(F.Checkbox, { label: 'Make this your primary address', description: 'For sign-in and receipts', checked: makePrimary,
+              onChange: function (e) { setMakePrimary(e.target.checked); } }))
+        : h('div', { className: 'as-card-actions' },
+            h(F.Button, { variant: 'secondary', size: 'small', type: 'button', fullWidth: mobile,
+              onClick: function () { setAdding(true); setTimeout(function () { var el = document.getElementById('as-new-email'); if (el) el.focus(); }, 0); } }, 'Add an email address')));
+  }
+
+  function Setting(p) {
+    return h('div', { className: 'as-setting' + (p.top ? ' as-setting--top' : '') + (p.last ? ' as-setting--last' : '') },
+      h('div', { className: 'as-detail' + (p.detailClass ? ' ' + p.detailClass : '') },
+        h('p', { className: 'body-base' }, p.label),
+        h('p', { className: (p.whyClass || 'body-small') + ' as-muted' }, p.value)),
+      p.action);
+  }
+  function small(label, onClick, extra) {
+    return h(F.Button, Object.assign({ variant: 'secondary', size: 'small', type: 'button', onClick: onClick }, extra || {}), label);
+  }
+
+  function SignInCard() {
+    var email = PR.primaryEmail(useProfile());
+    var g = useState(true), google = g[0], setGoogle = g[1];
+    var f = useState(false), fb = f[0], setFb = f[1];
+    var o = useState(false), out = o[0], setOut = o[1];
+    return h(UI.Card, { className: 'as-card', icon: 'lock', title: 'How you sign in' },
+      h('div', { className: 'as-settings' },
+        h(Setting, { label: 'Password', value: 'Last changed January 2024', action: small('Change', null, { 'aria-label': 'Change your password' }) }),
+        h(Setting, { label: 'Sign in with Google', value: google ? 'Connected to ' + email : 'Not connected',
+          action: small(google ? 'Disconnect' : 'Connect', function () { setGoogle(!google); }, { 'aria-label': (google ? 'Disconnect' : 'Connect') + ' Google' }) }),
+        h(Setting, { label: 'Sign in with Facebook', value: fb ? 'Connected to ' + email : 'Not connected',
+          action: small(fb ? 'Disconnect' : 'Connect', function () { setFb(!fb); }, { 'aria-label': (fb ? 'Disconnect' : 'Connect') + ' Facebook' }) }),
+        h(Setting, { last: true, detailClass: 'as-detail--devices', label: out ? 'Signed in on 1 device' : 'Signed in on 2 devices',
+          value: out ? 'This browser. You’re signed out everywhere else.' : 'This browser, and an iPhone last used Sept. 14.',
+          action: small('Sign out everywhere', function () { setOut(true); }, { disabled: out }) })));
+  }
+
+  function SendCard() {
+    var mobile = F.useIsMobile();
+    var init = {}; SENDS.forEach(function (x) { init[x.key] = { on: x.on, how: x.how }; });
+    var s = useState(init), prefs = s[0], setPrefs = s[1];
+    var sv = useState(''), saved = sv[0], setSaved = sv[1];
+    function set(key, patch) { var n = Object.assign({}, prefs); n[key] = Object.assign({}, prefs[key], patch); setPrefs(n); setSaved(''); }
+    return h(UI.Card, { className: 'as-card', icon: 'message', title: 'What we send you' },
+      h('div', { className: 'as-colhead caption', 'aria-hidden': 'true' }, h('span', null, 'WHAT WE SEND'), h('span', null, 'HOW')),
+      h('div', { className: 'as-choose' },
+        SENDS.map(function (x) {
+          var p = prefs[x.key];
+          return h('div', { key: x.key, className: 'as-choice' },
+            h(F.Toggle, { label: x.label, description: x.desc, checked: p.on, onChange: function (e) { set(x.key, { on: e.target.checked }); } }),
+            h(F.Dropdown, { label: 'How we send ' + x.label, options: ['Email', 'Text', 'Both'], value: p.how, disabled: !p.on,
+              onChange: function (v) { set(x.key, { how: v }); } }));
+        })),
+      h('p', { className: 'caption as-note' }, 'You’ll still get shift confirmations, gift receipts and anything about your sign-in — you need those. A change takes about a day to reach every list.'),
+      h('div', { className: 'as-actions' },
+        h(F.Button, { variant: 'primary', size: 'medium', type: 'button', onClick: function () { setSaved('Your preferences are saved.'); } }, 'Save preferences'),
+        h(F.ArrowLink, { label: 'Turn all marketing email off', showArrow: false, href: '#',
+          onClick: function (e) {
+            e.preventDefault(); var n = Object.assign({}, prefs);
+            SENDS.forEach(function (x) { if (x.marketing) n[x.key] = Object.assign({}, prefs[x.key], { on: false }); });
+            setPrefs(n); setSaved('');
+          } }),
+        saved ? h(Status, { text: saved }) : null));
+  }
+
+  function PrivacyCard() {
+    var r = useState(false), requested = r[0], setRequested = r[1];
+    return h(UI.Card, { className: 'as-card', icon: 'settings', title: 'Your data and your privacy' },
+      h('div', { className: 'as-settings' },
+        h(Setting, { top: true, label: 'A copy of your record', whyClass: 'body-base',
+          value: 'Everything FMSC holds about you, sent to your email. A group admin sees only your name, the shifts you packed with them and any contact details you choose to share.',
+          action: small(requested ? 'Copy requested' : 'Request a copy', function () { setRequested(true); }, { disabled: requested }) }),
+        h(Setting, { top: true, label: 'Close your account', value: 'Removes your sign-in and preferences. Gift and shift records stay.',
+          action: small('Close your account', null, { className: 'as-danger' }) })));
+  }
+
+  function Profile() {
+    return h(window.AccountShell, { current: 'profile' },
+      h(F.AccountPageHeader, { breakpoint: 'auto', title: 'Your profile and settings', showBreadcrumb: false, showDescription: false, showTag: false, showStats: false, showAction: false }),
+      h(ContactCard),
+      h('div', { className: 'as-pair' }, h(EmailCard), h(SignInCard)),
+      h('div', { className: 'as-pair' }, h(SendCard), h(PrivacyCard)));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Profile));
+</script>
+</body>
+</html>

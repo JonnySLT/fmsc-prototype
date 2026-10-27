@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>People & groups · FMSC</title>
+<meta name="description" content="Your FMSC groups and the people connected to your account. Start or join a group, or add a child or guest.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js.
+     Figma: "Account/People & Groups — New account" (desktop 4656:66418, mobile 4656:97154). */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Figma sets the gap on each card: Your groups space-lg, People connected space-sm. */
+  .ac-card.ap-card--groups { gap: var(--space-lg); }
+  /* Figma draws the 48px (40px mobile) empty-state icons with a 2px stroke; the DS scales the 24px icon's stroke up. */
+  .fm-empty-state__icon svg * { vector-effect: non-scaling-stroke; }
+
+  /* 1 · Your groups: header and the group search share one row (search 360 wide, top-aligned). */
+  .ap-top { display: flex; align-items: flex-start; gap: var(--space-sm); }
+  .ap-top .ac-card__header { flex: 1 1 auto; min-width: 0; }
+  .ap-search { flex: 0 1 360px; min-width: 0; }
+  @container ac-content (max-width: 639.98px) {
+    .ap-top { flex-direction: column; align-items: stretch; }
+    .ap-search { flex: none; }
+  }
+
+  /* Join with a code: input 320 + button on one row, bottom-aligned */
+  .ap-join { display: flex; align-items: flex-end; gap: var(--space-sm); }
+  .ap-join .fm-field { width: 320px; max-width: 100%; }
+  .ap-join .fm-btn { flex: none; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .ap-top { flex-direction: column; align-items: stretch; gap: var(--space-lg); }
+    .ap-search { flex: none; }
+    /* Figma mobile card headers are fixed at 52 (the two-line "People connected…" title runs into the padding). */
+    .ac-shell__content .ac-card__header { height: calc(var(--space-2xl) + var(--space-2xs)); padding-bottom: var(--space-sm); }
+    .ap-join { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .ap-join .fm-field { width: 100%; }
+    .ap-join .fm-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+
+  function People() {
+    var q = React.useState(''), query = q[0], setQuery = q[1];
+    var c = React.useState(''), code = c[0], setCode = c[1];
+    return h(window.AccountShell, { current: 'people' },
+
+      h(F.AccountPageHeader, { breakpoint: 'auto', title: 'Your people & groups', showBreadcrumb: false, showDescription: false, showStats: false, showAction: false, showTag: false }),
+
+      /* 1 · Your groups */
+      h('section', { className: 'ac-card ap-card--groups', 'aria-labelledby': 'ap-groups-title' },
+        h('div', { className: 'ap-top' },
+          h(UI.CardHeader, { icon: 'users-group', title: 'Your groups', id: 'ap-groups-title' }),
+          h('div', { className: 'ap-search' },
+            h(F.Search, { label: 'Find a group', placeholder: 'Group or leader name', value: query,
+              onChange: function (e) { setQuery(e.target.value); }, onClear: function () { setQuery(''); } }))),
+        h(F.EmptyState, { breakpoint: 'auto', icon: 'users-group', headline: 'You’re not in a group yet',
+          supportingText: 'A group books shifts together and keeps everyone’s hours in one place. Churches, schools, families and workplaces all use them.',
+          showSecondary: false, primaryLabel: 'Start a new group', primaryHref: 'signup-1.html?path=c' }),
+        h('form', { className: 'ap-join', onSubmit: function (e) { e.preventDefault(); } },
+          h(F.Input, { label: 'Have a join code?', placeholder: 'Enter the code someone sent you', value: code,
+            onChange: function (e) { setCode(e.target.value); }, name: 'join-code', autoComplete: 'off' }),
+          h(F.Button, { variant: 'secondary', size: 'medium', type: 'submit' }, 'Join the group'))),
+
+      /* 2 · People connected to your account */
+      h(UI.Card, { icon: 'friends', title: 'People connected to your account', id: 'ap-connected-title' },
+        h(F.EmptyState, { breakpoint: 'auto', icon: 'friends', headline: 'Nobody on your account yet',
+          supportingText: 'Add a child under 18 so you can sign their waivers, or a guest who has no email address.',
+          showSecondary: false, primaryLabel: 'Add a child or guest', primaryHref: '#' })));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(People));
+</script>
+</body>
+</html>

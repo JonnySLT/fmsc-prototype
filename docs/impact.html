@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FMSC Impact Prototype</title>
+<meta name="description" content="Desktop Impact page for the FMSC.org usability test, built from the FMSC Design System.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ol { margin: 0; }
+
+  /* Hero stats: top-align so a one-line label doesn't sit lower than two-line ones when labels wrap (≤ 1000px). */
+  .fm-hero--impact .fm-hero__stats { align-items: flex-start; }
+  .fm-hero--impact .fm-hero__stat { justify-content: flex-start; }
+  /* Figma (desktop and mobile) sets the hero stat labels in blue/200; the DS renders them content/inverse */
+  .fm-hero--impact .fm-hero__stat-label { color: var(--blue-200); }
+
+  .im-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .im-section--brand-subtle { background: var(--background-brand-subtle); }
+  .im-section--subtle { background: var(--background-subtle); }
+  .im-inner { width: 100%; max-width: var(--content-width); }
+  .im-header { width: 100%; max-width: 792px; }
+  .im-center { display: flex; justify-content: center; }
+  /* Body measures from the Figma frame: body-large 730, body-base 607, body-small 559 */
+  .im-header .fm-section-header__supporting { max-width: 730px; }
+
+  /* Where the meals go: Map explorer, made fluid for columns narrower than its 1200px Figma width */
+  /* (Desktop variant only — the DS Mobile variant below 600px follows the mobile frame as is.) */
+  .im-map { container-type: inline-size; }
+  .im-map .fm-map { width: 100%; }
+  .im-map .fm-map:not(.fm-map--mobile) .fm-map__col { flex: 1 1 792px; width: auto; min-width: 0; }
+  .im-map .fm-map:not(.fm-map--mobile) .fm-map__frame { height: auto; aspect-ratio: 792 / 486; }
+  .im-map .fm-map:not(.fm-map--mobile) .fm-map__readout { flex: 0 0 384px; }
+  .im-map__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .im-map .fm-map--mobile .im-map__img { background: var(--background-canvas); }
+  @container (max-width: 959px) {
+    .im-map .fm-map:not(.fm-map--mobile) { flex-direction: column; align-items: stretch; }
+    .im-map .fm-map:not(.fm-map--mobile) .fm-map__col, .im-map .fm-map:not(.fm-map--mobile) .fm-map__readout { flex: none; width: 100%; }
+    /* Stacked under the map: center the readout (select, figures, hint) on the page */
+    .im-map .fm-map:not(.fm-map--mobile) .fm-map__readout { align-items: center; text-align: center; }
+    .im-map .fm-map:not(.fm-map--mobile) .fm-map__head { position: relative; justify-content: center; }
+    .im-map .fm-map:not(.fm-map--mobile) .fm-map__clear { position: absolute; left: calc(50% + 160px + var(--space-lg)); }
+    .im-map .fm-map:not(.fm-map--mobile) .fm-map__live, .im-map .fm-map:not(.fm-map--mobile) .fm-map__stat { align-items: center; }
+  }
+
+  /* Article cards fill their grid cell */
+  .im-inner .fm-article-card { width: 100%; height: 100%; }
+  .im-inner .fm-badge-card { width: 100%; height: 100%; }
+  /* Stories: once the 3-up grid stacks (DS: under 720px), lay each card out photo-left so portraits aren't cropped to a thin strip. */
+  @container (max-width: 719.98px) {
+    .im-stories-grid .fm-article-card { flex-direction: row; }
+    .im-stories-grid .fm-article-card__photo { flex: 0 0 40%; width: 40%; height: auto; min-height: 216px; }
+    .im-stories-grid .fm-article-card__body { flex: 1 1 0; min-width: 0; justify-content: center; }
+  }
+  @container (max-width: 479.98px) {
+    .im-stories-grid .fm-article-card { flex-direction: column; }
+    .im-stories-grid .fm-article-card__photo { flex: none; width: 100%; height: 216px; min-height: 0; }
+  }
+
+  /* Artisan story: card with a decorative play mark over the photo (photo is 216px tall in the DS card) */
+  .im-artisan { position: relative; }
+  .im-artisan .fm-article-card { box-shadow: var(--shadow-md); }
+  .im-artisan__play { position: absolute; left: 50%; top: calc(216px / 2); transform: translate(-50%, -50%); width: 56px; height: 56px; color: var(--content-inverse); pointer-events: none; }
+  .im-steps-col { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-xl); }
+  .im-steps { display: flex; flex-direction: column; gap: var(--space-xl); padding: 0; list-style: none; width: 100%; }
+  .im-steps .fm-step-item { width: 100%; }
+
+  /* Keep your own count: slim account band */
+  .im-account { display: flex; justify-content: center; padding: var(--space-xl) var(--margin-x); background: var(--background-brand-subtle); }
+  .im-account__inner { display: flex; align-items: center; gap: var(--grid-gap); }
+  .im-account__copy { display: flex; flex-direction: column; gap: var(--space-xs); flex: 0 1 792px; min-width: 0; }
+  .im-account__copy p { max-width: 607px; color: var(--content-secondary); }
+  .im-account__actions { display: flex; flex: none; align-items: center; gap: var(--space-md); }
+  /* Jonny: the actions stay to the right of the copy, then stack under it on narrower screens. */
+  @media (min-width: 600px) and (max-width: 839.98px) {
+    .im-account__inner { flex-direction: column; align-items: flex-start; gap: var(--space-md); }
+    .im-account__copy { flex: none; }
+  }
+
+  /* Financials and reports */
+  .im-report { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-lg); min-height: 311px; padding: var(--card-pad); background: var(--background-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); }
+  .im-report .fm-media { flex: 0 1 280px; max-width: 280px; }
+  .im-report__copy { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); flex: 1 1 200px; min-width: 0; }
+  .im-docs { display: flex; flex-direction: column; padding: 0; list-style: none; }
+  .im-doc { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: var(--space-md); padding: var(--space-lg) 0; box-shadow: inset 0 -1px 0 var(--border-control); }
+  /* Figma rows: title in content/primary (still the download link), 1px border/control rule inside the 72px row */
+  .im-doc__link { color: var(--content-primary); text-decoration: none; }
+  .im-doc__link::after { content: ''; position: absolute; inset: 0; }
+  .im-doc__link:hover { text-decoration: underline; }
+  .im-doc__link:focus-visible { outline: none; }
+  .im-doc__link:focus-visible::after { box-shadow: inset 0 0 0 2px var(--border-focus); border-radius: var(--radius-sm); }
+  .im-doc__action { display: flex; align-items: center; gap: var(--space-sm); color: var(--content-secondary); }
+  .im-doc__icon { color: var(--content-link); }
+  .im-trust { max-width: 559px; text-align: center; color: var(--content-secondary); }
+
+  /* CTA band trust strip: the DS fixes each group at 384px, which overflows below a 1200px column */
+  .fm-cta-band--desktop .fm-cta-band__trust { flex-wrap: wrap; justify-content: center; width: 100%; max-width: var(--content-width); }
+  .fm-cta-band--desktop .fm-cta-band__group { flex: 1 1 220px; width: auto; max-width: 384px; }
+  /* Figma CTA band subtext is Body/Base in content/on-brand; the DS renders body-large in blue-200. */
+  @media (max-width: 879.98px) {
+    /* Size trust groups to their content so all three stay on one row instead of stranding the third. */
+    .fm-cta-band--desktop .fm-cta-band__group { flex: 0 1 auto; }
+    .fm-cta-band--desktop .fm-cta-band__trust { justify-content: space-around; }
+  }
+  .im-cta-sub { display: block; color: var(--content-on-brand); }
+  /* Figma footer legal + address run 968px wide; the DS caps the column at 756px. */
+  .fm-footer--desktop .fm-footer__legal-copy { max-width: 968px; }
+
+  /* ---- Mobile (< 600px): Figma "Mobile/Impact" 4454:38428 ---- */
+  @media (max-width: 599.98px) {
+    /* Stat blocks span the column so the label runs one line (Figma lets the 14,959 block run 363 wide, 1px past each side) */
+    .im-center .fm-stat { flex: none; width: calc(100% + 2 * var(--space-3xs)); }
+    /* Account band: copy, then a full-width button with Sign in centered under it */
+    .im-account { padding: var(--section-y) var(--margin-x); }
+    .im-account__inner { flex-direction: column; align-items: stretch; gap: var(--space-md); }
+    .im-account__copy { flex: none; gap: var(--space-xs); }
+    .im-account__actions { flex-direction: column; align-items: stretch; gap: var(--space-md); }
+    .im-account__actions .fm-arrow-link { align-self: center; }
+    /* Featured report: stacked cover, copy, full-width button */
+    .im-report { flex-direction: column; align-items: stretch; gap: var(--space-md); min-height: 0; }
+    .im-report .fm-media { flex: none; width: 100%; max-width: none; }
+    /* Document rows keep the size and icon on the right; long titles wrap beside them */
+    .im-doc { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-xs); }
+    .im-doc__action { gap: var(--space-sm); }
+    /* DS Footer (mobile): each column keeps its desktop flex-basis of 140px, which becomes height in the stacked list */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; }
+    .im-report__copy { flex: none; }
+    /* Mobile Map explorer, Selection=None: Figma shows the Clear link; the DS hides it until a country is picked */
+    .fm-map--mobile .fm-map__clear--hidden { visibility: visible; }
+    /* The list keeps the browser's default ul margin on desktop (part of the matched 1440 layout); drop it here. */
+    .im-docs { margin: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+  var helpItems = [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' },
+    { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host a MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }]
+    .map(function (l) { return typeof l === 'string' ? { label: l } : l; });
+
+  function Header(p) {
+    /* Mobile frame sets "Where the meals go" in Heading/H1 (mobile); the DS header always uses Heading/H2. */
+    if (p.h1Mobile && p.mobile) return h('div', { className: 'im-header' },
+      h('div', { className: 'fm-section-header fm-section-header--center fm-section-header--on-light' },
+        h('p', { className: 'fm-section-header__eyebrow overline' }, p.eyebrow),
+        h('h2', { className: 'fm-section-header__heading heading-h1-mobile', id: p.id }, p.heading),
+        h('p', { className: 'fm-section-header__supporting body-large-mobile' }, p.supporting)));
+    return h('div', { className: 'im-header' },
+      h(F.SectionHeader, { breakpoint: 'auto', align: 'center', eyebrow: p.eyebrow, heading: h('span', { id: p.id }, p.heading),
+        supporting: p.supporting, showSupporting: !!p.supporting }));
+  }
+
+  var stories = [
+    { image: 'impact-story-geralma.jpg', alt: 'Geralma, a young girl in Haiti, smiles at the camera.', title: 'Hope in Haiti: Geralma’s Story',
+      body: 'A partner clinic treated her tuberculosis and malnutrition. Her parents had made the trek from their village.', link: 'Read Geralma’s story' },
+    { image: 'impact-story-matthew.jpg', alt: 'Matthew, a small boy in a red plaid outfit, stands in tall grass.', title: 'In Uganda: Matthew the Miracle',
+      body: 'A week of MannaPack® Rice gave him the strength to sit up. Six months later he was running with friends.', link: 'Read Matthew’s story' },
+    { image: 'impact-story-norjay.jpg', alt: 'A mother sits in a doorway in the Philippines with three young children.', title: 'In the Philippines: Norjay’s Story',
+      body: 'Seven weeks of MannaPack® meals brought him to a healthy weight. His mother had not known he was at risk.', link: 'Read Norjay’s story' }
+  ];
+  var steps = [
+    ['1', 'You buy a handcrafted item', 'Each piece comes from an artisan group in a country FMSC serves.'],
+    ['2', 'The artisan is paid a fair wage', 'FMSC buys each piece for a fair wage before it’s sold.'],
+    ['3', 'Profits fund meals', 'Profits go into MannaPack® meal production, at 29 cents a meal.']
+  ];
+  var docs = [
+    ['Annual Report, 2025/26', 'PDF · 1.6 MB', 'PDF, 1.6 MB'],
+    ['Audited financial statements, 2025/26', 'PDF · 0.4 MB', 'PDF, 0.4 MB'],
+    ['Form 990, 2025/26', 'PDF · 0.9 MB', 'PDF, 0.9 MB']
+  ];
+  /* Step item with the Heading/H3 title the Figma component uses (the coded StepItem renders Heading/H4). */
+  /* DS StatBlock markup with the mobile figure size below 600px (the coded StatBlock has no mobile type). */
+  function Stat(p) {
+    return h('div', { className: 'fm-stat fm-stat--figure fm-stat--default' },
+      h('p', { className: 'fm-stat__value ' + (p.mobile ? 'display-xl-mobile' : 'display-xl') }, p.value),
+      h('p', { className: 'fm-stat__label body-base' }, p.label));
+  }
+  /* DS BadgeCard / ArticleCard titles and the Map explorer zoom glyphs are always Heading/H4 (20/26); the mobile frame
+     uses the mobile H4 (18/24). Swap the DS class for heading-h4-mobile below 600px (and back above it). */
+  function useMobileCardTitles(mobile) {
+    React.useLayoutEffect(function () {
+      document.querySelectorAll('main .fm-badge-card__title, main .fm-article-card__title, main .fm-map__zoom-btn').forEach(function (el) {
+        el.classList.toggle('heading-h4-mobile', mobile); el.classList.toggle('heading-h4', !mobile);
+      });
+    }, [mobile]);
+  }
+  function Step(s, mobile) {
+    return h('li', { key: s[0], className: 'fm-step-item fm-step-item--number' },
+      h('span', { className: 'fm-step-item__number ' + (mobile ? 'body-large-mobile' : 'body-large'), 'aria-hidden': 'true' }, s[0]),
+      h('div', { className: 'fm-step-item__copy' },
+        h('h3', { className: 'fm-step-item__title ' + (mobile ? 'heading-h3-mobile' : 'heading-h3') }, h('span', { className: 'fm-visually-hidden' }, 'Step ' + s[0] + ': '), s[1]),
+        h('p', { className: 'fm-step-item__desc body-base' }, s[2])));
+  }
+  var play = h('svg', { className: 'im-artisan__play', viewBox: '0 0 56 56', 'aria-hidden': 'true', focusable: 'false' },
+    h('path', { d: 'M19 13.5v29a1.5 1.5 0 0 0 2.3 1.27l22.6-14.5a1.5 1.5 0 0 0 0-2.54L21.3 12.23A1.5 1.5 0 0 0 19 13.5z', fill: 'currentColor' }));
+
+  function ImpactPage() {
+    var mobile = F.useIsMobile();
+    useMobileCardTitles(mobile);
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'impact' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: 'auto',
+          type: 'impact',
+          eyebrow: 'Our impact',
+          h1: 'Five billion meals so far',
+          body: 'Every meal starts with a volunteer who packs it and a donor who funds it.',
+          image: img('impact-hero.jpg'),
+          imageAlt: 'Smiling children eat bowls of rice at a long wooden table.',
+          stats: [
+            { value: '5.03B', label: 'meals packed since 2009' },
+            { value: '13.8M', label: 'kids fed for a year, since 2009' },
+            { value: '112', label: 'countries reached since 2009' },
+            { value: '1.2M', label: 'volunteers last year' }
+          ]
+        }),
+
+        /* 2 · Where the meals go */
+        h('section', { className: 'im-section im-section--brand-subtle', 'aria-labelledby': 'im-where' },
+          h(Header, { mobile: mobile, h1Mobile: true, id: 'im-where', eyebrow: 'Distribution', heading: 'Where the meals go',
+            supporting: 'Feed My Starving Children (FMSC) donates MannaPack® meals to a network of faith-based and humanitarian partners that already work in the communities they serve. They handle storage, transport and distribution, and they stay present after the food is gone.' }),
+          h('div', { className: 'im-inner im-map' },
+            h(F.MapExplorer, {
+              breakpoint: 'auto',
+              map: h('img', { className: 'im-map__img', src: img(mobile ? 'impact-m-map.svg' : 'impact-world-map.png'), alt: '' }),
+              totals: { meals: '5,031,960,880', label: 'meals donated since 2009', fact: '112 countries reached' }
+            })),
+          h('div', { className: 'im-inner im-center' },
+            h(Stat, { mobile: mobile, value: '99%+', label: 'of meals shipped safely reach their destination' }))),
+
+        /* 3 · How we choose and check partners */
+        h('section', { className: 'im-section', 'aria-labelledby': 'im-partners' },
+          h(Header, { id: 'im-partners', eyebrow: 'Partners', heading: 'How we choose and check partners',
+            supporting: 'Last year FMSC sent meals to 63 partners in 57 countries. They distribute through schools, children’s homes, clinics and feeding programs.' }),
+          h('div', { className: 'im-inner' }, h(F.LayoutGrid, { columns: 2 },
+            h(F.BadgeCard, { illustration: img('food-bowl.svg'), showLink: false, title: 'How we choose partners',
+              body: 'Partners apply, and we vet them before a single meal ships. We look for organizations rooted in the community, with the storage and transport to move food, and a mission we can stand alongside.' }),
+            h(F.BadgeCard, { illustration: img('food-bowl.svg'), showLink: false, title: 'How partners report back',
+              body: 'Every partner tells us what arrived, where it went and who it reached. Site visits and distribution records confirm it. When something doesn’t add up, we follow it.' })))),
+
+        /* 4 · Community stories */
+        h('section', { className: 'im-section im-section--subtle', 'aria-labelledby': 'im-stories' },
+          h(Header, { id: 'im-stories', eyebrow: 'Success Stories', heading: 'Children who got enough to eat',
+            supporting: 'Good nutrition is the foundation for all other progress.' }),
+          h('div', { className: 'im-inner im-stories-grid' }, h(F.LayoutGrid, { columns: 3 }, stories.map(function (s) {
+            return h(F.ArticleCard, { key: s.title, image: img(s.image), imageAlt: s.alt, tag: 'Success Stories', title: s.title, date: s.body, linkLabel: s.link, href: '#' });
+          }))),
+          h('div', { className: 'im-inner im-center' }, h(F.ArrowLink, { label: 'See all stories', href: '#' }))),
+
+        /* 5 · Artisan livelihoods */
+        h('section', { className: 'im-section', 'aria-labelledby': 'im-artisans' },
+          h(Header, { id: 'im-artisans', eyebrow: 'FMSC MarketPlace™', heading: 'Handcrafted goods that fund meals',
+            supporting: 'Every FMSC MarketPlace product is made by artisans in communities FMSC serves. Buying their work pays a fair wage, and the profits come back as meals.' }),
+          h('div', { className: 'im-inner' }, h(F.LayoutSplit, null,
+            h('div', { className: 'im-artisan' },
+              h(F.ArticleCard, { image: img('impact-artisans-hope-again.jpg'), imageAlt: 'Five women from Hope Again Women hold up grass-woven baskets in front of a brick wall in Uganda.',
+                tag: 'FMSC MarketPlace', title: 'Hope Again Women',
+                date: 'Grass-woven baskets, made by hand in Uganda. Their work is part of 14,959 livelihoods FMSC MarketPlace supported in the 2025–26 fiscal year.',
+                linkLabel: 'Watch their story', href: '#' }),
+              play),
+            h('div', { className: 'im-steps-col' },
+              h('ol', { className: 'im-steps', 'aria-label': 'How a purchase becomes meals' }, steps.map(function (st) { return Step(st, mobile); })),
+              h(F.Button, { variant: 'gold', size: 'large', href: 'marketplace.html', fullWidth: mobile }, 'Shop FMSC MarketPlace')))),
+          h('div', { className: 'im-inner im-center' },
+            h(Stat, { mobile: mobile, value: '14,959', label: 'livelihoods supported in the 2025–26 fiscal year' }))),
+
+        /* 7 · Keep your own count */
+        h('section', { className: 'im-account', 'aria-labelledby': 'im-account' },
+          h('div', { className: 'im-inner im-account__inner' },
+            h('div', { className: 'im-account__copy' },
+              h('h2', { id: 'im-account', className: mobile ? 'heading-h4-mobile' : 'heading-h4' }, 'Join us and keep track of your impact'),
+              h('p', { className: 'body-base' }, 'Create an FMSC account to keep your shift reservations, volunteer hours, family members, donations, and tax receipts in one place. Every gift, shift, and purchase adds to one lifetime total.')),
+            h('div', { className: 'im-account__actions' },
+              h(F.Button, { variant: 'primary', size: 'medium', href: 'create-account.html', fullWidth: mobile }, 'Track your impact'),
+              h(F.ArrowLink, { label: 'Sign in', href: 'sign-in.html' })))),
+
+        /* 8 · Impact report */
+        h('section', { className: 'im-section im-section--subtle', 'aria-labelledby': 'im-reports' },
+          h(Header, { id: 'im-reports', eyebrow: 'Accountability', heading: 'Our financials and reports' }),
+          h('div', { className: 'im-inner' }, h(F.LayoutSplit, null,
+            h('div', { className: 'im-report' },
+              h(F.MediaFrame, { ratio: mobile ? '3:2' : '4:3', image: img('impact-report-cover.jpg'), imageAlt: 'Cover of the 2025/26 FMSC Impact Report.' }),
+              h('div', { className: 'im-report__copy' },
+                h('h3', { className: mobile ? 'heading-h4-mobile' : 'heading-h4' }, '2025/26 Impact Report'),
+                h('p', { className: 'body-small' }, 'Meals shipped, kids fed, volunteers and audited finances for 2025/26.'),
+                h(F.Button, { variant: 'primary', size: 'large', href: '#', fullWidth: mobile }, 'Download the report'))),
+            h('ul', { className: 'im-docs', 'aria-label': 'Financial documents' }, docs.map(function (d) {
+              return h('li', { key: d[0], className: 'im-doc' },
+                h('a', { className: 'im-doc__link body-base', href: '#', 'aria-label': 'Download ' + d[0] + ' (' + d[2] + ')' }, d[0]),
+                h('span', { className: 'im-doc__action label-small', 'aria-hidden': 'true' }, d[1], h(F.Icon, { name: 'download', size: 20, className: 'im-doc__icon' })));
+            })))),
+          h('p', { className: 'im-trust body-small' }, '88% of total annual donations are spent directly on meal production. FMSC has been a four-star Charity Navigator recipient for 20 years, and more than 99% of meals shipped safely reach their destination.')),
+
+        h(F.CTABand, {
+          breakpoint: 'auto',
+          eyebrow: 'Join the movement',
+          headline: 'Be someone’s miracle.',
+          subtext: h('span', { className: 'im-cta-sub body-base' }, '29¢ feeds a child a meal. Give one today — or grab a hairnet and pack a thousand.'),
+          primaryHref: 'donate.html', secondaryHref: 'volunteer.html',
+          showTrustStrip: true,
+          trustIllustrations: [img('legacy-coins.svg'), img('food-mannapack-bag.svg'), img('volunteers-celebrate.svg')]
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')],
+        /* Frame text differs from the DS defaults ("Finances", "Host a MobilePack™ event"), so the columns are passed. */
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(ImpactPage));
+</script>
+</body>
+</html>

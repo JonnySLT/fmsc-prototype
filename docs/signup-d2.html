@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who’s coming? · Sign up to pack meals · FMSC</title>
+<meta name="description" content="Start a new church youth group and tell us how many spots you need at FMSC Coon Rapids.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (su-) come from signup-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Group block (Figma "Group"): fields space-md apart; fields 588 wide (Figma column), full width on mobile. */
+  .sd-group { display: flex; flex-direction: column; gap: var(--space-md); min-width: 0; }
+  .sd-field { width: 100%; max-width: 588px; }
+  .sd-help { max-width: 559px; }
+  /* Question + radios + help (Figma "Under 18" space-xs, "Packing" space-sm). */
+  .sd-question { display: flex; flex-direction: column; gap: var(--space-xs); min-width: 0; }
+  .sd-question--packing { gap: var(--space-sm); }
+  .sd-question__label { color: var(--content-primary); }
+  .sd-options { display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); }
+  /* Figma draws these label-only radios 20 tall; extend the hit area to 44 without moving the layout. */
+  .sd-options .fm-radio::before { content: ''; position: absolute; inset: calc(-1 * var(--space-sm)) 0; }
+  .sd-spots { display: flex; flex-direction: column; gap: var(--space-xs); align-items: flex-start; }
+  .sd-youth { display: flex; flex-direction: column; gap: var(--space-xs); align-items: flex-start; }
+  @media (max-width: 599.98px) {
+    .sd-question--packing .sd-options { flex-direction: column; gap: var(--space-sm); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="signup-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
+  /* Path D · step 2 (Figma "Sign up — D2 Who’s coming", 4454:34940 / mobile 4454:41939): a new church youth group,
+     "Faith Lutheran Confirmation Class" (Church: Youth Over 12), 15 spots. Routing: "Just me" → signup-a2;
+     "Which group?" = Grace Church Youth Group → signup-b2; "Group type" Family → signup-c2 (the family path). */
+  var GROUPS = ['Grace Church Youth Group', 'Start a new group'];
+  var PACKING = ['Yes, I’m packing', 'No, I’m only organizing'];
+  var TYPES = ['Family', 'Church: Youth Over 12', 'Church: Adults', 'School', 'Work', 'Friends'];
+
+  function Question(p) {
+    var id = 'sd-q-' + p.name;
+    return h('div', { className: 'sd-question' + (p.className ? ' ' + p.className : '') },
+      h('p', { className: 'sd-question__label label-base', id: id }, p.question),
+      h('div', { className: 'sd-options', role: 'radiogroup', 'aria-labelledby': id },
+        p.options.map(function (o) {
+          return h(F.Radio, { key: o, name: 'sd-' + p.name, value: o, label: o, checked: p.value === o, onChange: function () { p.onChange(o); } });
+        })),
+      h(UI.Note, { className: 'sd-help' }, p.help));
+  }
+
+  function Page() {
+    /* Every answer lives in the flow store (SignupShell.flow), so "Change who’s coming" reopens it as the user left it.
+       Group name starts blank and is required to continue (DS Input error state + focus). */
+    var flow = Shell.useFlow(), setFlow = flow[1], r = Shell.flow.resolve('d');
+    var groupName = r.groupName, under18 = r.under18, spots = r.spots;
+    var groupType = r.groupType;
+    function setGroupType(v) { setFlow({ groupType: v }); }
+    var packing = r.packing === 'no' ? PACKING[1] : PACKING[0];
+    var e = React.useState(false), nameError = e[0], setNameError = e[1];
+    function setGroupName(v) { setFlow({ groupName: v }); if (v.trim()) setNameError(false); }
+    function setUnder18(v) { setFlow({ under18: v }); }
+    function setSpots(n) { setFlow({ spots: n }); }
+    function setPacking(v) { setFlow({ packing: v === PACKING[1] ? 'no' : 'yes' }); }
+    function next(ev) {
+      if (groupName.trim()) { setFlow({ who: 'group', done2: true }); return; }
+      ev.preventDefault(); setNameError(true);
+      var box = document.querySelector('input[name="sd-group-name"]'); if (box) box.focus();
+    }
+    return h(Shell, { path: 'd', step: 2 },
+      h(UI.WhoChoice, { value: 'group', groupHref: Shell.href('d', 2) }),
+      h(UI.Rule),
+      h('div', { className: 'sd-group' },
+        h('div', { className: 'sd-field' },
+          h(F.Dropdown, { label: 'Which group?', showLabel: true, options: GROUPS, value: 'Start a new group',
+            onChange: function (v) { if (v !== 'Start a new group') Shell.go(Shell.href('b', 2)); } })),
+        h('div', { className: 'sd-field' },
+          h(F.Input, { label: 'Group name', value: groupName, onChange: function (e) { setGroupName(e.target.value); }, error: nameError,
+            description: nameError ? 'Enter a group name.' : 'Your group sees this name when they join, so use one they’ll recognize.', name: 'sd-group-name' })),
+        h('div', { className: 'sd-field' },
+          h(F.Dropdown, { label: 'Group type', showLabel: true, options: TYPES, value: groupType,
+            onChange: function (v) { if (v === 'Family') Shell.go(Shell.href('c', 2)); else setGroupType(v); } })),
+        h(Question, { name: 'under18', question: 'Will anyone under 18 pack with this group?', options: ['Yes', 'No'],
+          value: under18, onChange: setUnder18, help: 'We’ll ask each volunteer’s guardian for consent.' }),
+        h(UI.Note, { className: 'sd-help' }, 'You can change who can find and join your group in Group settings.'),
+        h('div', { className: 'sd-spots' },
+          h(F.QuantityStepper, { label: 'How many spots?', value: spots, min: 1, onChange: setSpots, name: 'sd-spots' }),
+          h(UI.Note, { className: 'sd-help' }, 'Count everyone who’ll pack, including people who haven’t joined yet. Not sure? Take your best guess. You can change it later.'))),
+      h(UI.Rule),
+      h(Question, { name: 'packing', className: 'sd-question--packing', question: 'Are you packing too?', options: PACKING,
+        value: packing, onChange: setPacking, help: 'You’ll choose who’s coming and invite the rest of your group after you reserve.' }),
+      h('div', { className: 'sd-youth' },
+        h(UI.Note, { className: 'sd-help' }, 'Youth groups pack alongside adults: one adult for every four students in grades 7–⁠12, and more for younger grades.'),
+        h(F.ArrowLink, { href: '#', label: 'See the age and ratio rules' })),
+      h(UI.Actions, { label: 'Continue to guidelines', href: Shell.href('d', 3), onClick: next }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

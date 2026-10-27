@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="327" height="173.8" viewBox="0 0 327 173.8" aria-hidden="true">
+  <!-- Figma "Map thumbnail — stylised static map" (mobile, Event details · Upcoming), rebuilt from its layer geometry. -->
+  <clipPath id="c"><rect width="327" height="173.8" /></clipPath>
+  <g clip-path="url(#c)">
+    <rect width="327" height="173.8" fill="#f1f0ec"/>
+    <rect x="-8" y="104" width="96" height="62" fill="#cde5c2"/>
+    <rect x="338" y="-6" width="88" height="52" fill="#cde5c2"/>
+    <rect x="250" y="128" width="74" height="54" fill="#cde5c2"/>
+    <rect x="0" y="9" width="450" height="5" fill="#e4e2dc"/>
+    <rect x="0" y="35" width="450" height="5" fill="#e4e2dc"/>
+    <rect x="0" y="61" width="450" height="5" fill="#e4e2dc"/>
+    <rect x="0" y="87" width="450" height="5" fill="#e4e2dc"/>
+    <rect x="0" y="113" width="450" height="5" fill="#e4e2dc"/>
+    <rect x="0" y="139" width="450" height="5" fill="#e4e2dc"/>
+    <rect x="0" y="165" width="450" height="5" fill="#e4e2dc"/>
+    <rect x="21" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="65" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="109" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="153" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="197" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="241" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="285" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="329" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="373" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="417" y="0" width="5" height="174" fill="#e4e2dc"/>
+    <rect x="0" y="10" width="450" height="4" fill="#ffffff"/>
+    <rect x="0" y="36" width="450" height="4" fill="#ffffff"/>
+    <rect x="0" y="62" width="450" height="4" fill="#ffffff"/>
+    <rect x="0" y="88" width="450" height="4" fill="#ffffff"/>
+    <rect x="0" y="114" width="450" height="4" fill="#ffffff"/>
+    <rect x="0" y="140" width="450" height="4" fill="#ffffff"/>
+    <rect x="0" y="166" width="450" height="4" fill="#ffffff"/>
+    <rect x="22" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="66" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="110" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="154" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="198" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="242" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="286" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="330" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="374" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="418" y="0" width="3" height="174" fill="#ffffff"/>
+    <rect x="0" y="85" width="450" height="9" fill="#e4e2dc"/>
+    <rect x="0" y="87" width="450" height="6" fill="#ffffff"/>
+    <rect x="239" y="0" width="9" height="174" fill="#e4e2dc"/>
+    <rect x="241" y="0" width="6" height="174" fill="#ffffff"/>
+    <rect width="540" height="18" fill="#e4e2dc" transform="translate(-40 118) rotate(6)"/>
+    <rect width="540" height="13" fill="#efc97a" transform="translate(-40 121) rotate(6)"/>
+  </g>
+</svg>

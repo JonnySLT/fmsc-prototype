@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="563" height="210" viewBox="0 0 563 210" aria-hidden="true">
+  <!-- Figma "Map thumbnail — stylised static map" (desktop, Event details · Upcoming), rebuilt from its layer geometry. -->
+  <clipPath id="c"><rect width="563" height="210" /></clipPath>
+  <g clip-path="url(#c)">
+    <rect width="563" height="210" fill="#f1f0ec"/>
+    <rect x="-9.8" y="127.2" width="117.4" height="75.8" fill="#cde5c2"/>
+    <rect x="413.3" y="-7.3" width="107.6" height="63.6" fill="#cde5c2"/>
+    <rect x="305.7" y="156.5" width="90.5" height="66" fill="#cde5c2"/>
+    <rect x="0" y="10.7" width="695.7" height="6.1" fill="#e4e2dc"/>
+    <rect x="0" y="42.5" width="695.7" height="6.1" fill="#e4e2dc"/>
+    <rect x="-6.1" y="74.3" width="708" height="6.1" fill="#e4e2dc"/>
+    <rect x="0" y="106.4" width="550.2" height="6.1" fill="#e4e2dc"/>
+    <rect x="0" y="138.2" width="689.6" height="6.1" fill="#e4e2dc"/>
+    <rect x="0" y="170" width="689.6" height="6.1" fill="#e4e2dc"/>
+    <rect x="0" y="201.8" width="689.6" height="6.1" fill="#e4e2dc"/>
+    <rect x="25.7" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="79.5" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="133.3" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="187.1" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="240.9" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="294.7" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="348.5" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="402.3" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="456.1" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="509.9" y="0" width="6.1" height="212.8" fill="#e4e2dc"/>
+    <rect x="0" y="12.2" width="695.7" height="4.9" fill="#ffffff"/>
+    <rect x="0" y="44" width="695.7" height="4.9" fill="#ffffff"/>
+    <rect x="0" y="75.8" width="695.7" height="4.9" fill="#ffffff"/>
+    <rect x="0" y="107.6" width="550.2" height="4.9" fill="#ffffff"/>
+    <rect x="0" y="139.4" width="695.7" height="4.9" fill="#ffffff"/>
+    <rect x="0" y="171.2" width="695.7" height="4.9" fill="#ffffff"/>
+    <rect x="0" y="203" width="695.7" height="4.9" fill="#ffffff"/>
+    <rect x="26.9" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="80.7" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="134.5" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="188.3" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="242.1" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="295.9" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="349.7" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="403.5" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="457.3" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="511.1" y="0" width="3.7" height="212.8" fill="#ffffff"/>
+    <rect x="0" y="103.6" width="673.7" height="11" fill="#e4e2dc"/>
+    <rect x="0" y="106.1" width="695.7" height="7.3" fill="#ffffff"/>
+    <rect x="292.2" y="0" width="11" height="212.8" fill="#e4e2dc"/>
+    <rect x="294.7" y="0" width="7.3" height="212.8" fill="#ffffff"/>
+    <rect width="660.3" height="22" fill="#e4e2dc" transform="translate(-48.9 144) rotate(6)"/>
+    <rect width="660.3" height="15.9" fill="#efc97a" transform="translate(-48.9 147.6) rotate(6)"/>
+  </g>
+</svg>

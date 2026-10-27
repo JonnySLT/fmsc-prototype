@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>32,400 meals packed in Coon Rapids · FMSC</title>
+<meta name="description" content="About 150 volunteers hand-packed 32,400 MannaPack® meals at FMSC Coon Rapids on Saturday, Aug. 8, 2026. See where the food went and photos from the day.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token. Built from Figma "Desktop/Event summary (public)" (4656:65922)
+     and "Mobile/Event summary (public)" (4656:96667). The share dialog, photo viewer and photo tiles follow
+     event-past.html (same Figma overlays). */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol, dl { margin: 0; }
+
+  .es-muted { color: var(--content-secondary); }
+  .ev-muted { color: var(--content-secondary); }
+
+  /* Hero: Figma Hero (Standard) with one Secondary Large "Share this event" button (share icon). The DS hero draws a
+     Gold + Secondary pair; the Gold one is hidden and the share icon rides in the Secondary button's label. */
+  .es-hero .fm-hero__actions > .fm-btn:first-child { display: none; }
+  .es-hero .fm-hero__actions .fm-btn__label { display: inline-flex; align-items: center; gap: var(--space-xs); }
+  /* Figma breaks the desktop H1 after "in" (its 690 column renders the line wider than the browser does). */
+  @media (min-width: 600px) { .es-hero .fm-hero__title { max-width: 650px; } }
+
+  .es-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .es-section--subtle { background: var(--background-subtle); }
+  .es-section--photos { gap: var(--space-sm); }
+  .es-inner { width: 100%; max-width: var(--content-width); display: flex; flex-direction: column; }
+  .es-head { display: flex; align-items: center; gap: var(--space-sm); padding-bottom: var(--space-sm); }
+  .es-head h2 { flex: 1 1 0; min-width: 0; }
+  .es-intro-wrap { gap: var(--space-md); }
+  .es-intro { max-width: 730px; }
+
+  /* 2 · What this event packed */
+  .es-figures { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-lg) var(--space-2xl); }
+  .es-figures .fm-stat { align-items: flex-start; text-align: left; }
+  @media (max-width: 899.98px) { .es-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* 3 · Where the food went */
+  .es-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); align-items: start; }
+  .ev-facts { display: flex; flex-direction: column; gap: var(--space-md); }
+  .ev-fact { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: var(--space-md); align-items: baseline; }
+  .ev-fact dt { color: var(--content-secondary); }
+  .ev-fact dd { margin: 0; color: var(--content-primary); }
+  /* The map art is the Figma "world-reach · Caribbean" layer (img/ev-haiti-map.svg), positioned so Cap-Haïtien sits under the pin.
+     Figma's map frame has no fill, so the section tint shows through the art's translucent sea. */
+  .ev-map { position: relative; overflow: hidden; height: 219px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: transparent; --ev-pin-x: 220px; container-type: inline-size; }
+  .ev-map__art { position: absolute; inset: 0; background: url(img/ev-haiti-map.svg) no-repeat; background-size: 2520px 1654px; background-position: calc(var(--ev-pin-x) - 674px) -638px; }
+  /* Figma pins Cap-Haïtien 220px in and 81px down (the same spot as event-past.html's 200px map). */
+  .ev-map__pin { position: absolute; left: calc(var(--ev-pin-x) - 10px); top: 81px; color: var(--accent-highlight); }
+  .ev-map__label { position: absolute; left: calc(var(--ev-pin-x) + 20px); top: 76px; padding: var(--space-xs); border-radius: var(--radius-sm); background: var(--background-surface); color: var(--content-primary); white-space: nowrap; }
+  @media (max-width: 799.98px) { .es-two { grid-template-columns: minmax(0, 1fr); } }
+
+  /* 4 · Photos from this event (Figma "Event photos", Default; no Select/Download on the public page) */
+  .es-photos { width: 100%; max-width: var(--content-width); display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--card-pad); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); background: var(--background-surface); box-shadow: var(--shadow-md); }
+  .ev-photo-group { display: flex; flex-direction: column; gap: var(--space-sm); }
+  .ev-photo-group + .ev-photo-group { padding-top: var(--space-lg); }
+  .ev-group-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); min-height: 44px; }
+  .ev-group-title { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-xs); }
+  .ev-group-titles { display: flex; flex-direction: column; gap: var(--space-2xs); }
+  .ev-pages { display: flex; align-items: center; gap: var(--space-md); }
+  .ev-pages .fm-pagination { width: auto; padding: 0; }
+  .ev-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-xs); list-style: none; padding: 0; margin: 0; }
+  .ev-tile { position: relative; display: block; width: 100%; aspect-ratio: 1; padding: 0; border: 0; border-radius: var(--radius-sm); overflow: hidden; background: var(--background-subtle); cursor: pointer; }
+  .ev-tile img { width: 100%; height: 100%; object-fit: cover; }
+  .ev-tile:hover img { opacity: 0.9; }
+
+  /* Dialogs and the photo viewer (same as event-past.html) */
+  html.ev-lock { overflow: hidden; }
+  .ev-layer { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: var(--space-md); background: var(--scrim-strong); overflow-y: auto; }
+  .ev-dialog.fm-dialog { width: 528px; max-width: 100%; margin: auto; max-height: none; }
+  .ev-dialog .fm-dialog__body { gap: var(--space-lg); }
+  .ev-dialog .fm-dialog__close { margin-right: calc(-1 * var(--space-sm)); }
+  .ev-preview { width: 100%; overflow: hidden; border-radius: var(--radius-md); background: var(--background-subtle); }
+  .ev-preview__photo { width: 100%; height: 180px; object-fit: cover; }
+  .ev-preview__summary { display: flex; flex-direction: column; gap: var(--space-2xs); padding: var(--space-md); }
+  .ev-preview__thumbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); padding: var(--space-md) var(--space-md) 0; }
+  .ev-preview__thumbs img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); }
+  .ev-share-block { display: flex; flex-direction: column; gap: var(--space-2xs); width: 100%; }
+  .ev-share-row { display: flex; align-items: center; gap: var(--space-sm); }
+  .ev-url { flex: 1 1 0; min-width: 0; padding: var(--space-md); border-radius: var(--radius-md); background: var(--background-subtle); color: var(--content-primary); overflow-wrap: anywhere; }
+  .ev-share-row .fm-btn { flex: none; }
+  .ev-share-to { display: flex; gap: var(--space-sm); }
+  .ev-share-to .fm-btn { flex: 1 1 0; min-width: 0; }
+  .ev-share-note a { color: var(--content-link); text-decoration: none; }
+  .ev-share-note a:hover { text-decoration: underline; }
+  .ev-mask { display: inline-block; width: 24px; height: 24px; background: currentColor; -webkit-mask: var(--ev-mask) center / contain no-repeat; mask: var(--ev-mask) center / contain no-repeat; }
+  .ev-layer.ev-viewer { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: var(--space-md); padding: var(--space-lg); background: var(--background-inverse); overflow: hidden; }
+  .ev-viewer__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); }
+  .ev-viewer__count, .ev-viewer__caption { color: var(--content-inverse); }
+  .ev-viewer__count { width: calc(var(--space-xl) + var(--space-xs)); height: calc(var(--space-2xl) - var(--space-2xs)); align-self: center; }
+  .ev-viewer__count span { display: block; }
+  .ev-viewer__actions, .ev-viewer__bottom { display: flex; gap: var(--space-sm); }
+  .ev-viewer__stage { position: relative; flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: var(--space-md); }
+  .ev-viewer__photo { flex: 1 1 0; min-width: 0; height: 100%; object-fit: contain; }
+  .ev-nav { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-pill); background: var(--background-surface); box-shadow: inset 0 0 0 1px var(--border-subtle); color: var(--graphic-ink); cursor: pointer; }
+  .ev-nav:hover { background: var(--background-subtle); }
+  .ev-viewer .fm-focusable:focus-visible { outline-color: var(--content-inverse); }
+  .ev-viewer__bottom { display: none; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .es-figures { gap: var(--grid-gap); }
+    .es-figures .fm-stat { width: auto; }
+    .ev-fact { display: flex; flex-direction: column; gap: var(--space-2xs); }
+    .ev-map { height: 200px; }
+    .ev-map { --ev-pin-x: 41.3%; }
+    .ev-map__art { background-position: calc(41.3cqw - 674px) -638px; }
+    .es-photos .es-head { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+    .es-photos .es-head h2 { flex: none; }
+    /* Figma mobile tiles are 103 x 103 (radius-sm), 8 apart. */
+    .ev-grid { grid-template-columns: repeat(3, minmax(0, 103px)); }
+    .ev-pages .fm-pagination__count { display: none; }
+
+    .ev-dialog.fm-dialog { width: 100%; }
+    .ev-dialog .fm-dialog__body, .ev-share-block, .ev-preview__summary { gap: var(--space-sm); }
+    .ev-preview__photo { height: 140px; }
+    .ev-share-to { flex-direction: column; }
+    .ev-share-to .fm-btn { flex: none; width: 100%; }
+    .ev-viewer__actions .ev-hide-m { display: none; }
+    .ev-viewer__count { width: auto; height: auto; }
+    .ev-viewer__count span { display: inline; }
+    .ev-viewer__bottom { display: flex; }
+    .ev-viewer__bottom .fm-btn { flex: 1 1 0; }
+    .ev-viewer__stage { gap: 0; }
+    .ev-nav { position: absolute; z-index: 1; top: 50%; transform: translateY(-50%); opacity: 0; }
+    .ev-nav:focus-visible { opacity: 1; }
+    .ev-nav--prev { left: var(--space-xs); }
+    .ev-nav--next { right: var(--space-xs); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement;
+  function img(n) { return 'img/' + n; }
+
+  /* SAMPLE DATA (Figma): the public page for the Aug. 8, 2026, packing event at FMSC Coon Rapids — the same event as
+     event-past.html's default shift, so the photos, share link and dialog match. */
+  var EVENT_TITLE = 'Packing event at FMSC Coon Rapids', SHARE_URL = 'fmsc.org/packed/7Kq2Xr';
+  var packingAlts = {
+    p1: 'A volunteer in a hairnet carries a box of MannaPack® meals between packing tables',
+    p2: 'Smiling volunteers in hairnets and U.S. Bank shirts at a packing table',
+    p3: 'A volunteer in a hairnet laughs while passing a scoop across the packing line',
+    p4: 'Two boys in hairnets hold up sealed meal bags beside a MannaPack® box',
+    p5: 'A girl in a hairnet rests her arms on a box and smiles at the camera',
+    p6: 'Kids in matching blue shirts and hairnets hold scoops at a packing table',
+    p7: 'Volunteers scoop rice and soy into funnels at a packing table, smiling up at the camera',
+    p8: 'A volunteer carries a tall stack of MannaPack® boxes across the warehouse',
+    p9: 'A volunteer in a hairnet packs sealed meal bags into a box',
+    p10: 'Volunteers in yellow shirts and hairnets fill meal bags with scoops'
+  };
+  var haitiAlts = {
+    h1: 'Children smile over green bowls of rice at a school meal',
+    h2: 'A boy eats a meal of rice from a bowl at a wooden table',
+    h3: 'Children eat together from orange and pink bowls at a blue table',
+    h4: 'A girl smiles while carrying a bag of food on her shoulder',
+    h5: 'Two children sit on the ground eating from bowls and smiling',
+    h6: 'A boy eats a spoonful of rice and vegetables from a bowl'
+  };
+  var PACK_N = 24, photos = [];
+  for (var i = 0; i < PACK_N; i++) { var k = 'p' + ((i % 10) + 1); photos.push({ key: 'pack-' + i, id: k, alt: packingAlts[k], caption: 'Packing day · FMSC Coon Rapids · Aug. 8, 2026' }); }
+  ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(function (k, j) { photos.push({ key: 'haiti-' + j, id: k, alt: haitiAlts[k], caption: 'In Haiti · From Hope for Haiti Children’s Center' }); });
+  photos.forEach(function (p, n) { p.index = n; p.thumb = img('ev-thumb-' + p.id + '.jpg'); p.src = img('ev-photo-' + p.id + '.jpg'); });
+
+  /* ---------- Modal layers: portal, focus trap, Escape, scroll lock, background inert (as event-past.html) ---------- */
+  var layers = [];
+  function syncLayers() {
+    var root = document.getElementById('root');
+    if (root) root.inert = layers.length > 0;
+    layers.forEach(function (el, i) { el.inert = i < layers.length - 1; });
+    document.documentElement.classList.toggle('ev-lock', layers.length > 0);
+  }
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  function Layer(p) {
+    var ref = React.useRef(null), closeRef = React.useRef(p.onClose), keyRef = React.useRef(p.onKey);
+    closeRef.current = p.onClose; keyRef.current = p.onKey;
+    React.useLayoutEffect(function () {
+      var el = ref.current, prev = document.activeElement;
+      layers.push(el); syncLayers();
+      var first = el.querySelector('[data-autofocus]') || el.querySelector(FOCUSABLE);
+      if (first) first.focus();
+      function onKey(e) {
+        if (layers[layers.length - 1] !== el) return;
+        if (e.key === 'Escape') { e.preventDefault(); closeRef.current(); return; }
+        if (e.key === 'Tab') {
+          var list = Array.prototype.filter.call(el.querySelectorAll(FOCUSABLE), function (n) { return n.offsetParent !== null || n === document.activeElement; });
+          if (!list.length) return;
+          var a = list[0], b = list[list.length - 1];
+          if (e.shiftKey && (document.activeElement === a || !el.contains(document.activeElement))) { e.preventDefault(); b.focus(); }
+          else if (!e.shiftKey && (document.activeElement === b || !el.contains(document.activeElement))) { e.preventDefault(); a.focus(); }
+          return;
+        }
+        if (keyRef.current) keyRef.current(e);
+      }
+      document.addEventListener('keydown', onKey);
+      return function () {
+        document.removeEventListener('keydown', onKey);
+        var at = layers.indexOf(el); if (at > -1) layers.splice(at, 1);
+        syncLayers();
+        var back = (p.returnFocus && p.returnFocus.current) || prev;
+        if (back && document.contains(back) && back.focus) back.focus();
+      };
+    }, []);
+    return ReactDOM.createPortal(
+      h('div', { ref: ref, className: 'ev-layer ' + (p.className || ''), onMouseDown: function (e) { if (p.scrimCloses && e.target === e.currentTarget) closeRef.current(); } }, p.children),
+      document.body);
+  }
+  function CopyButton(p) {
+    var s = React.useState(false), done = s[0], set = s[1];
+    React.useEffect(function () { if (!done) return undefined; var t = setTimeout(function () { set(false); }, 2500); return function () { clearTimeout(t); }; }, [done]);
+    return h(React.Fragment, null,
+      h(F.Button, { variant: 'secondary', size: 'medium', icon: done ? 'check' : undefined, 'aria-label': done ? 'Copied' : 'Copy link',
+        onClick: function () { try { navigator.clipboard && navigator.clipboard.writeText('https://' + p.url).catch(function () {}); } catch (e) {} set(true); } },
+        done ? 'Copied' : 'Copy'),
+      h('span', { className: 'fm-visually-hidden', role: 'status', 'aria-live': 'polite' }, done ? 'Link copied' : ''));
+  }
+  function LinkedInIcon() { return h('span', { className: 'ev-mask', 'aria-hidden': 'true', style: { '--ev-mask': 'url(img/ev-linkedin.svg)' } }); }
+  function ShareBody(p) {
+    var mobile = F.useIsMobile();
+    return h(React.Fragment, null,
+      p.preview,
+      h('div', { className: 'ev-share-block' },
+        h('h3', { className: 'label-small' }, 'Copy link'),
+        h('p', { className: 'caption ev-muted' }, p.why),
+        h('div', { className: 'ev-share-row' },
+          h('p', { className: 'ev-url body-small' }, p.url),
+          h(CopyButton, { url: p.url }))),
+      h('div', { className: 'ev-share-block' },
+        h('h3', { className: 'label-small' }, 'Share to'),
+        h('div', { className: 'ev-share-to' },
+          mobile && p.more ? h(F.Button, { variant: 'primary', size: 'medium', icon: 'share', onClick: function () {
+            if (navigator.share) navigator.share({ title: p.title, url: 'https://' + p.url }).catch(function () {});
+          } }, 'More sharing options') : null,
+          h(F.Button, { variant: 'secondary', size: 'medium', icon: 'mail', href: 'mailto:?subject=' + encodeURIComponent(p.title) + '&body=' + encodeURIComponent('https://' + p.url) }, 'Email'),
+          h(F.Button, { variant: 'secondary', size: 'medium', icon: 'brand-facebook', href: '#' }, 'Facebook'),
+          h(F.Button, { variant: 'secondary', size: 'medium', icon: h(LinkedInIcon), href: '#' }, 'LinkedIn')),
+        h('p', { className: 'caption ev-muted ev-share-note' }, 'Posting to Instagram? ', h('a', { className: 'fm-focusable', href: p.download, download: '' }, p.downloadLabel))));
+  }
+  /* Figma "Dialog · Share this event" (4656:65895 / 4656:96912), as on event-past.html. */
+  function ShareEventDialog(p) {
+    return h(Layer, { onClose: p.onClose, scrimCloses: true, returnFocus: p.returnFocus },
+      h(F.Dialog, { breakpoint: 'auto', modal: true, className: 'ev-dialog', title: 'Share this event', closeLabel: 'Close', onClose: p.onClose, actions: null },
+        h(ShareBody, {
+          more: true, title: EVENT_TITLE, url: SHARE_URL,
+          why: 'Anyone with the link can see this. Names stay private.',
+          download: img('ev-photo-p1.jpg'), downloadLabel: 'Download the image',
+          preview: h('div', { className: 'ev-preview' },
+            h('img', { className: 'ev-preview__photo', src: img('ev-photo-p1.jpg'), alt: '' }),
+            h('div', { className: 'ev-preview__summary' },
+              h('p', { className: 'label-small' }, EVENT_TITLE),
+              h('p', { className: 'caption ev-muted' }, 'Saturday, Aug. 8, 2026 · three packing sessions'),
+              h('p', { className: 'caption ev-muted' }, '32,400 meals packed, headed to Haiti')))
+        })));
+  }
+  function SharePhotosDialog(p) {
+    var n = p.items.length, word = n === 1 ? '1 photo' : n + ' photos';
+    return h(Layer, { onClose: p.onClose, scrimCloses: true, returnFocus: p.returnFocus },
+      h(F.Dialog, { breakpoint: 'auto', modal: true, className: 'ev-dialog', title: 'Share ' + word, closeLabel: 'Close', onClose: p.onClose, actions: null },
+        h(ShareBody, {
+          title: word + ' from FMSC Coon Rapids', url: SHARE_URL + '/photos',
+          why: n === 1 ? 'Anyone with the link can see this photo.' : 'Anyone with the link can see these ' + n + ' photos.',
+          download: n === 1 ? p.items[0].src : '#', downloadLabel: n === 1 ? 'Download the photo' : 'Download the photos',
+          preview: h('div', { className: 'ev-preview' },
+            h('div', { className: 'ev-preview__thumbs' }, p.items.map(function (x) { return h('img', { key: x.key, src: x.thumb, alt: x.alt }); })),
+            h('div', { className: 'ev-preview__summary' },
+              h('p', { className: 'label-small' }, word + ' from FMSC Coon Rapids'),
+              h('p', { className: 'caption ev-muted' }, 'Saturday, Aug. 8, 2026')))
+        })));
+  }
+  function PhotoViewer(p) {
+    var mobile = F.useIsMobile();
+    var cur = photos[p.index], total = photos.length;
+    function go(d) { p.onIndex((p.index + d + total) % total); }
+    var touch = React.useRef(null);
+    return h(Layer, { className: 'ev-viewer', onClose: p.onClose, returnFocus: p.returnFocus,
+      onKey: function (e) { if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); } else if (e.key === 'ArrowRight') { e.preventDefault(); go(1); } } },
+      h('div', { role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Photo viewer', style: { display: 'contents' } },
+        h('div', { className: 'ev-viewer__top' },
+          h('p', { className: 'caption ev-viewer__count', 'aria-live': 'polite' }, h('span', null, (p.index + 1) + ' of'), ' ', h('span', null, String(total))),
+          h('div', { className: 'ev-viewer__actions' },
+            h(F.Button, { variant: 'light', size: 'medium', icon: 'share', className: 'ev-hide-m', onClick: function (e) { p.onShare(cur, e.currentTarget); } }, 'Share'),
+            h(F.Button, { variant: 'light', size: 'medium', icon: 'download', className: 'ev-hide-m', href: cur.src, download: '' }, 'Download'),
+            h(F.Button, { variant: 'light', size: 'medium', icon: 'x', onClick: p.onClose, 'data-autofocus': true }, 'Close'))),
+        h('div', { className: 'ev-viewer__stage',
+          onTouchStart: function (e) { touch.current = e.touches[0].clientX; },
+          onTouchEnd: function (e) { if (touch.current == null) return; var dx = e.changedTouches[0].clientX - touch.current; touch.current = null; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); } },
+          h('button', { type: 'button', className: 'ev-nav ev-nav--prev fm-focusable', 'aria-label': 'Previous photo', onClick: function () { go(-1); } }, h(F.Icon, { name: 'chevron-left', size: 20 })),
+          h('img', { className: 'ev-viewer__photo', src: cur.src, alt: cur.alt }),
+          h('button', { type: 'button', className: 'ev-nav ev-nav--next fm-focusable', 'aria-label': 'Next photo', onClick: function () { go(1); } }, h(F.Icon, { name: 'chevron-right', size: 20 }))),
+        h('p', { className: 'caption ev-viewer__caption' }, cur.caption),
+        mobile ? h('div', { className: 'ev-viewer__bottom' },
+          h(F.Button, { variant: 'light', size: 'medium', icon: 'share', onClick: function (e) { p.onShare(cur, e.currentTarget); } }, 'Share'),
+          h(F.Button, { variant: 'light', size: 'medium', icon: 'download', href: cur.src, download: '' }, 'Download')) : null));
+  }
+
+  function Head(p) {
+    var mobile = F.useIsMobile();
+    return h('div', { className: 'es-head' },
+      h(F.IconBadge, { color: 'brand', size: 'small', icon: p.icon }),
+      h('h2', { className: mobile ? 'heading-h4-mobile' : 'heading-h4', id: p.id }, p.title));
+  }
+
+  /* Photos: Figma "Event photos" (Default). Tiles open the photo viewer, as on event-past.html. */
+  function Photos(p) {
+    var mobile = F.useIsMobile();
+    var per = mobile ? 6 : 12;
+    var pg = React.useState(0), page = pg[0], setPage = pg[1];
+    var pages = Math.ceil(PACK_N / per), cur = Math.min(page, pages - 1);
+    var pack = photos.slice(0, PACK_N).slice(cur * per, cur * per + per), haiti = photos.slice(PACK_N);
+    function grid(list, label) {
+      return h('ul', { className: 'ev-grid', 'aria-label': label }, list.map(function (x) {
+        return h('li', { key: x.key }, h('button', { type: 'button', className: 'ev-tile fm-focusable', 'aria-label': 'Open photo ' + (x.index + 1) + ' of ' + photos.length + ': ' + x.alt,
+          onClick: function (e) { p.onOpen(x, e.currentTarget); } }, h('img', { src: x.thumb, alt: '' })));
+      }));
+    }
+    var h4 = mobile ? 'heading-h4-mobile' : 'heading-h4';
+    return h('div', { className: 'es-photos' },
+      h(Head, { icon: 'camera', title: 'Photos from this event', id: 'es-photos-title' }),
+      h('div', { className: 'ev-photo-group' },
+        h('div', { className: 'ev-group-head' },
+          h('h3', { className: 'ev-group-title' }, h('span', { className: h4 }, 'Packing day'), h('span', { className: 'body-base ev-muted' }, PACK_N + ' photos')),
+          h('div', { className: 'ev-pages' },
+            h(F.Pagination, { count: (cur * per + 1) + '–' + Math.min(PACK_N, cur * per + per) + ' of ' + PACK_N, ariaLabel: 'Packing day photo pages',
+              previousLabel: 'Previous photos', nextLabel: 'Next photos', nextDisabled: cur === pages - 1,
+              onPrevious: function () { setPage(Math.max(0, cur - 1)); }, onNext: function () { setPage(Math.min(pages - 1, cur + 1)); } }))),
+        grid(pack, 'Packing day photos')),
+      h('div', { className: 'ev-photo-group' },
+        h('div', { className: 'ev-group-titles' },
+          h('h3', { className: 'ev-group-title' }, h('span', { className: h4 }, 'In Haiti'), h('span', { className: 'body-base ev-muted' }, '6 photos')),
+          h('p', { className: 'body-base ev-muted' }, 'From Hope for Haiti Children’s Center')),
+        grid(haiti, 'Photos from Haiti')));
+  }
+
+  function Summary() {
+    var mobile = F.useIsMobile();
+    var bp = 'auto';
+    var sh = React.useState(false), shareOpen = sh[0], setShareOpen = sh[1];
+    var vw = React.useState(null), viewer = vw[0], setViewer = vw[1];
+    var sp = React.useState(null), sharePhotos = sp[0], setSharePhotos = sp[1];
+    var heroRef = React.useRef(null), shareReturn = React.useRef(null), viewerReturn = React.useRef(null), photosReturn = React.useRef(null);
+    React.useEffect(function () {
+      var b = heroRef.current && heroRef.current.querySelector('.fm-hero__actions .fm-btn:last-child');
+      if (b) b.setAttribute('aria-haspopup', 'dialog');
+    });
+    var figures = [['32,400', 'meals packed'], ['88', 'children fed for a year'], ['~150', 'volunteers across the day'], ['3', 'packing sessions']];
+    return h(React.Fragment, null,
+      h(window.SiteNav, { current: 'event' }),
+      h('main', { id: 'main' },
+        /* 1 · Hero */
+        h('div', { ref: heroRef, style: { display: 'contents' } },
+          h(F.Hero, {
+            breakpoint: bp, type: 'standard', className: 'es-hero',
+            eyebrow: 'PACKING EVENT · SATURDAY, AUG. 8, 2026',
+            h1: '32,400 meals packed in Coon Rapids',
+            body: 'About 150 volunteers hand-packed MannaPack® meals at Feed My Starving Children (FMSC), a Christian nonprofit, over three packing sessions.',
+            secondaryLabel: h(React.Fragment, null, h(F.Icon, { name: 'share', size: 24 }), 'Share this event'),
+            onSecondary: function (e) { shareReturn.current = e.currentTarget; setShareOpen(true); },
+            image: img('ev-summary-hero.jpg'),
+            imageAlt: 'A volunteer in a cap and hairnet carries a MannaPack® box past packing tables, with volunteers in hairnets working behind him'
+          })),
+
+        /* 2 · What this event packed */
+        h('section', { className: 'es-section', 'aria-labelledby': 'es-packed-title' },
+          h('div', { className: 'es-inner' }, h(Head, { icon: 'bowl', title: 'What this event packed', id: 'es-packed-title' })),
+          h('div', { className: 'es-inner' },
+            h('div', { className: 'es-figures' }, figures.map(function (s) {
+              /* DS StatBlock has no mobile variant; below 600 the same markup with Display/XL mobile (Figma mobile stat). */
+              return mobile
+                ? h('div', { key: s[1], className: 'fm-stat' }, h('p', { className: 'fm-stat__value display-xl-mobile' }, s[0]), h('p', { className: 'fm-stat__label body-base' }, s[1]))
+                : h(F.StatBlock, { key: s[1], value: s[0], label: s[1] });
+            })))),
+
+        /* 3 · Where the food went */
+        h('section', { className: 'es-section es-section--subtle', 'aria-labelledby': 'es-where-title' },
+          h('div', { className: 'es-inner es-intro-wrap' },
+            h(Head, { icon: 'globe', title: 'Where the food went', id: 'es-where-title' }),
+            h('p', { className: 'es-intro es-muted ' + (mobile ? 'body-large-mobile' : 'body-large') }, 'FMSC donates meals to food distribution partners that already work in the communities they serve. More than 99% of FMSC meals have safely reached their intended destination.')),
+          h('div', { className: 'es-inner' },
+            h('div', { className: 'es-two' },
+              h('dl', { className: 'ev-facts' }, [['Left the warehouse', 'Sept. 2, 2026'], ['Arrived in', 'Haiti'], ['Partner', 'Hope for Haiti Children’s Center'], ['Served through', 'A school feeding program in Cap-Haïtien']].map(function (r) {
+                return h('div', { key: r[0], className: 'ev-fact' }, h('dt', { className: 'body-small' }, r[0]), h('dd', { className: 'body-base' }, r[1]));
+              })),
+              h('div', { className: 'ev-map', role: 'img', 'aria-label': 'Map of the Caribbean with a pin on Cap-Haïtien, Haiti' },
+                h('div', { className: 'ev-map__art' }),
+                h(F.Icon, { name: 'map-pin-filled', size: 21, className: 'ev-map__pin' }),
+                h('span', { className: 'ev-map__label label-small', 'aria-hidden': 'true' }, 'Cap-Haïtien, Haiti'))))),
+
+        /* 4 · Photos from the event */
+        h('section', { className: 'es-section es-section--photos', 'aria-labelledby': 'es-photos-title' },
+          h(Photos, { onOpen: function (x, el) { viewerReturn.current = el; setViewer(x.index); } })),
+
+        /* 5 · CTA band */
+        h(F.CTABand, {
+          breakpoint: bp, eyebrow: '',
+          headline: 'Pack meals with FMSC',
+          subtext: 'A packing session runs two hours. You can come on your own or bring a group, and each meal costs 29 cents.',
+          primaryLabel: 'Find a packing event', primaryHref: 'volunteer.html',
+          secondaryLabel: 'Give meals', secondaryHref: 'donate.html',
+          showTrustStrip: true,
+          trustIllustrations: [img('donations-recurring.svg'), img('food-mannapack-bag.svg'), img('volunteers-celebrate.svg')]
+        })),
+
+      h(F.Footer, {
+        breakpoint: bp,
+        logoSrc: img('fmsc-logo-text-only.png'),
+        /* Figma footer copy on this frame ("Our finances", "Host an FMSC MobilePack™ event"). */
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }),
+
+      shareOpen ? h(ShareEventDialog, { onClose: function () { setShareOpen(false); }, returnFocus: shareReturn }) : null,
+      viewer != null ? h(PhotoViewer, { index: viewer, onIndex: setViewer, onClose: function () { setViewer(null); }, returnFocus: viewerReturn,
+        onShare: function (x, el) { photosReturn.current = el; setSharePhotos([x]); } }) : null,
+      sharePhotos ? h(SharePhotosDialog, { items: sharePhotos, onClose: function () { setSharePhotos(null); }, returnFocus: photosReturn }) : null);
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Summary));
+</script>
+</body>
+</html>

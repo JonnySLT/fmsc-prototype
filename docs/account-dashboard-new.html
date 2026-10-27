@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · FMSC</title>
+<meta name="description" content="Your new FMSC account dashboard: the meals you pack and fund, your next packing shift and your giving show up here.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js.
+     Figma: "Account/Dashboard — New account" (desktop 4656:66306, mobile 4656:97045): the dashboard just after
+     creating an account, every card in its empty state. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Two cards side by side; one column when the content column is under 800px (1024 and down). */
+  .an-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); align-items: stretch; }
+  .an-pair--impact { gap: var(--grid-gap); }
+  @container ac-content (max-width: 799.98px) { .an-pair { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Empty states fill the rest of their card (Figma: the packed / attention panels grow to the row height). */
+  .ac-card > .fm-empty-state { flex: 1 1 auto; min-width: 0; }
+  /* Figma "Needs your attention": the all-clear panel centres its content vertically. */
+  .an-clear .fm-empty-state { justify-content: center; }
+  /* Figma draws the 48px (40px mobile) empty-state icons with a 2px stroke; the DS scales the 24px icon's stroke up. */
+  .fm-empty-state__icon svg * { vector-effect: non-scaling-stroke; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    /* Figma mobile: these card headers have no padding under them; "Needs your attention" keeps space-sm. */
+    body .ac-card__header { padding-bottom: 0; }
+    body .an-clear .ac-card__header { padding-bottom: var(--space-sm); }
+    .an-pair { grid-template-columns: minmax(0, 1fr); gap: var(--section-gap); }
+    .an-pair--impact { gap: var(--grid-gap); }
+    /* Figma mobile lists "What you've given" before "What you've packed" */
+    .an-given { order: -1; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+  var img = function (n) { return 'img/' + n; };
+
+  /* Empty state (DS EmptyState, Breakpoint auto). Headline + optional line + optional primary button. */
+  function Empty(p) {
+    return h(F.EmptyState, {
+      breakpoint: 'auto', icon: p.icon, illustration: p.illustration, headline: p.headline,
+      supportingText: p.text, showSupportingText: !!p.text,
+      showActions: !!p.action, showPrimary: !!p.action, showSecondary: false,
+      primaryLabel: p.action, primaryHref: p.href
+    });
+  }
+
+  function Dashboard() {
+    return h(window.AccountShell, { current: 'dashboard' },
+
+      /* 1 · Welcome + what you've packed / given */
+      h(UI.Panel, { className: 'an-impact', title: 'Welcome, ' + window.FMSCData.profile.firstName() },
+        h('div', { className: 'an-pair an-pair--impact' },
+          h(UI.Card, { tone: 'brand', icon: 'salad', title: 'What you’ve packed' },
+            h(Empty, { illustration: img('food-bowl.svg'), headline: 'Nothing packed yet',
+              text: 'Your meals, hours and the countries they reach show up here after your first shift.' })),
+          h(UI.Card, { tone: 'brand', icon: 'currency-dollar', title: 'What you’ve given', className: 'an-given' },
+            h(Empty, { illustration: img('donations-recurring.svg'), headline: 'Nothing given yet',
+              text: 'Your lifetime giving and the meals it has funded show up here.', action: 'Give a gift', href: 'donate.html' })))),
+
+      /* 3 · Your next shift + 2 · Needs your attention */
+      h('div', { className: 'an-pair' },
+        h(UI.Card, { icon: 'calendar-event', title: 'Your next packing shift' },
+          h(Empty, { icon: 'calendar', headline: 'No shifts booked yet', action: 'Find a packing shift', href: 'volunteer.html' })),
+        h(UI.Card, { icon: 'list-check', title: 'Needs your attention', className: 'an-clear' },
+          h(Empty, { icon: 'circle-check', headline: 'You’re all caught up!' }))),
+
+      /* Where your meals have gone + 5 · Your giving this year */
+      h('div', { className: 'an-pair' },
+        h(UI.Card, { icon: 'world', title: 'Where your meals have gone' },
+          h(Empty, { icon: 'globe', headline: 'No meals to trace yet' })),
+        h(UI.Card, { mask: img('donations-recurring.svg'), title: 'Your giving this year' },
+          h(Empty, { illustration: img('donations-recurring.svg'), headline: 'No gifts in 2026' }))));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Dashboard));
+</script>
+</body>
+</html>

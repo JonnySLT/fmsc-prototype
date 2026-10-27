@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start a fundraiser · FMSC</title>
+<meta name="description" content="Set a goal, share your page with friends and family, and see each gift counted in meals. Start a Feed My Starving Children fundraiser or find one to give to.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .fr-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); }
+  .fr-section--subtle { background: var(--background-subtle); }
+  .fr-inner { width: 100%; max-width: var(--content-width); }
+  .fr-stack { display: flex; flex-direction: column; gap: var(--section-gap); }
+
+  /* DS sections that own their padding: keep the content on the 1200 column at any width. */
+  .fr-setup, .fr-find { padding-left: max(var(--margin-x), calc((100% - var(--content-width)) / 2)); padding-right: max(var(--margin-x), calc((100% - var(--content-width)) / 2)); }
+
+  /* Video guide: 588 / 588 split, copy centred on the video. */
+  .fr-video .fm-video { width: 100%; height: auto; aspect-ratio: 588 / 331; }
+  .fr-video__frame { position: relative; width: 100%; aspect-ratio: 588 / 331; border-radius: var(--radius-lg); overflow: hidden; background: var(--background-inverse); }
+  .fr-video__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .fr-video__copy { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); }
+  .fr-video__copy .fm-arrow-link { min-height: 44px; }
+
+  /* Pick an occasion: 3 + 2 cards, 384 wide, second row centred. */
+  .fr-occasions { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--grid-gap); }
+  .fr-occasions > li { display: flex; flex: 0 1 calc((100% - 2 * var(--grid-gap)) / 3); min-width: 0; }
+  .fr-occasions .fm-badge-card { width: 100%; }
+  .fr-occasions .fm-badge-card__link { margin-top: auto; }
+  /* Figma desktop cards are a fixed 316 tall (the body text box fills); mobile cards hug. */
+  @media (min-width: 600px) { .fr-occasions .fm-badge-card { min-height: 316px; } }
+
+  /* Figma draws the 1px strokes of the switches and the search card inside the layout (they add 2px). */
+  .fr-setup .fm-setup__switch, .fr-find .fm-finder__switch { padding: calc(var(--space-3xs) + 1px); }
+  .fr-find .fm-finder__card-search { padding: calc(var(--card-pad) + 1px); }
+  /* Figma Fundraiser card: the button row follows the body's space-sm gap with no extra top padding (card 470). */
+  .fr-find .fm-finder__card-actions { padding-top: 0; }
+  /* Four fundraiser cards get too narrow below ~1024: two per row (the DS row never wraps). */
+  @media (min-width: 600px) and (max-width: 1099.98px) {
+    .fr-find .fm-finder__row { flex-wrap: wrap; }
+    .fr-find .fm-finder__card { flex: 1 1 calc(50% - var(--grid-gap)); }
+  }
+  /* Keep the whole placeholder visible: the search field takes its own line when the row gets tight. */
+  @media (min-width: 600px) and (max-width: 799.98px) {
+    .fr-find .fm-finder__where { flex-wrap: wrap; }
+    .fr-find .fm-finder__field { flex: 1 1 100%; }
+  }
+  @container fr-occ (max-width: 900px) { .fr-occasions > li { flex-basis: calc((100% - var(--grid-gap)) / 2); } }
+  .fr-occ-wrap { container: fr-occ / inline-size; width: 100%; }
+
+  /* Share it and track it: Figma Icon badge Medium is drawn 64px (DS Medium is 56). */
+  .fr-share .fm-icon-badge--medium { width: 64px; height: 64px; }
+  /* …with the 48px icon drawn at a 2px stroke (the DS icon scales its 24px artwork, so the stroke doubles to 4px) */
+  .fr-share .fm-icon-badge .fm-icon path { stroke-width: 1; }
+  /* Set up: Figma's step connectors are dashed (6 on, 6 off); the DS Set-up section draws them solid */
+  .fr-setup .fm-setup__connector { border-top-style: dashed; }
+  .fr-setup.fm-setup--mobile .fm-setup__connector { border-left-style: dashed; }
+  .fr-share .fm-section-card-grid__inner, .fr-share > * { width: 100%; max-width: var(--content-width); }
+  .fr-share { align-items: center; }
+  .fr-share .fm-badge-card { width: 100%; height: 100%; }
+
+  /* FAQ: Figma answers sit in a 607px text box; each item's 1px rule adds to its height (97px closed). */
+  .fr-faq .fm-section-faq__answer { max-width: 607px; }
+  .fr-faq .fm-section-faq__item { box-shadow: none; border-top: 1px solid var(--border-subtle); }
+
+  /* CTA band: Figma hides the eyebrow; subtext is content/on-brand, as in the frame. */
+  .fr-cta .fm-cta-band__eyebrow:empty { display: none; }
+  .fr-cta .fm-cta-band__subtext { color: var(--content-on-brand); }
+  .fm-footer--desktop .fm-footer__legal-copy { max-width: 968px; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .fr-video__stack { display: flex; flex-direction: column; gap: var(--grid-gap); }
+    .fr-occasions { flex-direction: column; flex-wrap: nowrap; }
+    .fr-occasions > li { flex: none; }
+    .fr-faq .fm-section-faq__answer { max-width: none; }
+    /* Figma Segmented control Width=Fill: two equal segments (the DS segment keeps its label's min-content width). */
+    .fr-setup .fm-setup__segment { min-width: 0; padding-left: var(--space-2xs); padding-right: var(--space-2xs); }
+    /* DS Badge card has no Mobile variant: the title renders in the mobile H4 (18/24) below 600px. */
+    .fr-title-m { display: block; }
+    /* DS fix: Footer Mobile keeps the desktop flex-basis (140px) on its stacked columns, which becomes height. */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+
+  /* Businesses tab: not drawn in the usability frames; illustrations from the DS component's Version=Businesses
+     (Legacy/document, Extras/storefront, Online/laptop, Marketplace/people-group). Titles and copy come from the DS defaults. */
+  var businessIllustrations = ['fr-legacy-document.svg', 'fr-extras-storefront.svg', 'fr-online-laptop.svg', 'fr-marketplace-people-group.svg'];
+  var setupSteps = [
+    { title: 'Tell your story', description: 'Add your name, a photo and a few lines on why you’re raising meals. Friends will read it before they give.', illustration: img('fr-marketplace-person.svg') },
+    { title: 'Set a meal goal', description: 'Pick a dollar goal, and your page shows it in meals too. At 29 cents a meal, $100 pays for 344 meals.', illustration: img('fr-donations-cost-per-meal.svg') },
+    { title: 'Pick an end date', description: 'Choose when your fundraiser closes. A birthday or race day gives people a reason to give now.', illustration: img('fr-online-calendar.svg') },
+    { title: 'Preview and share', description: 'Preview your fundraiser page, then publish it and send the link by email, text or social post.', illustration: img('fr-social-share.svg') }
+  ];
+  var occasions = [
+    ['Birthdays, weddings and anniversaries', 'Ask for meals instead of gifts, and let guests see the impact of their donation.', 'volunteers-celebrate.svg', 'Start a celebration fundraiser'],
+    ['Memorial and tribute fundraisers', 'Remember someone by feeding kids in their name. Family and friends can read their story and give.', 'legacy-heart-cross.svg', 'Start a memorial fundraiser'],
+    ['Races, challenges and team goals', 'Set a meal goal for your 5K, a reading challenge or your team’s season, and share your progress as you go.', 'volunteers-team-raise.svg', 'Start a challenge fundraiser'],
+    ['Church, school and workplace drives', 'Bring a congregation, classroom or office together around one goal.', 'fr-volunteers-group-hands.svg', 'Start a group drive'],
+    ['Holiday and year-end campaigns', 'Give your holiday a meal goal, or close out the year by asking friends to feed kids with you.', 'donations-cash-gift.svg', 'Start a holiday fundraiser']
+  ];
+  var shareItems = [
+    ['A fundraiser link', 'Get a short link and ready-made messages for email, group chats and social posts. Send them as they are or make them your own.', 'link'],
+    ['Images and a flyer', 'Download images sized for social posts, plus a flyer to print for a church lobby, break room or classroom.', 'photo'],
+    ['Progress in meals', 'Your page shows how close you are to your goal in meals, updated as gifts come in.', 'target-arrow'],
+    ['A thank-you for each supporter', 'See who has given and thank each person from your page.', 'message-heart']
+  ];
+
+  /* SAMPLE DATA (Figma): placeholder fundraisers for the usability test, not real campaigns.
+     The first four are the Figma cards; the last two are DS sample fundraisers that only show up in search results. */
+  var fundraisers = [
+    { title: 'Grace Church runs for 10,000 meals', organizer: 'Organized by the Grace Church running team', location: 'Maple Grove, MN', raised: 7410, goal: 10000, percent: 75, timeLeft: '10 days left', image: img('fr-grace-church.jpg'), imageAlt: 'Three volunteers in hairnets sit in the doorway of an FMSC truck holding a box of MannaPack® meals.', featured: true },
+    { title: 'Room 12’s year-end drive', organizer: 'Organized by Ms. Ortega’s fourth-grade class', location: 'Aurora, IL', raised: 1480, goal: 2000, percent: 75, timeLeft: '12 days left', image: img('fr-room-12.jpg'), imageAlt: 'Rows of volunteers in blue hairnets and T-shirts seated on folding chairs.', featured: true },
+    { title: 'Remembering Joe Hanson', organizer: 'Organized by the Hanson family', location: 'Sioux Falls, SD', raised: 3200, goal: 3448, percent: 95, timeLeft: '15 days left', image: img('fr-joe-hanson.jpg'), imageAlt: 'A smiling volunteer in a hairnet flashes a peace sign at a packing table with her team.', featured: true },
+    { title: 'Priya’s 30th birthday', organizer: 'Organized by Priya Shah', location: 'Mesa, AZ', raised: 980, goal: 1034, percent: 95, timeLeft: '21 days left', image: img('fr-priya.jpg'), imageAlt: 'Volunteers pack meals at long tables in a hangar while one carries a box.', featured: true },
+    { title: 'Grace Lutheran youth group’s summer drive', organizer: 'Organized by the Grace Lutheran Church youth group', location: 'Plymouth, MN', raised: 1200, goal: 1724, percent: 70, timeLeft: '18 days left', image: img('fr-room-12.jpg'), imageAlt: 'Rows of volunteers in blue hairnets and T-shirts seated on folding chairs.' },
+    { title: 'Grace Academy reading challenge', organizer: 'Organized by Grace Academy’s fourth-grade classes', location: 'Sioux Falls, SD', raised: 2400, goal: 3448, percent: 70, timeLeft: '25 days left', image: img('fr-grace-church.jpg'), imageAlt: 'Three volunteers in hairnets sit in the doorway of an FMSC truck holding a box of MannaPack® meals.' }
+  ];
+
+  var faqs = [
+    { question: 'How much of the money I raise goes to meals?', answer: 'FMSC spends 88% of total annual donations directly on meal production. Our financial accountability page has the annual report, audited financials and impact numbers.' },
+    /* Figma: "[Answer — client to confirm]" on the collapsed items. */
+    { question: 'Do my supporters get their own tax receipts?', answer: '[Answer — client to confirm]' },
+    { question: 'Someone gave me cash or a check. How does it count toward my goal?', answer: '[Answer — client to confirm]' },
+    { question: 'Can an employer match count toward my goal?', answer: '[Answer — client to confirm]' },
+    { question: 'Can I change my fundraiser or end it early?', answer: '[Answer — client to confirm]' },
+    { question: 'Who can I contact with questions about my fundraiser?', answer: '[Answer — client to confirm]' }
+  ];
+
+  /* Badge card title: mobile H4 below 600px (the DS card only sets the desktop H4). */
+  function cardTitle(t, mobile) { return mobile ? h('span', { className: 'fr-title-m heading-h4-mobile' }, t) : t; }
+
+  function Header(p) {
+    return h(F.SectionHeader, { breakpoint: 'auto', align: 'left', showEyebrow: false, showSupporting: !!p.supporting,
+      heading: h('span', { id: p.id }, p.heading), supporting: p.supporting });
+  }
+
+  function VideoGuide() {
+    var mobile = F.useIsMobile();
+    var s = React.useState(false), playing = s[0], setPlaying = s[1];
+    var video = playing
+      ? h('div', { className: 'fr-video__frame' },
+          h('iframe', { src: 'https://www.youtube-nocookie.com/embed/Q2JJJsr8nTA?autoplay=1&rel=0', title: 'How to set up your fundraiser page', allow: 'autoplay; encrypted-media; picture-in-picture', allowFullScreen: true }))
+      : h(F.VideoPlayer, { poster: img('fr-video-poster.jpg'), posterAlt: 'The FMSC fundraising site’s “Fundraise for FMSC” page in a browser window.', title: 'How to set up your fundraiser page', onPlay: function () { setPlaying(true); } });
+    var copy = h('div', { className: 'fr-video__copy' },
+      h(Header, { id: 'fr-video', heading: 'How to set up your page',
+        supporting: 'This video guide walks through building your fundraiser page, from telling your story to setting your goal.' }),
+      h(F.ArrowLink, { label: 'Get fundraising ideas and resources', href: '#' }));
+    return h('section', { className: 'fr-section fr-video', 'aria-labelledby': 'fr-video' },
+      h('div', { className: 'fr-inner' },
+        mobile ? h('div', { className: 'fr-video__stack' }, video, copy)
+          : h(F.LayoutSplit, { align: 'center' }, video, copy)));
+  }
+
+  function Find() {
+    var mobile = F.useIsMobile();
+    var q = React.useState(''), query = q[0], setQuery = q[1];
+    var sq = React.useState(null), searched = sq[0], setSearched = sq[1];
+    var fl = React.useState('featured'), filter = fl[0], setFilter = fl[1];
+    var state = 'default', items;
+    if (searched) {
+      var needle = searched.toLowerCase();
+      items = fundraisers.filter(function (f) { return (f.title + ' ' + f.organizer + ' ' + f.location).toLowerCase().indexOf(needle) !== -1; });
+      state = items.length ? 'results' : 'no-results';
+    } else {
+      items = fundraisers.filter(function (f) { return f.featured; });
+      /* Nearly funded: closest to the goal first. */
+      if (filter === 'nearly-funded') items = items.slice().sort(function (a, b) { return b.raised / b.goal - a.raised / a.goal; });
+    }
+    return h(F.SectionFindAFundraiser, {
+      breakpoint: mobile ? 'mobile' : 'desktop',
+      className: 'fr-find',
+      state: state,
+      query: query,
+      onQueryChange: function (v) { setQuery(v); if (!v) setSearched(null); },
+      onSearch: function (v) { var t = (v || '').trim(); setSearched(t || null); },
+      onClear: function () { setQuery(''); setSearched(null); },
+      filter: filter,
+      onFilterChange: setFilter,
+      items: items.map(function (f) { return Object.assign({}, f, { href: '#' }); }),
+      giveLabel: 'See details',
+      seeAllHref: '#', startHref: '#fr-setup-top'
+    });
+  }
+
+  function FundraiserPage() {
+    var mobile = F.useIsMobile();
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'how-to-help' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: 'auto',
+          type: 'standard',
+          eyebrow: 'FUNDRAISE',
+          h1: 'Raise money for meals with the people you know',
+          body: 'Set a goal, share your page with friends and family, and see each gift counted in meals. Each Feed My Starving Children (FMSC) meal costs 29 cents.',
+          primaryLabel: 'Start your fundraiser', primaryHref: '#fr-setup-top',
+          secondaryLabel: 'Find a fundraiser', secondaryHref: '#fr-find-top',
+          image: img(mobile ? 'fr-m-hero.jpg' : 'fr-hero.jpg'),
+          imageAlt: 'Hundreds of volunteers in hairnets pack meals at tables in a school gym.'
+        }),
+
+        /* 2 · Set up your fundraiser */
+        h('div', { id: 'fr-setup-top' }),
+        h(F.SectionSetUpYourFundraiser, {
+          breakpoint: 'auto', className: 'fr-setup',
+          individualsSteps: setupSteps,
+          businessesSteps: [
+            { title: 'Apply as a business', description: 'Start with our application for third-party fundraisers. We’ll let you know once it’s approved.' },
+            { title: 'Plan how you’ll raise meals', description: 'Give a portion of sales, run a customer drive or rally your employees around one goal.' },
+            { title: 'Build your page', description: 'Add your business name, logo and why you’re raising meals, then set a dollar goal and an end date.' },
+            { title: 'Share it with your people', description: 'Send the link to customers, employees and partners. Ask us before using FMSC’s logo.' }
+          ].map(function (st, i) { return Object.assign(st, { illustration: img(businessIllustrations[i]) }); }),
+          startHref: '#', applyHref: '#', aboutHref: '#'
+        }),
+
+        /* 3 · Video guide */
+        h(VideoGuide),
+
+        /* 4 · Pick an occasion */
+        h('section', { className: 'fr-section fr-section--subtle', 'aria-labelledby': 'fr-occasion' },
+          h('div', { className: 'fr-inner fr-stack' },
+            h(Header, { id: 'fr-occasion', heading: 'Pick an occasion' }),
+            h('div', { className: 'fr-occ-wrap' },
+              h('ul', { className: 'fr-occasions' }, occasions.map(function (o) {
+                return h('li', { key: o[0] }, h(F.BadgeCard, { container: 'card', align: 'left', illustration: img(o[2]), title: cardTitle(o[0], mobile), body: o[1], linkLabel: o[3], linkHref: '#fr-setup-top' }));
+              }))))),
+
+        /* 5 · Share it and track it */
+        h(F.SectionCardGrid, {
+          breakpoint: 'auto', className: 'fr-share', columns: 4,
+          showHeader: true, showFooter: false,
+          header: { align: 'left', showEyebrow: false, showSupporting: true, heading: 'Share your fundraiser page and watch the meals add up', supporting: 'Almost everyone who gives to a fundraiser gives because someone they know asked.' },
+          items: shareItems.map(function (s) {
+            return h(F.BadgeCard, { key: s[0], container: 'card', align: 'left', showLink: false, title: cardTitle(s[0], mobile), body: s[1],
+              badge: h(F.IconBadge, { color: 'subtle', size: 'medium', icon: s[2] }) });
+          })
+        }),
+
+        /* 6 · Find a fundraiser */
+        h('div', { id: 'fr-find-top' }),
+        h(Find),
+
+        /* 7 · Common questions */
+        h(F.SectionFAQ, {
+          breakpoint: 'auto', className: 'fr-faq',
+          header: { align: 'left', showEyebrow: false, showSupporting: false, heading: 'Common questions' },
+          items: faqs, showLink: false
+        }),
+
+        /* 8 · CTA band */
+        h(F.CTABand, {
+          breakpoint: 'auto', className: 'fr-cta',
+          eyebrow: '',
+          headline: 'Start a fundraiser or give to one',
+          subtext: 'Setting up your page takes a few minutes. If a friend sent you here, find their fundraiser and give meals there.',
+          primaryLabel: 'Start your fundraiser', primaryHref: '#fr-setup-top',
+          secondaryLabel: 'Find a fundraiser', secondaryHref: '#fr-find-top',
+          showTrustStrip: false, showStatsStrip: false
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(FundraiserPage));
+</script>
+</body>
+</html>

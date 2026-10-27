@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>People & groups · FMSC</title>
+<meta name="description" content="Your FMSC groups, the people connected to your account and the people you’ve packed with.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Cards: Figma sets the header-to-content gap on the card itself (Your groups space-lg, the table cards space-sm). */
+  .ac-card.ap-card { gap: var(--space-sm); }
+  .ac-card.ap-card--groups { gap: var(--space-lg); }
+  .ac-card__header.ap-head { padding-bottom: var(--space-0); }
+  .ap-head .fm-btn, .ap-head .fm-toggle { flex: none; }
+
+  /* 1 · Your groups: three cards in a row (Figma 299 each, space-lg apart); one column when the content column is narrow. */
+  .ap-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-lg); align-items: stretch; }
+  .ap-groups > * { min-width: 0; }
+  .ap-groups .fm-empty-state { min-width: 0; justify-content: center; }
+  /* Figma lines the shift panels and links up across the cards (the names wrap differently): each card's name block,
+     shift panel and link share the row tracks of the grid. */
+  @media (min-width: 600px) {
+    .ap-groups .fm-group-card, .ap-groups .fm-empty-state { grid-row: span 3; }
+    .ap-groups .fm-group-card { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: subgrid; row-gap: var(--space-md); align-items: start; justify-items: start; }
+    .ap-groups .fm-group-card__content { display: contents; }
+    .ap-groups .fm-group-card__identity, .ap-groups .fm-group-card__shift { align-self: stretch; justify-self: stretch; }
+    .ap-groups .fm-group-card__shift { align-self: start; }
+    .ap-groups .fm-group-card__link { align-self: end; }
+  }
+  @container ac-content (max-width: 799.98px) {
+    .ap-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    /* Two columns: the start-a-group card takes the full row instead of sitting alone. */
+    .ap-groups .fm-empty-state { grid-column: 1 / -1; }
+  }
+  @container ac-content (max-width: 539.98px) { .ap-groups { grid-template-columns: minmax(0, 1fr); gap: var(--space-md); } }
+
+  /* Join with a code: input 320 + button on one row */
+  .ap-join { display: flex; align-items: flex-end; gap: var(--space-sm); }
+  .ap-join .fm-field { width: 320px; max-width: 100%; }
+  .ap-join .fm-btn { flex: none; }
+
+  /* Tables: Figma wraps the DS table in a border-default frame with radius-lg; the first column is inset space-lg. */
+  .ap-table { overflow: hidden; border: 1px solid var(--border-default); border-radius: var(--radius-lg); }
+  .ap-table .fm-dtable { width: 100%; }
+  .ap-table .fm-dtable__table { width: 100%; }
+  .ap-table th:first-child, .ap-table td:first-child { padding-left: var(--space-lg); }
+  .ap-table .fm-pagination { border-top: 0; }
+  /* Figma draws the sort chevron at the right edge of the Date column. */
+  .ap-table .fm-table-header__sort { width: 100%; justify-content: space-between; min-height: 44px; margin: calc(-1 * var(--space-sm)) 0; }
+  /* Row links: hit area extended to 44px without moving the text (DS link cells size the <a> to its text). */
+  .ap-table .fm-table-cell__link, .ap-table .fm-dtable__link { display: inline-block; padding: var(--space-sm) 0; margin: calc(-1 * var(--space-sm)) 0; }
+
+  /* Notes line under the connected-people table; inline link hit area extended to 44px without moving the line. */
+  .ap-note { color: var(--content-secondary); }
+  .ap-note a { display: inline-block; padding: var(--space-md) 0; margin: calc(-1 * var(--space-md)) 0; color: var(--content-link); text-decoration: none; }
+  .ap-note a:hover { text-decoration: underline; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .ap-groups { grid-template-columns: minmax(0, 1fr); gap: var(--space-md); }
+    /* Figma Group card Mobile: the link sits straight under the shift panel (no gap). */
+    .ap-groups .fm-group-card.fm-mobile { gap: var(--space-0); }
+    .ap-join { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .ap-join .fm-field { width: 100%; }
+    .ap-join .fm-btn, .ap-card > .fm-btn { width: 100%; }
+    .ap-card > .fm-toggle { align-self: flex-start; }
+    .ap-table { border-radius: var(--radius-xl); }
+  }
+  /* Stacked records (mobile, and any width where the table would be narrower than 720px).
+     Figma records end in a 1px border-subtle stroke that adds to the record height (DS draws it as an inset shadow). */
+  .ap-table .fm-dtable__record { box-shadow: none; border-bottom: 1px solid var(--border-subtle); }
+  /* Records with no group skip that line (Figma shows the group only for Luis M.). */
+  .ap-table .fm-dtable__detail:has(> span[role="cell"]:empty:only-child) { display: none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script src="flow-data.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+
+  /* SAMPLE DATA (Figma): the usability-test persona Sarah's groups and people. */
+  var groups = [
+    /* "Go to your group" (AUTH_BRIEF, Oct. 27, 2026): the admin view for the group Sarah runs, the member view for the other. */
+    { groupName: 'Grace Church Youth Group', details: '9 people · You’re an admin', date: 'Saturday, Oct. 3', siteAndTime: 'FMSC Coon Rapids · 9 a.m.', spots: '4 of 12 spots still open', href: 'account-group-admin.html' },
+    { groupName: 'Whitfield Thanksgiving Crew', details: '7 people · You’re a member', date: 'Friday, Nov. 27', siteAndTime: 'FMSC Eagan · 9:30 a.m.', spots: '3 of 10 spots still open', href: 'account-group-member.html' }
+  ];
+  /* Groups started in the sign-up flow (paths c and d) join the list, with their next shift: people = you plus those
+     you added; spots still open = spots − claimed. One card per group name (its earliest upcoming shift). */
+  (function addSavedGroups() {
+    var RS = window.FMSCData.reservations, seen = {};
+    RS.sortByDate(RS.list()).forEach(function (r) {
+      if ((r.path !== 'c' && r.path !== 'd') || !r.group) return;
+      var d = RS.describe(r); if (!d.upcoming) return;
+      if (seen[r.group] || groups.some(function (g) { return g.groupName === r.group; })) return;
+      seen[r.group] = true;
+      var n = 1 + (r.added || []).filter(function (x) { return x !== 'Sarah Whitfield'; }).length;
+      groups.push({ groupName: r.group, details: n + (n === 1 ? ' person' : ' people') + ' · You’re an admin', date: d.dateLabel,
+        siteAndTime: d.site.where + ' · ' + d.start, spots: Math.max(0, r.spots - r.claimed) + ' of ' + r.spots + ' spots still open',
+        href: 'event-upcoming.html?res=' + encodeURIComponent(r.id) });
+    });
+  })();
+  var connected = [
+    { name: 'Lily Whitfield', rel: 'Your child · 9', shifts: 4, hours: 8, consent: 'Signed by you', action: 'Edit' },
+    { name: 'Maya Whitfield', rel: 'Your child · 14', shifts: 6, hours: 12, consent: 'Signed by you', action: 'Edit' },
+    { name: 'Carol Whitfield', rel: 'No FMSC account', shifts: 1, hours: 2, consent: '—', action: 'Invite to join' }
+  ];
+  var partners = [
+    ['Elena R.', 'Aug. 8, 2026', 'FMSC Coon Rapids', 'None'],
+    ['Sam P.', 'Aug. 8, 2026', 'FMSC Coon Rapids', 'None'],
+    ['Hannah K.', 'June 13, 2026', 'FMSC Eagan', 'None'],
+    ['Marcus T.', 'June 13, 2026', 'FMSC Eagan', 'None'],
+    ['Luis M.', 'Nov. 28, 2025', 'FMSC Eagan', 'Whitfield Thanksgiving Crew']
+  ];
+  var plural = function (n, one) { return n + ' ' + one + (n === 1 ? '' : 's'); };
+  var actionHeader = { showLabel: false };
+
+  /* Card header: DS IconBadge + h2, with an optional action on the right (desktop). On mobile the action drops below. */
+  function Head(p) {
+    var mobile = F.useIsMobile();
+    return h('div', { className: 'ac-card__header ap-head' },
+      h(UI.Badge, { icon: p.icon }),
+      h('h2', { className: 'ac-card__title ' + (mobile ? 'heading-h4-mobile' : 'heading-h4'), id: p.id }, p.title),
+      mobile ? null : p.action);
+  }
+  function Section(p) {
+    var mobile = F.useIsMobile();
+    return h('section', { className: 'ac-card ap-card ' + (p.className || ''), 'aria-labelledby': p.id },
+      h(Head, { icon: p.icon, title: p.title, id: p.id, action: p.action }),
+      mobile ? p.action : null,
+      p.children);
+  }
+
+  /* True when the element is narrower than px: the tables switch to stacked records rather than squeezing columns. */
+  function useNarrow(ref, px) {
+    var st = React.useState(false), narrow = st[0], setNarrow = st[1];
+    React.useLayoutEffect(function () {
+      var el = ref.current; if (!el || !window.ResizeObserver) return undefined;
+      var ro = new ResizeObserver(function (en) { setNarrow(en[0].contentRect.width < px); });
+      ro.observe(el); return function () { ro.disconnect(); };
+    }, [px]);
+    return narrow;
+  }
+
+  function People() {
+    var mobile = F.useIsMobile();
+    var wrapRef = React.useRef(null);
+    var stacked = useNarrow(wrapRef, 720) || mobile;
+    var t = React.useState(true), showName = t[0], setShowName = t[1];
+    /* ?join=<code> (the homepage join-code search) fills the join code field. */
+    var c = React.useState(function () { try { return new URLSearchParams(location.search).get('join') || ''; } catch (e) { return ''; } }), code = c[0], setCode = c[1];
+
+    var connectedTable = stacked
+      ? h(F.DataTable, {
+          breakpoint: 'mobile', caption: 'People connected to your account', showPagination: false,
+          columns: [{ key: 'name', label: 'Name' }, { key: 'rel', label: 'Relationship' }, { key: 'detail', label: 'Shifts, hours and guardian consent' }, { key: 'action', label: 'Action', cells: 'link' }],
+          rows: connected.map(function (r) {
+            var bits = [plural(r.shifts, 'shift'), plural(r.hours, 'hour')]; if (r.consent !== '—') bits.push(r.consent);
+            return { name: r.name, rel: r.rel, detail: bits.join(' · '), action: { value: r.action, href: '#' } };
+          })
+        })
+      : h(F.DataTable, {
+          breakpoint: 'desktop', caption: 'People connected to your account', showPagination: false,
+          columns: [
+            { key: 'name', label: 'Name', cells: 'stacked', width: 280 },
+            { key: 'shifts', label: 'Shifts', width: 90 },
+            { key: 'hours', label: 'Hours', width: 90 },
+            { key: 'consent', label: 'Guardian consent', width: 326 },
+            { key: 'action', label: 'Action', cells: 'link', width: 158, header: actionHeader }
+          ],
+          rows: connected.map(function (r) {
+            return { name: { value: r.name, secondary: r.rel }, shifts: String(r.shifts), hours: String(r.hours), consent: r.consent, action: { value: r.action, href: '#' } };
+          })
+        });
+
+    var partnerCols = [
+      { key: 'name', label: 'Name', cells: 'strong', width: 130 },
+      { key: 'date', label: 'Date', width: 130, sort: 'descending', onSort: function () {} },
+      { key: 'site', label: 'Site', width: 160, mobileJoin: 'date' },
+      { key: 'group', label: 'Group', width: 314 },
+      { key: 'action', label: 'Action', cells: 'link', width: 210, header: actionHeader }
+    ];
+    var partnerTable = h(F.DataTable, {
+      breakpoint: stacked ? 'mobile' : 'desktop', caption: 'People you’ve packed with', count: '1–5 of 8 people',
+      /* Figma draws both pager buttons enabled on page 1. */
+      pagination: { ariaLabel: 'People you’ve packed with pages' },
+      columns: stacked ? partnerCols.map(function (col) { return col.key === 'name' ? Object.assign({}, col, { cells: 'text' }) : col; }) : partnerCols,
+      rows: partners.map(function (r) {
+        return { name: r[0], date: r[1], site: r[2], group: stacked && r[3] === 'None' ? '' : r[3], action: { value: 'Invite to pack again', href: '#' } };
+      })
+    });
+
+    return h(window.AccountShell, { current: 'people' },
+
+      h(F.AccountPageHeader, { breakpoint: 'auto', title: 'Your people & groups', showBreadcrumb: false, showDescription: false, showStats: false, showAction: false, showTag: false }),
+
+      /* 1 · Your groups */
+      h(Section, { className: 'ap-card--groups', icon: 'users-group', title: 'Your groups', id: 'ap-groups-title' },
+        h('div', { className: 'ap-groups' },
+          groups.map(function (g) {
+            return h(F.GroupCard, Object.assign({ key: g.groupName, breakpoint: 'auto', shift: 'upcoming', headingLevel: 3 }, g));
+          }),
+          h(F.EmptyState, { breakpoint: 'auto', icon: 'users-group', headline: 'Bring your own group', supportingText: 'Book shifts together with your church, team or family.', showPrimary: true, showSecondary: false, primaryLabel: 'Start a new group', primaryHref: 'signup-1.html?path=c' })),
+        h('form', { className: 'ap-join', onSubmit: function (e) { e.preventDefault(); } },
+          h(F.Input, { label: 'Have a join code?', placeholder: 'Enter the code someone sent you', value: code, onChange: function (e) { setCode(e.target.value); }, name: 'join-code', autoComplete: 'off' }),
+          h(F.Button, { variant: 'secondary', size: 'medium', type: 'submit' }, 'Join the group'))),
+
+      /* 2 · People connected to your account */
+      h(Section, { icon: 'friends', title: 'People connected to your account', id: 'ap-connected-title',
+          action: h(F.Button, { variant: 'secondary', size: 'medium', href: '#' }, 'Add someone') },
+        h('div', { className: 'ap-table', ref: wrapRef }, connectedTable),
+        h('p', { className: 'caption ap-note' }, 'Kids can take over their own record at 18. ',
+          h('a', { className: 'fm-focusable', href: '#' }, 'What we store for volunteers under 18'))),
+
+      /* 3 · People you've packed with */
+      h(Section, { icon: 'users-group', title: 'People you’ve packed with', id: 'ap-partners-title',
+          action: h(F.Toggle, { label: 'Show my name as ' + window.FMSCData.profile.shortName(), checked: showName, onChange: function (e) { setShowName(e.target.checked); } }) },
+        h('div', { className: 'ap-table' }, partnerTable)));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(People));
+</script>
+</body>
+</html>

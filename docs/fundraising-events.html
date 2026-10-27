@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fundraising events · FMSC</title>
+<meta name="description" content="FMSC galas and luncheons bring supporters together for a meal and stories from an FMSC food distribution partner. Find an upcoming event, sponsor one or host your own.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; components bring their own styles. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .fe-section { display: flex; flex-direction: column; align-items: center; gap: var(--section-gap); padding: var(--section-y) var(--margin-x); scroll-margin-top: var(--space-4xl); }
+  .fe-section--subtle { background: var(--background-subtle); }
+  .fe-inner { width: 100%; max-width: var(--content-width); }
+  .fe-stack { display: flex; flex-direction: column; align-items: flex-start; gap: var(--section-gap); }
+  .fe-stack > * { width: 100%; }
+  .fe-secondary { color: var(--content-secondary); }
+  .fe-arrow.fm-arrow-link, .fe-page .fm-badge-card .fm-arrow-link { min-height: 44px; }
+
+  /* Upcoming / past events: two 588 cards a row; one a row once the desktop card's 200px action column gets tight. */
+  .fe-events-wrap { container: fe-events / inline-size; }
+  .fe-events { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); }
+  .fe-events > li { display: flex; min-width: 0; }
+  .fe-events .fm-event-card { width: 100%; }
+  /* Figma draws the 1px strokes of the event card and its tag inside their boxes (DS adds them outside: +4px a card). */
+  .fe-events .fm-event-card { padding: calc(var(--card-pad) - 1px); }
+  .fe-events .fm-event-card__tag { padding: calc(var(--space-2xs) - 1px) calc(var(--space-sm) - 1px); }
+  @container fe-events (max-width: 1000px) { .fe-events { grid-template-columns: minmax(0, 1fr); gap: var(--grid-gap); } }
+  .fe-past { display: flex; flex-direction: column; gap: var(--grid-gap); }
+  .fe-signup { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-xs); }
+
+  /* What to expect: steps fill, the photo is a fixed 576 × 265 column. */
+  .fe-expect { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 576px); gap: var(--grid-gap); align-items: start; }
+  .fe-steps { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--space-md); }
+  .fe-steps .fm-step-item { width: 100%; }
+  .fe-photo { width: 100%; aspect-ratio: 576 / 265; object-fit: cover; border-radius: var(--radius-lg); }
+  @media (max-width: 899.98px) { .fe-expect { grid-template-columns: minmax(0, 1fr); } .fe-photo { order: -1; } }
+
+  /* Sponsor an event / Host your own: three 384 badge cards */
+  .fe-cards .fm-badge-card { width: 100%; height: 100%; }
+  .fe-cards .fm-badge-card__link { margin-top: auto; }
+  .fe-sponsor-cta { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); text-align: center; }
+
+  /* Talk with our team */
+  .fe-contacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); }
+  .fe-contact { display: flex; flex-direction: column; gap: var(--space-sm); min-width: 0; }
+  .fe-contact .fm-contact-card { width: 100%; }
+  @media (max-width: 839.98px) { .fe-contacts { grid-template-columns: minmax(0, 1fr); } }
+
+  /* FAQ: Figma answers sit in a 607px text box; each item's 1px rule adds to its height (97px closed). */
+  .fe-faq .fm-section-faq__answer { max-width: 607px; }
+  .fe-faq .fm-section-faq__item { box-shadow: none; border-top: 1px solid var(--border-subtle); }
+
+  /* CTA band: Figma hides the eyebrow; subtext is content/on-brand, as in the frame. */
+  .fe-cta .fm-cta-band__eyebrow:empty { display: none; }
+  .fe-cta .fm-cta-band__subtext { color: var(--content-on-brand); }
+  .fm-footer--desktop .fm-footer__legal-copy { max-width: 968px; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .fe-events, .fe-past { gap: var(--grid-gap); }
+    .fe-signup { flex-direction: column; align-items: flex-start; gap: var(--space-xs); }
+    .fe-photo { aspect-ratio: 361 / 240; }
+    /* Mobile frame: photo and steps are direct children of the section (section-gap apart). */
+    .fe-expect { gap: var(--section-gap); }
+    .fe-sponsor-cta { align-items: stretch; text-align: left; }
+    .fe-sponsor-cta .fm-btn { width: 100%; }
+    .fe-contacts { gap: var(--grid-gap); }
+    .fe-faq .fm-section-faq__answer { max-width: none; }
+    /* DS Badge card has no Mobile variant: the title renders in the mobile H4 (18/24) below 600px. */
+    .fe-title-m { display: block; }
+    /* DS fix: Footer Mobile keeps the desktop flex-basis (140px) on its stacked columns, which becomes height. */
+    .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; }
+  }
+</style>
+</head>
+<body class="fe-page">
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script>
+  var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
+  var img = function (n) { return 'img/' + n; };
+
+  /* SAMPLE DATA (Figma): event names, dates, venues and ticket prices as drawn in the usability frame
+     (the Arizona card is labelled "SAMPLE" in Figma). Ticket links stay inert. */
+  var seating = 'Group seating comes with sponsorship, from 4 to 50 tickets.';
+  var upcoming = [
+    { title: 'Minnesota Fall Gala', dateAndTime: 'Saturday, Oct. 24 · 5:30–8:30 p.m. CT', venue: 'Hilton Minneapolis · Minneapolis, MN', price: '$175 a ticket, with a plated dinner and the evening’s program' },
+    { title: 'Arizona Fall Gala', dateAndTime: 'Saturday, Nov. 14 · 6–9 p.m. MST', venue: 'The Grand Hall · Tempe, AZ', price: '$150 a ticket, with a plated dinner and the evening’s program' }
+  ];
+  var past = [
+    { title: 'Illinois Spring Gala', dateAndTime: 'Saturday, May 2 · Drury Lane · Oakbrook Terrace, IL' },
+    { title: 'Ripples of Hope Women’s Luncheon', dateAndTime: 'Tuesday, June 2 · The Hope Center · Plano, TX' }
+  ];
+  var steps = [
+    ['Find your seat', 'Check in when you arrive and find your table. Each event lists its own start time and venue.'],
+    ['A meal and stories', 'You’ll share a meal and hear directly from one of FMSC’s food distribution partners about the families and communities they serve.'],
+    ['The giving moment', 'Near the end of the event, guests are invited to give toward meals. Some donors pledge ahead of time to get the giving started.']
+  ];
+  var benefits = [
+    ['Seats for your guests', 'Reserved places at the event for the people you invite.', 'fr-marketplace-people-group.svg'],
+    ['Your name at the event', 'On screens during the event and at an FMSC packing site afterward.', 'fe-careers-crowd.svg'],
+    ['Your logo online', 'On the event webpage, in FMSC social posts and on the thank-you email.', 'fr-online-laptop.svg']
+  ];
+  var hostCards = [
+    ['Start a fundraiser', 'Set up an online page for a dinner, party or any occasion, and watch the meals add up.', 'volunteers-celebrate.svg', 'Start a fundraiser', 'fundraiser.html'],
+    ['Host an FMSC MobilePack™ event', 'Bring the packing line to your church, school or town.', 'food-mannapack-bag.svg', 'See how hosting works', 'host-mobilepack.html'],
+    ['Invite an FMSC speaker', 'Ask for someone from FMSC to share the work at your church, school or event.', 'fe-volunteers-raise-hand.svg', 'Request a speaker', '#']
+  ];
+  var faqs = [
+    { question: 'How much of my ticket is tax deductible?', answer: 'Part of each ticket covers your dinner and evening, and the rest is tax deductible. Your email receipt shows the deductible amount.' },
+    { question: 'What should I wear?', answer: 'Business or cocktail attire works for most events. The event page has any specifics.' },
+    { question: 'Can I come if I’m new to FMSC?', answer: 'Yes. You’ll leave with a clear picture of what FMSC does and how your support helps feed kids. A gala is also a good way to introduce a friend to FMSC.' },
+    { question: 'Can I sponsor from a donor advised fund?', answer: 'Yes, but a payment from a donor advised fund can’t include tickets or other benefits. Email Barb Shimshock at bshimshock@fmsc.org to set it up.' },
+    { question: 'Can I ask for an accessible seat or share a dietary need?', answer: 'Yes. Email Gwen Cowle, our Event Director, at gcowle@fmsc.org before the event.' },
+    { question: 'Can I give if I can’t attend?', answer: 'Yes. Give online any time at fmsc.org/give. Each meal costs 29 cents.' }
+  ];
+  var contacts = [
+    { group: 'Event questions', name: 'Gwen Cowle', initials: 'GC', title: 'Event Director', email: 'gcowle@fmsc.org', emailLabel: 'Email Gwen' },
+    { group: 'Sponsorship questions', name: 'Barb Shimshock', initials: 'BS', title: 'Vice President of Development', email: 'bshimshock@fmsc.org', emailLabel: 'Email Barb' }
+  ];
+
+  /* Badge card title: mobile H4 below 600px (the DS card only sets the desktop H4). */
+  function cardTitle(t, mobile) { return mobile ? h('span', { className: 'fe-title-m heading-h4-mobile' }, t) : t; }
+
+  function Header(p) {
+    return h(F.SectionHeader, { breakpoint: 'auto', align: 'left', showEyebrow: false, showSupporting: !!p.supporting,
+      heading: h('span', { id: p.id }, p.heading), supporting: p.supporting });
+  }
+
+  /* DS StepItem has no Mobile variant: below 600px render the same markup with the mobile H4 (18/24) title. */
+  function Step(p) {
+    var mobile = F.useIsMobile();
+    if (!mobile) return h(F.StepItem, { as: 'li', indicator: 'number', number: p.number, title: p.title, description: p.description, titleAs: 'h3' });
+    return h('li', { className: 'fm-step-item fm-step-item--number' },
+      h('span', { className: 'fm-step-item__number body-large', 'aria-hidden': 'true' }, p.number),
+      h('div', { className: 'fm-step-item__copy' },
+        h('h3', { className: 'fm-step-item__title heading-h4-mobile' }, h('span', { className: 'fm-visually-hidden' }, 'Step ' + p.number + ': '), p.title),
+        h('p', { className: 'fm-step-item__desc body-base' }, p.description)));
+  }
+
+  function EventsPage() {
+    var mobile = F.useIsMobile();
+    return h(Fragment, null,
+      h(window.SiteNav, { current: 'how-to-help' }),
+
+      h('main', null,
+        h(F.Hero, {
+          breakpoint: 'auto',
+          type: 'standard',
+          eyebrow: 'EVENTS',
+          h1: 'Come to an FMSC fundraising event',
+          body: 'FMSC galas and luncheons bring supporters together for a meal and stories straight from an FMSC food distribution partner. Every ticket helps fund meals. Bring someone who’s new to FMSC.',
+          primaryLabel: 'See upcoming events', primaryHref: '#fe-upcoming',
+          secondaryLabel: 'Sponsor an event', secondaryHref: '#fe-sponsor',
+          image: img(mobile ? 'fe-m-hero.jpg' : 'fe-hero.jpg'),
+          imageAlt: 'Guests seated at round tables in a ballroom at an FMSC Gala in Minneapolis'
+        }),
+
+        /* 2 · Upcoming events */
+        h('section', { className: 'fe-section', id: 'fe-upcoming', 'aria-labelledby': 'fe-upcoming-h' },
+          h('div', { className: 'fe-inner fe-stack' },
+            h(Header, { id: 'fe-upcoming-h', heading: 'Upcoming events', supporting: 'FMSC hosts galas and luncheons that fund meals for kids.' }),
+            h('div', { className: 'fe-events-wrap' },
+              h('ul', { className: 'fe-events' }, upcoming.map(function (e) {
+                return h('li', { key: e.title }, h(F.EventCard, Object.assign({ breakpoint: 'auto', status: 'upcoming', tagLabel: 'Upcoming',
+                  seating: seating, showPrice: true, showSeating: true, showRegistrationCloses: false,
+                  buttonLabel: 'Get tickets', buttonHref: '#', showLink: true, linkLabel: 'Sponsor this event', linkHref: '#fe-sponsor' }, e)));
+              }))),
+            h('div', { className: 'fe-past' },
+              h('h3', { className: mobile ? 'heading-h3-mobile' : 'heading-h3' }, 'Past events'),
+              h('div', { className: 'fe-events-wrap' },
+                h('ul', { className: 'fe-events' }, past.map(function (e) {
+                  return h('li', { key: e.title }, h(F.EventCard, Object.assign({ breakpoint: 'auto', status: 'past', tagLabel: 'Past event',
+                    showLink: true, linkLabel: 'See photos from the evening', linkHref: '#', headingLevel: 4 }, e)));
+                }))),
+              h('p', { className: 'fe-signup' },
+                h('span', { className: 'fe-secondary body-base' }, 'Don’t see an event near you?'),
+                h(F.ArrowLink, { className: 'fe-arrow', label: 'Get emails about new events', href: '#' }))))),
+
+        /* 3 · What to expect at an event */
+        h('section', { className: 'fe-section fe-section--subtle', id: 'fe-expect', 'aria-labelledby': 'fe-expect-h' },
+          h('div', { className: 'fe-inner fe-stack' },
+            h(Header, { id: 'fe-expect-h', heading: 'What to expect at an event', supporting: 'You don’t need to know anything about FMSC before you come.' }),
+            h('div', { className: 'fe-expect' },
+              h('ol', { className: 'fe-steps' }, steps.map(function (s, i) {
+                return h(Step, { key: s[0], number: String(i + 1), title: s[0], description: s[1] });
+              })),
+              h('img', { className: 'fe-photo', src: img('fe-gala-sign.jpg'), alt: 'A guest holds up a Feeding Kids Together sign at an FMSC Gala' })))),
+
+        /* 4 · Sponsor an event */
+        h('section', { className: 'fe-section', id: 'fe-sponsor', 'aria-labelledby': 'fe-sponsor-h' },
+          h('div', { className: 'fe-inner fe-stack' },
+            h(Header, { id: 'fe-sponsor-h', heading: 'Sponsor an event', supporting: 'We have flexible sponsorship options available. What’s included:' }),
+            h('div', { className: 'fe-cards' }, h(F.LayoutGrid, { columns: 3 }, benefits.map(function (b) {
+              return h(F.BadgeCard, { key: b[0], container: 'card', align: 'left', illustration: img(b[2]), title: cardTitle(b[0], mobile), body: b[1], showLink: false });
+            }))),
+            h('div', { className: 'fe-sponsor-cta' },
+              h('h3', { className: mobile ? 'heading-h4-mobile' : 'heading-h4' }, 'Learn about sponsorship opportunities'),
+              h(F.Button, { variant: 'primary', size: 'large', href: '#fe-contact' }, 'Contact our team')))),
+
+        /* 5 · Host your own event */
+        h('section', { className: 'fe-section fe-section--subtle', id: 'fe-host', 'aria-labelledby': 'fe-host-h' },
+          h('div', { className: 'fe-inner fe-stack' },
+            h(Header, { id: 'fe-host-h', heading: 'Host your own event' }),
+            h('div', { className: 'fe-cards' }, h(F.LayoutGrid, { columns: 3 }, hostCards.map(function (c) {
+              return h(F.BadgeCard, { key: c[0], container: 'card', align: 'left', illustration: img(c[2]), title: cardTitle(c[0], mobile), body: c[1], linkLabel: c[3], linkHref: c[4] });
+            }))))),
+
+        /* 6 · Common questions */
+        h(F.SectionFAQ, {
+          breakpoint: 'auto', className: 'fe-faq',
+          header: { align: 'left', showEyebrow: false, showSupporting: false, heading: 'Common questions' },
+          items: faqs, showLink: false
+        }),
+
+        /* 7 · Talk with our team */
+        h('section', { className: 'fe-section fe-section--subtle', id: 'fe-contact', 'aria-labelledby': 'fe-contact-h' },
+          h('div', { className: 'fe-inner fe-stack' },
+            h(Header, { id: 'fe-contact-h', heading: 'Talk with our team' }),
+            h('div', { className: 'fe-contacts' }, contacts.map(function (c) {
+              return h('div', { key: c.name, className: 'fe-contact' },
+                h('h3', { className: mobile ? 'heading-h4-mobile' : 'heading-h4' }, c.group),
+                h(F.ContactCard, { breakpoint: 'auto', name: c.name, initials: c.initials, title: c.title,
+                  phone: '763-XXX-XXXX', email: c.email, emailLabel: c.emailLabel, headingLevel: 4 }));
+            })))),
+
+        /* 8 · CTA band */
+        h(F.CTABand, {
+          breakpoint: 'auto', className: 'fe-cta',
+          eyebrow: '',
+          headline: 'Bring a friend to the next gala',
+          subtext: 'Every event helps fund meals for kids. Pick one and bring someone new.',
+          primaryLabel: 'See upcoming events', primaryHref: '#fe-upcoming',
+          secondaryLabel: 'Sponsor an event', secondaryHref: '#fe-sponsor',
+          showTrustStrip: false, showStatsStrip: false
+        })),
+
+      h(F.Footer, {
+        breakpoint: 'auto',
+        logoSrc: img('fmsc-logo-text-only.png'),
+        columns: [
+          { title: 'About FMSC', links: [{ label: 'Our mission', href: 'mission.html' }, 'Our story', 'What’s in a meal', 'Locations', 'Our finances', 'Leadership and board', 'Careers', 'News', 'Contact us'] },
+          { title: 'Ways to help', links: [{ label: 'Volunteer at a packing event', href: 'volunteer.html' }, { label: 'Donate once or monthly', href: 'donate.html' }, { label: 'Start a fundraiser', href: 'fundraiser.html' }, { label: 'Shop FMSC MarketPlace™', href: 'marketplace.html' }, { label: 'Host an FMSC MobilePack™ event', href: 'host-mobilepack.html' }, { label: 'Attend a fundraising event', href: 'fundraising-events.html' }, { label: 'Plan an estate gift', href: 'estate-gift.html' }, { label: 'Corporate partnerships', href: 'corporate-partnerships.html' }] },
+          { title: 'Resources', links: ['Common questions', 'Annual report', 'Food aid requests', 'Request a speaker', 'Partner resources', 'Press'] },
+          { title: 'Account', links: [{ label: 'Sign in', href: 'sign-in.html' }, { label: 'Your impact', href: 'account-dashboard.html' }, { label: 'Receipts and tax documents', href: 'account-giving.html' }] },
+          { title: 'Stay in touch', links: ['Email updates', 'Facebook', 'Instagram', 'YouTube', 'LinkedIn'] }
+        ],
+        seals: [img('seal-charity-navigator.png'), img('seal-candid.svg')]
+      }));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(EventsPage));
+</script>
+</body>
+</html>

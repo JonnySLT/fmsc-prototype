@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volunteering · FMSC</title>
+<meta name="description" content="Your FMSC volunteering: every shift you book or pack, and a downloadable record of your volunteer hours.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js.
+     Figma: "Account/Volunteering — New account" (desktop 4656:66350, mobile 4656:97087). */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  /* Figma draws the 48px (40px mobile) empty-state icons with a 2px stroke; the DS scales the 24px icon's stroke up. */
+  .fm-empty-state__icon svg * { vector-effect: non-scaling-stroke; }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    /* Figma mobile: the hours card header is 56 tall (12px under the badge row). */
+    .av-hours .ac-card__header { min-height: 56px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="account-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+
+  function Volunteering() {
+    var mobile = F.useIsMobile();
+    return h(window.AccountShell, { current: 'volunteering' },
+
+      /* Account page header. Figma mobile adds the one-line description; desktop shows the title only. */
+      h(F.AccountPageHeader, { breakpoint: 'auto', title: 'Your volunteering', showBreadcrumb: false, showTag: false, showStats: false, showAction: false,
+        showDescription: mobile, description: 'Nothing packed yet.' }),
+
+      /* 6 · Shift history */
+      h(UI.Card, { icon: 'file-text', title: 'Shifts', id: 'av-shifts-title' },
+        h(F.EmptyState, { breakpoint: 'auto', icon: 'file-text', headline: 'No shifts to show yet',
+          supportingText: 'Every shift you book or pack is listed here, with the hours and who you packed with.',
+          showSecondary: false, primaryLabel: 'Find a packing shift', primaryHref: 'volunteer.html' })),
+
+      /* 5 · Download an hours record */
+      h(UI.Card, { className: 'av-hours', icon: 'download', title: 'Download an hours record', id: 'av-hours-title' },
+        h(F.EmptyState, { breakpoint: 'auto', icon: 'circle-check', headline: 'Nothing to download yet',
+          supportingText: 'After your first shift you can pull a PDF of your hours for school or work.',
+          showPrimary: false, secondaryLabel: 'What the record shows', secondaryHref: '#' })));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Volunteering));
+</script>
+</body>
+</html>
