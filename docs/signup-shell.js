@@ -74,9 +74,12 @@
     try { var u = new URL(url, location.href); return u.origin === location.origin && /\/signup-[a-z0-9]+\.html$/.test(u.pathname); }
     catch (e) { return false; }
   }
+  /* The confirmation (step 4) is a new page: "Reserve my spot" opens it at the top (Jonny, Oct. 27, 2026). */
   function saveScroll(url) {
     if (!isSignup(url)) return;
-    try { sessionStorage.setItem(SCROLL_KEY, JSON.stringify({ y: window.scrollY, to: new URL(url, location.href).pathname })); } catch (e) { /* storage blocked: opens at top */ }
+    var to = new URL(url, location.href).pathname;
+    var y = /\/signup-[a-d]4\.html$/.test(to) ? 0 : window.scrollY;
+    try { sessionStorage.setItem(SCROLL_KEY, JSON.stringify({ y: y, to: to })); } catch (e) { /* storage blocked: opens at top */ }
   }
   function go(url) { saveScroll(url); window.location.href = url; }
   document.addEventListener('click', function (e) {
