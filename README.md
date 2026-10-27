@@ -2,7 +2,7 @@
 
 A clickable HTML prototype of the FMSC.org redesign, used for usability testing. It's built from the Client Prototype Figma file (the "Usability test · Desktop" and "Usability test · Mobile" pages) on a coded version of the FMSC Design System.
 
-- **Live site:** served by GitHub Pages from the `docs/` folder on `main`.
+- **Live site:** https://jonnyslt.github.io/fmsc-prototype/ (GitHub Pages, `docs/` folder on `main`).
 - **Start page:** `docs/index.html` (signed-out homepage).
 - **Not for search engines:** every page carries `noindex, nofollow`, and `docs/robots.txt` disallows crawling.
 
