@@ -32,7 +32,7 @@
 
   var PATHS = ['a', 'b', 'c', 'd'];
   var STEPS = [
-    { n: 1, title: 'Pick a packing time', change: 'Change packing time' },
+    { n: 1, title: 'Reserve a packing time', change: 'Change packing time' },
     { n: 2, title: 'Who’s coming?', change: 'Change who’s coming' },
     { n: 3, title: 'Volunteer guidelines and waiver', change: 'Change guidelines and waiver' }
   ];
@@ -295,6 +295,16 @@
     '.su-confirm-title__body { margin: 0; max-width: 607px; color: var(--content-secondary); overflow-wrap: anywhere; }',
     '.su-confirm-links { display: flex; flex-direction: column; gap: var(--space-sm); }',
     '.su-confirm-links__line { margin: 0; max-width: 607px; color: var(--content-secondary); }',
+    /* Confirmation side column (desktop): summary + "Share a link", 384 wide, grid-gap apart. */
+    '.su-confirm__side { flex: none; width: 384px; max-width: 100%; display: flex; flex-direction: column; gap: var(--grid-gap); }',
+    '.su-confirm__side > .fm-reservation-summary { width: 100%; }',
+    '@container su-content (max-width: 839.98px) { .su-confirm__side { width: auto; } }',
+    '.su-share { gap: var(--space-md); }',
+    '.su-share__title { margin: 0; color: var(--content-primary); }',
+    /* Next: fill your spots (Figma "Who’s coming"): rows space-sm apart, heading lines space-3xs apart. */
+    '.su-who { display: flex; flex-direction: column; gap: var(--space-sm); min-width: 0; }',
+    '.su-who__head { display: flex; flex-direction: column; gap: var(--space-3xs); }',
+    '.su-who__title, .su-who__from { margin: 0; color: var(--content-primary); }',
 
     /* "Link for this shift" opens the public event page: show it as clickable. */
     '.su-shell .fm-invite__url { cursor: pointer; }',
@@ -386,12 +396,13 @@
         h(F.ArrowLink, { href: '#', label: 'Read the code of conduct' }),
         h(F.ArrowLink, { href: '#', label: 'Read the volunteering policies' })));
   }
-  /* Waiver: the accept checkbox and "Read the waiver" link. Controlled: checked, onChange(bool), error. */
+  /* Waiver: the "Read the waiver" link and the accept checkbox. Controlled: checked, onChange(bool), error. */
   function Waiver(p) {
     return h('div', { className: 'su-waiver' },
+      /* Figma (Oct. 27, 2026): "Read the waiver" sits above the accept checkbox. */
+      h(F.ArrowLink, { href: '#', label: 'Read the waiver' }),
       h(F.Checkbox, { name: 'su-waiver', label: 'I’ve read the guidelines and accept the volunteer waiver.', checked: !!p.checked, error: !!p.error,
-        onChange: function (e) { p.onChange(e.target.checked); } }),
-      h(F.ArrowLink, { href: '#', label: 'Read the waiver' }));
+        onChange: function (e) { p.onChange(e.target.checked); } }));
   }
   /* ConfirmTitle: success badge + H2 + one line. */
   function ConfirmTitle(p) {
@@ -417,7 +428,73 @@
     var sum = Object.assign({}, SUMMARY, { status: 'confirmed', whenValue: r.when, whereValue: r.where, shortSummary: r.shortSummary, month: r.month, day: r.dayNum }, p.summary || {});
     var card = h('section', { key: 'card', className: cls('su-card su-confirm__card', p.className), 'aria-labelledby': p.labelledBy }, p.children);
     var summary = h(F.ReservationSummary, Object.assign({ key: 'sum' }, sum, { breakpoint: mobile ? 'mobile' : 'desktop' }));
+    /* side (Figma, Oct. 27, 2026): the "Share a link" card under the summary on desktop, under the card on mobile. */
+    if (p.side) {
+      return h('div', { className: 'su-confirm' }, mobile
+        ? [summary, card, h(Fragment, { key: 'side' }, p.side)]
+        : [card, h('div', { key: 'side', className: 'su-confirm__side' }, summary, p.side)]);
+    }
     return h('div', { className: 'su-confirm' }, mobile ? [summary, card] : [card, summary]);
+  }
+
+  /* ---- Confirmation people (paths b, c, d; Figma "Sign up — B4/C4/D4 Confirmation", Oct. 27, 2026) ----
+     ConfirmPeople({ path, people, total, fromLabel, searchLabel, addTitle, emptyFrom }): the whole step 4 page body.
+     Checking someone claims a spot for them (up to the open spots) and unchecking frees it, with the Added / Removed
+     toast; Sarah's own row follows her "Are you packing?" answer. People added with "Add someone" join the list
+     checked. Everything is saved to the reservation as it changes. */
+  function ConfirmPeople(c) {
+    var mobile = F.useIsMobile();
+    var PP = window.PeoplePicker;
+    var path = c.path, f0 = readFlow();
+    var r0 = resolve(path);
+    var a = React.useState(function () { var o = {}; addedNames().forEach(function (n) { o[n] = true; }); return o; }), added = a[0], setAdded = a[1];
+    var y = React.useState(r0.packing === 'yes'), youOn = y[0], setYou = y[1];
+    var g = React.useState(Array.isArray(f0.guests) ? f0.guests : []), guests = g[0], setGuests = g[1];
+    var R = resolve(path);
+    var claimed = (youOn ? 1 : 0) + Object.keys(added).length;
+    var room = R.spots - claimed;
+    var me = window.FMSCData.profile.primaryEmail();
+    var base = c.people.map(function (x) { return Object.assign({}, x, { email: x.you ? me : x.email }); }).concat(guests);
+    var isOn = function (x) { return x.you ? youOn : !!added[x.name]; };
+    var people = base.map(function (x) { return Object.assign({}, x, { desc: x.desc + (isOn(x) ? ' · has a spot' : '') }); });
+    var checked = {}; base.forEach(function (x) { checked[x.name] = isOn(x); });
+    React.useEffect(function () { saveReservation(path, { added: Object.keys(added) }); }, [added, youOn]);
+    function apply(names, on) {
+      var nx = Object.assign({}, added), you = youOn;
+      names.forEach(function (n) { var x = base.filter(function (b) { return b.name === n; })[0]; if (x && x.you) you = on; else if (on) nx[n] = true; else delete nx[n]; });
+      if (you !== youOn) { writeFlow({ packing: you ? 'yes' : 'no' }); setYou(you); }
+      setAdded(nx);
+    }
+    function addGuest(x) {
+      if (base.some(function (b) { return b.name === x.name; })) return;
+      var ng = guests.concat([{ name: x.name, desc: x.desc, email: x.email, minor: x.minor }]);
+      setGuests(ng); writeFlow({ guests: ng });
+      if (room > 0) { var nx = Object.assign({}, added); nx[x.name] = true; setAdded(nx); }
+    }
+    var shown = people.length;
+    var total = (c.total || c.people.length) + guests.length;
+    var count = '1–' + shown + ' of ' + total + (total === 1 ? ' person' : ' people');
+    var share = h('section', { className: 'su-card su-share', 'aria-labelledby': 'su-share-title' },
+      h('h2', { className: 'label-large su-share__title', id: 'su-share-title' }, 'Share a link'),
+      h('p', { className: 'body-small su-note' }, linkNote(R, room)),
+      h(PP.ShareLink, { url: R.linkUrl, code: R.code, href: 'event-summary.html' }));
+    return h(Confirmation, { path: path, labelledBy: 'su-confirm-title', side: share,
+        summary: { spotsValue: claimed + ' of ' + R.spots + ' claimed', showGroup: true, groupValue: R.group } },
+      h('div', { id: 'su-confirm-title' },
+        h(ConfirmTitle, { title: (R.spots === 1 ? 'Your spot is reserved for ' : 'Your spots are reserved for ') + R.dateLabel,
+          body: 'We sent the details to ' + me + '. Arrive at ' + R.arrive })),
+      h(Rule),
+      h('div', { className: 'su-who' },
+        h('div', { className: 'su-who__head' },
+          h('h3', { className: 'label-large su-who__title', id: 'su-fill-title' }, 'Next: fill your spots'),
+          h('p', { className: 'body-base su-note su-measure', 'aria-live': 'polite' }, claimed + ' of ' + R.spotsText + ' claimed so far. Add people now, or later from your reservation.')),
+        h('p', { className: 'label-base su-who__from', id: 'su-from' }, c.fromLabel),
+        h(PP.List, { people: people, checked: checked, room: room, mobile: mobile, searchLabel: c.searchLabel, count: count, labelledBy: 'su-from', caption: c.fromLabel,
+          onToggle: function (n, on) { apply([n], on); }, onToggleAll: function (names, on) { apply(names, on); } }),
+        h(PP.AddSomeone, { title: c.addTitle, titleClass: 'label-base', onAdd: addGuest })),
+      h(Rule),
+      h(ConfirmLinks, { line: 'Track waivers, add guests or change your spots from your reservation.',
+        links: [{ label: 'See your reservation', href: reservationHref() }, { label: 'Add to calendar', href: '#' }] }));
   }
 
   /* ---- SignupShell ---- */
@@ -495,6 +572,6 @@
   window.SignupUI = {
     EventHeader: EventHeader, EventFacts: EventFacts, StepCard: StepCard, Actions: Actions, WhoChoice: WhoChoice,
     Guidelines: Guidelines, Waiver: Waiver, Rule: Rule, Note: Note,
-    Confirmation: Confirmation, ConfirmTitle: ConfirmTitle, ConfirmLinks: ConfirmLinks, useFlow: useFlow
+    Confirmation: Confirmation, ConfirmTitle: ConfirmTitle, ConfirmLinks: ConfirmLinks, ConfirmPeople: ConfirmPeople, useFlow: useFlow
   };
 })();

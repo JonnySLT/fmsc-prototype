@@ -5,38 +5,17 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Your spots are reserved · Sign up your group · FMSC</title>
-<meta name="description" content="Spots for Faith Lutheran Confirmation Class at FMSC Coon Rapids are reserved. Fill your spots and invite the rest of your group.">
+<meta name="description" content="Spots for Faith Lutheran Confirmation Class at FMSC Coon Rapids are reserved. Fill your spots and share the link with the rest of your group.">
 <link rel="stylesheet" href="ds/tokens.css">
 <link rel="stylesheet" href="ds/bundle.css">
 <style>
-  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (su-) come from signup-shell.js. */
+  /* Page layout only. Every value is an FMSC DS token; the flow shell, the people list and the shared blocks (su-, pp-)
+     come from signup-shell.js and people-picker.js. */
   html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
   body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   * { box-sizing: border-box; }
   img { display: block; max-width: 100%; }
   h1, h2, h3, h4, p, ul, ol { margin: 0; }
-
-  /* Title + line blocks ("Next: fill your spots", "Invite everyone else"): space-3xs apart, line at the 607 measure. */
-  .sd-head { display: flex; flex-direction: column; gap: var(--space-3xs); min-width: 0; }
-  .sd-head__title { color: var(--content-primary); }
-  .sd-head__line { max-width: 607px; color: var(--content-secondary); }
-
-  /* Member picker: rows space-sm apart; search 360 wide on desktop; people in one column, rows space-xs apart. */
-  .sd-members { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); min-width: 0; }
-  .sd-members > .sd-head, .sd-members > .sd-people, .sd-members > .fm-pagination { align-self: stretch; }
-  .sd-members__from { color: var(--content-primary); }
-  .sd-search { width: 360px; max-width: 100%; }
-  .sd-people__col { display: flex; flex-direction: column; gap: var(--space-xs); min-width: 0; }
-  .sd-people__empty { color: var(--content-secondary); }
-  .sd-members .fm-pagination { padding-left: 0; padding-right: 0; }
-
-  /* DS Invite is 946 wide by default; here it fills the card column. */
-  .sd-invite .fm-invite:not(.fm-invite--mobile) { width: 100%; }
-
-  @media (max-width: 599.98px) {
-    .sd-search { width: 100%; }
-    .sd-members > .fm-btn { align-self: stretch; }
-  }
 </style>
 </head>
 <body>
@@ -46,103 +25,18 @@
 <script src="ds/bundle.js"></script>
 <script src="site-nav.js"></script>
 <script src="flow-data.js"></script>
+<script src="people-picker.js"></script>
 <script src="signup-shell.js"></script>
 <script>
-  var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
-  /* Path D · confirmation (Figma "Sign up — D4 Confirmation", 4454:35049 / mobile 4454:42048): spots reserved for the new
-     Faith Lutheran Confirmation Class; fill them from the people on Sarah's account (the new group has no members yet),
-     invite the rest (link, code FAITH-1003). "See your reservation" opens the event details page. */
-  /* Group name, spots, the packing answer and the date come from the flow store (SignupShell.flow). Sarah holds the
-     first claimed spot when she said she's packing; if she's only organizing, no spot is claimed yet. */
-  var R = Shell.flow.resolve('d');
-  var GROUP = R.group;
-  /* The four people on the account, one column at every width (Figma "People" holds a single column). */
-  var PEOPLE = [
-    { name: 'Sarah Whitfield', desc: 'You', on: R.packing === 'yes' },
-    { name: 'Maya Whitfield', desc: 'Your child · 14' },
-    { name: 'Lily Whitfield', desc: 'Your child · 9' },
-    { name: 'Carol Whitfield', desc: 'No FMSC account' }
-  ];
-
-  /* "Add selected" claims the checked people (up to the open spots): they stay checked and locked, and the claimed line,
-     the summary and the link note follow. The reservation is saved as the page renders and again on each add. */
-  function initialAdded() { var o = {}; Shell.flow.added().forEach(function (n) { o[n] = true; }); return o; }
-  Shell.flow.saveReservation('d');
-
-  function Members(p) {
-    var init = {}; PEOPLE.forEach(function (x) { init[x.name] = !!x.on; });
-    var c = React.useState(init), checked = c[0], setChecked = c[1];
-    var q = React.useState(''), query = q[0], setQuery = q[1];
-    var match = PEOPLE.filter(function (x) { return !query || window.FMSCData.profile.display(x.name).toLowerCase().indexOf(query.trim().toLowerCase()) >= 0; });
-    /* "Select all" covers only people who can still join (not Sarah when she holds the claimed spot, nor anyone added),
-       so it starts unchecked as the frame shows. */
-    var open = PEOPLE.filter(function (x) { return !x.on && !p.added[x.name]; });
-    var room = Math.max(0, R.spots - p.claimed);
-    var nPicked = open.filter(function (x) { return checked[x.name]; }).length;
-    var all = open.length > 0 && open.every(function (x) { return checked[x.name]; });
-    var some = open.some(function (x) { return checked[x.name]; });
-    function toggle(name, v) { var n = Object.assign({}, checked); n[name] = v; setChecked(n); }
-    function toggleAll(v) { var n = Object.assign({}, checked); open.forEach(function (x, i) { n[x.name] = v && i < room; }); setChecked(n); }
-    function add() {
-      var names = open.filter(function (x) { return checked[x.name]; }).slice(0, room).map(function (x) { return x.name; });
-      if (names.length) p.onAdd(names);
-    }
-    function row(x) {
-      if (p.added[x.name]) return h(F.Checkbox, { key: x.name, label: window.FMSCData.profile.display(x.name), description: x.desc, checked: true, disabled: true, onChange: function () {} });
-      return h(F.Checkbox, { key: x.name, label: window.FMSCData.profile.display(x.name), description: x.desc, checked: !!checked[x.name],
-        disabled: !x.on && !checked[x.name] && nPicked >= room ? true : undefined, onChange: function (e) { toggle(x.name, e.target.checked); } });
-    }
-    return h('div', { className: 'sd-members', role: 'group', 'aria-labelledby': 'sd-fill-title' },
-      h('div', { className: 'sd-head' },
-        h('h3', { className: 'sd-head__title label-large', id: 'sd-fill-title' }, 'Next: fill your spots'),
-        h('p', { className: 'sd-head__line body-base', 'aria-live': 'polite' }, p.claimed + ' of ' + R.spotsText + ' claimed so far. Add people now, or later from your reservation.')),
-      h('p', { className: 'sd-members__from label-base', id: 'sd-from' }, 'From people on your account'),
-      h('div', { className: 'sd-search' },
-        h(F.Search, { label: 'Find someone on your account', placeholder: 'Find someone on your account', value: query,
-          onChange: function (e) { setQuery(e.target.value); }, onClear: function () { setQuery(''); } })),
-      h(F.Checkbox, { label: 'Select all', description: 'Only people who can still join', checked: all, indeterminate: some && !all,
-        disabled: !open.length || !room ? true : undefined, onChange: function (e) { toggleAll(e.target.checked); } }),
-      match.length
-        ? h('div', { className: 'sd-people', role: 'group', 'aria-labelledby': 'sd-from' },
-            h('div', { className: 'sd-people__col' }, match.map(row)))
-        : h('p', { className: 'sd-people__empty body-small', role: 'status' }, 'No one in this list matches “' + query.trim() + '”.'),
-      h(F.Pagination, { count: '1–4 of 4 people', ariaLabel: 'People on your account pages',
-        previousLabel: 'Previous people', nextLabel: 'Next people' }),
-      h(F.Button, { variant: 'secondary', size: 'medium', type: 'button', onClick: add }, 'Add selected'));
-  }
-
-  function Page() {
-    var a = React.useState(initialAdded), added = a[0], setAdded = a[1];
-    var claimed = R.claimedBase + Object.keys(added).length;
-    function onAdd(names) {
-      var nx = Object.assign({}, added); names.forEach(function (n) { nx[n] = true; }); setAdded(nx);
-      Shell.flow.saveReservation('d', { added: Object.keys(nx) });
-    }
-    return h(Shell, { path: 'd', step: 4, summary: false },
-      h(UI.Confirmation, { labelledBy: 'sd-confirm-title',
-          summary: { spotsValue: claimed + ' of ' + R.spots + ' claimed', showGroup: true, groupValue: GROUP } },
-        h('div', { id: 'sd-confirm-title' },
-          h(UI.ConfirmTitle, { title: (R.spots === 1 ? 'Your spot is reserved for ' : 'Your spots are reserved for ') + R.dateLabel,
-            body: 'We sent the details to ' + window.FMSCData.profile.primaryEmail() + '. Arrive at ' + R.arrive })),
-        h(UI.Rule),
-        h(Members, { added: added, claimed: claimed, onAdd: onAdd }),
-        h(UI.Rule),
-        h('div', { className: 'sd-head' },
-          h('h3', { className: 'sd-head__title label-large' }, 'Invite everyone else'),
-          h('p', { className: 'sd-head__line body-base' }, 'Send your link, share the code, or email them an invitation.')),
-        h('div', { className: 'sd-invite' },
-          h(F.Invite, {
-            breakpoint: 'auto', guestTab: false, defaultTab: 'link',
-            linkLabel: 'Link for this shift', linkUrl: R.linkUrl,
-            showLinkNote: true, linkNote: Shell.flow.linkNote(R, R.spots - claimed),
-            codeIntro: 'Joining on fmsc.org? Use this shift’s code:', code: R.code, showSettingsLink: false,
-            emailDescription: 'They get an email invitation to join ' + GROUP + ' on this shift.'
-          })),
-        h(UI.Rule),
-        h(UI.ConfirmLinks, { line: 'Track waivers, add guests or change your spots from your reservation.',
-          links: [{ label: 'See your reservation', href: Shell.flow.reservationHref() }, { label: 'Add to calendar', href: '#' }] })));
-  }
-  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+  var UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement, D = window.FMSCData;
+  /* Path D · confirmation (Figma "Sign up — D4 Confirmation"): spots reserved for the new Faith Lutheran Confirmation
+     Class; fill them from the four people on Sarah's account (the new group has no members yet).
+     Figma (Oct. 27, 2026): checking a person claims a spot (Added toast), unchecking frees it (Removed toast); "Add someone"
+     adds a person by name; "Share a link" sits under the reservation summary. "See your reservation" opens the event page. */
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(Shell, { path: 'd', step: 4, summary: false },
+      h(UI.ConfirmPeople, { path: 'd', people: D.people.account, fromLabel: 'From people on your account',
+        searchLabel: 'Find someone on your account', addTitle: 'Someone else coming? Add them' })));
 </script>
 </body>
 </html>

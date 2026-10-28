@@ -21,9 +21,8 @@
   .es-muted { color: var(--content-secondary); }
   .ev-muted { color: var(--content-secondary); }
 
-  /* Hero: Figma Hero (Standard) with one Secondary Large "Share this event" button (share icon). The DS hero draws a
-     Gold + Secondary pair; the Gold one is hidden and the share icon rides in the Secondary button's label. */
-  .es-hero .fm-hero__actions > .fm-btn:first-child { display: none; }
+  /* Hero: Figma Hero (Standard) with Gold Large "Find a packing event" and Secondary Large "Share this event" (share
+     icon; Oct. 27, 2026). The share icon rides in the Secondary button's label. */
   .es-hero .fm-hero__actions .fm-btn__label { display: inline-flex; align-items: center; gap: var(--space-xs); }
   /* Figma breaks the desktop H1 after "in" (its 690 column renders the line wider than the browser does). */
   @media (min-width: 600px) { .es-hero .fm-hero__title { max-width: 650px; } }
@@ -365,6 +364,7 @@
             eyebrow: 'PACKING EVENT · SATURDAY, AUG. 8, 2026',
             h1: '32,400 meals packed in Coon Rapids',
             body: 'About 150 volunteers hand-packed MannaPack® meals at Feed My Starving Children (FMSC), a Christian nonprofit, over three packing sessions.',
+            primaryLabel: 'Find a packing event', primaryHref: 'volunteer.html',
             secondaryLabel: h(React.Fragment, null, h(F.Icon, { name: 'share', size: 24 }), 'Share this event'),
             onSecondary: function (e) { shareReturn.current = e.currentTarget; setShareOpen(true); },
             image: img('ev-summary-hero.jpg'),

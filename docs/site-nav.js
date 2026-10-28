@@ -32,13 +32,13 @@
      Link rules, applied to every click on the site so pages keep plain hrefs:
      - signed in:  index.html → home-signed-in.html; sign-in.html / create-account*.html → the account Dashboard
      - signed out: home-signed-in.html → index.html
-     - 'new':      account-<page>.html → account-<page>-new.html (the five account pages) */
+     - 'new':      account-<page>.html → account-<page>-new.html (the six account pages) */
   var AUTH_KEY = 'fmsc-auth';
   var memAuth = 'out';
   function readAuth() { try { var v = sessionStorage.getItem(AUTH_KEY); return v === 'sarah' || v === 'new' ? v : 'out'; } catch (e) { return memAuth; } }
   function writeAuth(v) { memAuth = v; try { sessionStorage.setItem(AUTH_KEY, v); } catch (e) {} try { window.dispatchEvent(new Event('fmsc-auth')); } catch (e) {} }
   (function fromQuery() { var m = /[?&]auth=(out|sarah|new)\b/.exec(location.search); if (m) writeAuth(m[1]); })();
-  var ACCOUNT_PAGES = ['dashboard', 'people', 'volunteering', 'giving', 'profile'];
+  var ACCOUNT_PAGES = ['dashboard', 'people', 'volunteering', 'giving', 'profile', 'marketplace'];
   function resolveHref(href, state) {
     if (!href) return href;
     state = state || readAuth();
@@ -138,4 +138,35 @@
     });
   }
   window.SiteNav = SiteNav;
+
+  /* ---- Toast (Figma "Overlay · Toast", Oct. 27, 2026) ----
+     window.FMSCToast.show('Added' | 'Removed'): the DS Toast pill, bottom centre, for 2 seconds (Figma: opens on a
+     checkbox click, closes after 2s). Added: feedback-success + check; Removed: feedback-warning + x. The status is also
+     announced (role=status). */
+  (function toast() {
+    var CSS = '.fm-toast-host { position: fixed; left: 50%; bottom: var(--space-lg); z-index: 1000; transform: translateX(-50%); pointer-events: none; }' +
+      '.fm-toast { display: inline-flex; align-items: center; gap: var(--space-xs); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-pill); color: var(--content-inverse); box-shadow: var(--shadow-md); animation: fm-toast-in 0.3s ease-out; }' +
+      '.fm-toast--added { background: var(--feedback-success); }' +
+      '.fm-toast--removed { background: var(--feedback-warning); }' +
+      '.fm-toast__icon { flex: none; color: var(--graphic-ink); }' +
+      '@keyframes fm-toast-in { from { opacity: 0; } to { opacity: 1; } }' +
+      '@media (prefers-reduced-motion: reduce) { .fm-toast { animation: none; } }';
+    var host = null, root = null, timer = null, n = 0;
+    function ensure() {
+      if (host) return;
+      if (!document.getElementById('fm-toast-css')) { var st = document.createElement('style'); st.id = 'fm-toast-css'; st.textContent = CSS; document.head.appendChild(st); }
+      host = document.createElement('div'); host.className = 'fm-toast-host'; host.setAttribute('role', 'status'); host.setAttribute('aria-live', 'polite');
+      document.body.appendChild(host); root = window.ReactDOM.createRoot(host);
+    }
+    function show(status) {
+      ensure();
+      var removed = status === 'Removed';
+      n += 1;
+      root.render(h('div', { key: n, className: 'fm-toast label-base ' + (removed ? 'fm-toast--removed' : 'fm-toast--added') },
+        h(window.FMSC.Icon, { name: removed ? 'x' : 'check', size: 24, className: 'fm-toast__icon' }), removed ? 'Removed' : 'Added'));
+      clearTimeout(timer);
+      timer = setTimeout(function () { root.render(null); }, 2000);
+    }
+    window.FMSCToast = { show: show };
+  })();
 })();

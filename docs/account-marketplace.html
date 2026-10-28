@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketPlace purchases · FMSC</title>
+<meta name="description" content="Your FMSC MarketPlace™ orders, the meals each one provides, and answers to common order questions.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; shared account styles (ac-) come from account-shell.js.
+     Figma: "Account/MarketPlace purchases" (Designs, Oct. 27, 2026). */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+
+  .am-muted { color: var(--content-secondary); }
+
+  /* 1 · Your orders: header with the Year filter on the right (Figma 240 wide); note at the Caption measure (462). */
+  .am-head { display: flex; align-items: center; gap: var(--space-sm); padding-bottom: var(--space-sm); }
+  .am-head .ac-card__title { flex: 1 1 0; }
+  .am-year { flex: none; width: 240px; }
+  .am-note { max-width: 462px; }
+  .ac-card > .fm-arrow-link { align-self: flex-start; }
+  .am-table { border: 1px solid var(--border-default); border-radius: var(--radius-lg); overflow: hidden; }
+  .am-table .fm-dtable, .am-table .fm-dtable__table { width: 100%; }
+  .am-table .fm-dtable__table { table-layout: fixed; }
+  /* Figma: the first column is inset space-lg from the table edge. */
+  .am-table .fm-dtable__table tr > :first-child { padding-left: var(--space-lg); }
+  .am-table .fm-dtable__table td:not(:nth-child(2)), .am-table .fm-dtable__table th { white-space: nowrap; }
+  /* Status cells hold only the tag (Figma Cells=Tagged with no value line). */
+  .am-table .fm-table-cell--tagged .fm-table-cell__strong:empty { display: none; }
+  /* Figma Tag colours: Shipped Brand (the DS tag), Delivered Neutral. */
+  .am-table .fm-table-cell__tag:has(.am-tag--neutral), .am-table .fm-dtable__tag:has(.am-tag--neutral) { background: var(--background-subtle); color: var(--content-secondary); }
+  .am-table .fm-dtable__tag { align-self: flex-start; display: inline-flex; padding: var(--space-2xs) var(--space-sm); border-radius: var(--radius-sm); }
+  /* Row links: 44px hit area without moving the layout. */
+  .am-table .fm-table-cell__link, .am-table .fm-dtable__link { display: inline-block; padding: var(--space-sm) 0; margin: calc(-1 * var(--space-sm)) 0; }
+  /* Figma record rule sits in the layout (+1px each record); the DS draws it as an inset shadow. */
+  .am-table .fm-dtable__record { box-shadow: none; border-bottom: 1px solid var(--border-subtle); }
+  .am-empty { padding: var(--space-md) var(--card-pad); color: var(--content-secondary); }
+
+  /* 2 · Questions about an order: the first (open) item has no rule above it */
+  .am-faq .fm-disclosure-item { box-shadow: none; border-top: 1px solid var(--border-subtle); }
+  .am-faq .ac-card__header + .fm-disclosure-item { border-top: 0; }
+  .am-faq .fm-disclosure-item__row { justify-content: space-between; }
+
+  @container ac-content (max-width: 799.98px) {
+    .am-head { flex-wrap: wrap; }
+    .am-year { flex: 1 1 100%; width: auto; }
+  }
+
+  /* Mobile frame (393): below 600px */
+  @media (max-width: 599.98px) {
+    .ac-shell__content .ac-card__header { padding-bottom: 0; }
+    .am-head { flex-wrap: wrap; padding-bottom: 0; }
+    .am-year { flex: 1 1 100%; width: 100%; }
+    .am-note { max-width: none; }
+    .am-table { border: 0; border-radius: 0; }
+    .am-faq .fm-disclosure-item__question { font-size: 18px; line-height: 24px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="account-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
+
+  /* SAMPLE DATA (Figma): Sarah's FMSC MarketPlace™ orders in 2026. */
+  var orders = [
+    { date: 'Oct. 18, 2026', item: 'Bernide Mug – Peace', order: '48213', made: 'Haiti', total: '$37.00', meals: '49 meals', status: 'Shipped' },
+    { date: 'Sept. 26, 2026', item: 'Christmas Beaded Serving Set', order: '47906', made: 'Eswatini', total: '$39.00', meals: '52 meals', status: 'Delivered' },
+    { date: 'Aug. 30, 2026', item: 'Horn Catch All', order: '47511', made: 'Haiti', total: '$29.00', meals: '33 meals', status: 'Delivered' }
+  ];
+  var YEARS = ['2026', '2025'];
+  var faqs = [
+    ['Where’s my tracking number?', 'When your order ships, we email you a confirmation with a tracking number. Can’t find it? Email marketplace@fmsc.org or call 763-267-6313.'],
+    ['How do I return or exchange an item?', 'Email marketplace@fmsc.org or call 763-267-6313, and our team will set up the return or exchange with you.'],
+    ['Something arrived damaged or missing', 'Email marketplace@fmsc.org or call 763-267-6313. We’ll make it right as quickly as we can.'],
+    ['How much is shipping?', 'Standard shipping is a $5 flat rate. Faster USPS and UPS options are available at checkout for an added fee.'],
+    ['How does my purchase provide meals?', 'FMSC MarketPlace pays artisans a fair wage for what they make, and profits pay for more meal production. Each product page lists how many meals that item provides.']
+  ];
+
+  function tag(status) { return h('span', { className: status === 'Delivered' ? 'am-tag--neutral' : 'am-tag--brand' }, status); }
+
+  function Orders() {
+    var mobile = F.useIsMobile();
+    /* Stacked records (the DS mobile table) whenever the content column is under 800px: 1024 and down. */
+    var records = F.useMediaQuery('(max-width: 1024.98px)');
+    var y = React.useState('2026'), year = y[0], setYear = y[1];
+    var rows = orders.filter(function (o) { return o.date.slice(-4) === year; });
+    /* Figma column widths 150/329/100/110/120/130 of the 939px table, as shares. */
+    var columns = records
+      ? [{ key: 'date', label: 'Date', cells: 'tagged' }, { key: 'total', label: 'Total', mobileJoin: 'date' }, { key: 'item', label: 'Item' }, { key: 'order', label: 'Order' }, { key: 'link', label: 'Order details', cells: 'link' }]
+      : [{ key: 'date', label: 'Date', cells: 'strong', width: '16%' }, { key: 'item', label: 'Item', cells: 'stacked', width: '35%' },
+         { key: 'total', label: 'Total', width: '10.6%' }, { key: 'meals', label: 'Meals', width: '11.7%' },
+         { key: 'status', label: 'Status', cells: 'tagged', width: '12.8%' },
+         { key: 'link', label: '', cells: 'link', width: '13.9%', header: { 'aria-label': 'Order details' } }];
+    var data = rows.map(function (o) {
+      var link = { value: 'View order', href: '#', 'aria-label': 'View order #' + o.order };
+      return records
+        ? { date: { value: o.date, tag: tag(o.status) }, total: o.total, item: o.item, order: 'Order #' + o.order + ' · ' + o.meals, link: link }
+        : { date: o.date, item: { value: o.item, secondary: 'Order #' + o.order + ' · Made in ' + o.made }, total: o.total, meals: o.meals, status: { value: '', tag: tag(o.status) }, link: link };
+    });
+    return h('section', { className: 'ac-card', 'aria-labelledby': 'am-orders-title' },
+      h('div', { className: 'ac-card__header am-head' },
+        h(UI.Badge, { icon: 'shopping-bag' }),
+        h('h2', { className: 'ac-card__title ' + (mobile ? 'heading-h4-mobile' : 'heading-h4'), id: 'am-orders-title' }, 'Your orders'),
+        h('div', { className: 'am-year' }, h(F.Dropdown, { label: 'Year', options: YEARS, value: year, onChange: setYear }))),
+      h('p', { className: 'caption am-muted am-note' }, 'Online orders placed with any email on your account show up here. Purchases at a packing site or event don’t.'),
+      h('div', { className: 'am-table' },
+        rows.length
+          ? h(F.DataTable, { breakpoint: records ? 'mobile' : 'desktop', caption: 'Your orders', columns: columns, rows: data, showPagination: false })
+          /* INVENTED COPY (prototype): Figma shows 2026 only. */
+          : h('p', { className: 'am-empty body-base' }, 'No orders in ' + year + '.')),
+      h(F.ArrowLink, { type: 'external', label: 'Shop FMSC MarketPlace', href: 'marketplace.html' }));
+  }
+
+  function Purchases() {
+    return h(window.AccountShell, { current: 'marketplace' },
+
+      /* Account page header: title + two figures */
+      h(F.AccountPageHeader, { breakpoint: 'auto', title: 'MarketPlace purchases', showStats: true, showStat3: false,
+        stats: [{ value: '3', label: 'orders in 2026' }, { value: '134', label: 'meals provided' }] }),
+
+      /* 1 · Your orders */
+      h(Orders),
+
+      /* 2 · Questions about an order */
+      h(UI.Card, { className: 'am-faq', icon: 'message', title: 'Questions about an order' },
+        faqs.map(function (q, i) {
+          return h(F.DisclosureItem, { key: q[0], question: q[0], answer: q[1], defaultExpanded: i === 0 });
+        }),
+        h('p', { className: 'body-base am-muted' }, 'Email marketplace@fmsc.org or call 763-267-6313 with any other questions.')));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Purchases));
+</script>
+</body>
+</html>

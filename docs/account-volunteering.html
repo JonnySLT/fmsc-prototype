@@ -136,13 +136,13 @@
     { name: 'Maya Whitfield', hours: '6 hours in date range', checked: false }
   ];
 
-  /* Column widths are the Figma 240/250/99/247/108 split of the 944px table, as shares so it narrows with the column. */
+  /* Column widths are the Figma 200/250/99/241/154 split of the 944px table, as shares so it narrows with the column. */
   var columns = [
-    { key: 'date', label: 'Date', cells: 'tagged', width: '25.4%', sort: 'descending' },
+    { key: 'date', label: 'Date', cells: 'tagged', width: '21.2%', sort: 'descending' },
     { key: 'site', label: 'Site', cells: 'stacked', width: '26.5%', sort: 'unsorted' },
     { key: 'hours', label: 'Hours', cells: 'text', width: '10.5%', sort: 'unsorted', mobileJoin: 'date' },
-    { key: 'group', label: 'Group and role', cells: 'stacked', width: '26.2%', sort: 'unsorted' },
-    { key: 'details', label: 'Details', cells: 'link', width: '11.4%', header: { showLabel: false } }
+    { key: 'group', label: 'Group and role', cells: 'stacked', width: '25.5%', sort: 'unsorted' },
+    { key: 'details', label: 'Details', cells: 'link', width: '16.3%', header: { showLabel: false } }
   ];
   /* Records (stacked) view: Figma mobile joins site and city, and lowercases the role after the group. */
   function rows(records, list) {
@@ -152,7 +152,8 @@
         site: records ? { value: s.mSite } : { value: s.site, secondary: s.city },
         hours: '2 hours',
         group: records ? { value: s.group, secondary: s.role.toLowerCase() } : { value: s.group, secondary: s.role },
-        details: { value: h(React.Fragment, null, 'Event details', h('span', { className: 'fm-visually-hidden' }, ', ' + s.date)), href: s.href }
+        /* Figma: upcoming shifts read "Manage reservation"; past shifts keep "Event details". */
+        details: { value: h(React.Fragment, null, s.upcoming ? 'Manage reservation' : 'Event details', h('span', { className: 'fm-visually-hidden' }, ', ' + s.date)), href: s.href }
       };
     });
   }

@@ -21,6 +21,9 @@
   .ac-card.ap-card--groups { gap: var(--space-lg); }
   .ac-card__header.ap-head { padding-bottom: var(--space-0); }
   .ap-head .fm-btn, .ap-head .fm-toggle { flex: none; }
+  /* Your groups search: 360 wide in the header (Figma), full width below the header on mobile. */
+  .ap-group-search { flex: none; width: 360px; max-width: 100%; }
+  @media (max-width: 599.98px) { .ap-group-search { width: 100%; } }
 
   /* 1 · Your groups: three cards in a row (Figma 299 each, space-lg apart); one column when the content column is narrow. */
   .ap-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-lg); align-items: stretch; }
@@ -163,6 +166,10 @@
     var t = React.useState(true), showName = t[0], setShowName = t[1];
     /* ?join=<code> (the homepage join-code search) fills the join code field. */
     var c = React.useState(function () { try { return new URLSearchParams(location.search).get('join') || ''; } catch (e) { return ''; } }), code = c[0], setCode = c[1];
+    /* Figma (Oct. 27, 2026): "Group or leader name" search in the Your groups header (below it on mobile). */
+    var gq = React.useState(''), groupQuery = gq[0], setGroupQuery = gq[1];
+    var gNeedle = groupQuery.trim().toLowerCase();
+    var shownGroups = groups.filter(function (g) { return !gNeedle || g.groupName.toLowerCase().indexOf(gNeedle) >= 0; });
 
     var connectedTable = stacked
       ? h(F.DataTable, {
@@ -209,9 +216,12 @@
       h(F.AccountPageHeader, { breakpoint: 'auto', title: 'Your people & groups', showBreadcrumb: false, showDescription: false, showStats: false, showAction: false, showTag: false }),
 
       /* 1 · Your groups */
-      h(Section, { className: 'ap-card--groups', icon: 'users-group', title: 'Your groups', id: 'ap-groups-title' },
+      h(Section, { className: 'ap-card--groups', icon: 'users-group', title: 'Your groups', id: 'ap-groups-title',
+          action: h('div', { className: 'ap-group-search' }, h(F.Search, { label: 'Group or leader name', placeholder: 'Group or leader name', value: groupQuery,
+            onChange: function (e) { setGroupQuery(e.target.value); }, onClear: function () { setGroupQuery(''); } })) },
+        gNeedle && !shownGroups.length ? h('p', { className: 'body-small ap-note', role: 'status' }, 'No groups match “' + groupQuery.trim() + '”.') : null,
         h('div', { className: 'ap-groups' },
-          groups.map(function (g) {
+          shownGroups.map(function (g) {
             return h(F.GroupCard, Object.assign({ key: g.groupName, breakpoint: 'auto', shift: 'upcoming', headingLevel: 3 }, g));
           }),
           h(F.EmptyState, { breakpoint: 'auto', icon: 'users-group', headline: 'Bring your own group', supportingText: 'Book shifts together with your church, team or family.', showPrimary: true, showSecondary: false, primaryLabel: 'Start a new group', primaryHref: 'signup-1.html?path=c' })),

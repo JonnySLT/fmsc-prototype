@@ -5,33 +5,17 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Your spots are reserved · FMSC</title>
-<meta name="description" content="Four spots for Whitfield Household are reserved at FMSC Coon Rapids for Saturday, Oct. 3, 9–11 a.m. Fill your spots and invite everyone else.">
+<meta name="description" content="Four spots for Whitfield Household are reserved at FMSC Coon Rapids for Saturday, Oct. 3, 9–11 a.m. Fill your spots and share the link with everyone else.">
 <link rel="stylesheet" href="ds/tokens.css">
 <link rel="stylesheet" href="ds/bundle.css">
 <style>
-  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (su-) come from signup-shell.js. */
+  /* Page layout only. Every value is an FMSC DS token; the flow shell, the people list and the shared blocks (su-, pp-)
+     come from signup-shell.js and people-picker.js. */
   html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
   body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   * { box-sizing: border-box; }
   img { display: block; max-width: 100%; }
   h1, h2, h3, h4, p, ul, ol { margin: 0; }
-
-  /* Fill your spots (Figma "Who’s coming"): rows space-sm apart, items left-aligned. */
-  .sc-fill { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); min-width: 0; }
-  /* Figma Pagination here has no side padding (DS default is card-pad, for tables). */
-  .sc-fill > .fm-pagination { align-self: stretch; padding-left: 0; padding-right: 0; }
-  .sc-head { display: flex; flex-direction: column; gap: var(--space-3xs); min-width: 0; align-self: stretch; }
-  .sc-head__title { color: var(--content-primary); }
-  .sc-head__body { color: var(--content-secondary); max-width: 607px; }
-  .sc-pick { color: var(--content-primary); }
-  .sc-search { width: 360px; max-width: 100%; }
-  .sc-people { display: flex; flex-direction: column; gap: var(--space-xs); align-self: stretch; margin: 0; padding: 0; list-style: none; }
-  .sc-people .fm-check, .sc-fill > .fm-check { align-self: flex-start; }
-  .sc-empty { color: var(--content-secondary); }
-  @media (max-width: 599.98px) {
-    .sc-search { width: 100%; }
-    .sc-fill > .fm-btn { align-self: stretch; }
-  }
 </style>
 </head>
 <body>
@@ -41,99 +25,18 @@
 <script src="ds/bundle.js"></script>
 <script src="site-nav.js"></script>
 <script src="flow-data.js"></script>
+<script src="people-picker.js"></script>
 <script src="signup-shell.js"></script>
 <script>
-  var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
-  /* Path C · confirmation (Figma "Sign up — C4 Confirmation", 4454:34877 / mobile 4454:41877): Whitfield Household,
-     4 spots. Fill your spots from people on the account (Sarah is in; Maya, Lily, Carol can be added), then invite the rest.
-     "Add selected" claims the checked people: the claimed line, the summary and the link note follow. */
-  /* Group name, spots, the packing answer and the date come from the flow store (SignupShell.flow). Sarah holds the
-     first claimed spot when she said she's packing; if she's only organizing she can be added like anyone else.
-     People can be added only up to the open spots. */
-  var R = Shell.flow.resolve('c');
-  var TOTAL = R.spots;
-  var PEOPLE = [
-    { name: 'Sarah Whitfield', desc: 'You', you: R.packing === 'yes' },
-    { name: 'Maya Whitfield', desc: 'Your child · 14' },
-    { name: 'Lily Whitfield', desc: 'Your child · 9' },
-    { name: 'Carol Whitfield', desc: 'No FMSC account' }
-  ];
-
-  function FillSpots(p) {
-    var q = React.useState(''), query = q[0], setQuery = q[1];
-    var s = React.useState({}), picked = s[0], setPicked = s[1];
-    var open = PEOPLE.filter(function (x) { return !x.you && !p.added[x.name]; });
-    var room = Math.max(0, TOTAL - p.claimed);
-    var nPicked = open.filter(function (x) { return picked[x.name]; }).length;
-    var allOn = nPicked > 0 && nPicked >= Math.min(open.length, room);
-    var shown = PEOPLE.filter(function (x) { return window.FMSCData.profile.display(x.name).toLowerCase().indexOf(query.trim().toLowerCase()) >= 0; });
-    var n = shown.length;
-    var count = n ? '1–' + n + ' of ' + n + (n === 1 ? ' person' : ' people') : '0 people';
-    function toggle(name, on) { var nx = Object.assign({}, picked); nx[name] = on; setPicked(nx); }
-    function all(on) { var nx = {}; open.slice(0, room).forEach(function (x) { nx[x.name] = on; }); setPicked(nx); }
-    function add() {
-      var names = open.filter(function (x) { return picked[x.name]; }).map(function (x) { return x.name; });
-      if (names.length) { p.onAdd(names); setPicked({}); }
-    }
-    return h('div', { className: 'sc-fill', role: 'group', 'aria-labelledby': 'sc-fill-title' },
-      h('div', { className: 'sc-head' },
-        h('h3', { className: 'sc-head__title label-large', id: 'sc-fill-title' }, 'Next: fill your spots'),
-        h('p', { className: 'sc-head__body body-base', 'aria-live': 'polite' }, p.claimed + ' of ' + TOTAL + ' spots claimed so far. Add people now, or later from your reservation.')),
-      h('p', { className: 'sc-pick label-base' }, 'From people on your account'),
-      h('div', { className: 'sc-search' },
-        h(F.Search, { label: 'Find someone on your account', placeholder: 'Find someone on your account', value: query,
-          onChange: function (e) { setQuery(e.target.value); }, onClear: function () { setQuery(''); } })),
-      h(F.Checkbox, { label: 'Select all', description: 'Only people who can still join', checked: allOn, disabled: !open.length || !room,
-        onChange: function (e) { all(e.target.checked); } }),
-      h('ul', { className: 'sc-people', 'aria-label': 'People on your account' },
-        shown.map(function (x) {
-          var claimed = x.you || p.added[x.name];
-          return h('li', { key: x.name },
-            claimed
-              ? h(F.Checkbox, { label: window.FMSCData.profile.display(x.name), description: x.desc, checked: true, disabled: !x.you, onChange: function () {} })
-              : h(F.Checkbox, { label: window.FMSCData.profile.display(x.name), description: x.desc, checked: !!picked[x.name], disabled: !picked[x.name] && nPicked >= room, onChange: function (e) { toggle(x.name, e.target.checked); } }));
-        }),
-        n ? null : h('li', { className: 'sc-empty body-small' }, 'No one on your account matches “' + query.trim() + '”.')),
-      h(F.Pagination, { count: count, ariaLabel: 'People pages', previousLabel: 'Previous people', nextLabel: 'Next people' }),
-      h(F.Button, { variant: 'secondary', size: 'medium', type: 'button', onClick: add }, 'Add selected'));
-  }
-
-  /* The reservation is saved as the page renders, and again with the names each "Add selected" claims (they come back
-     on reload, and when the reservation is reopened from the event page). */
-  function initialAdded() { var o = {}; Shell.flow.added().forEach(function (n) { o[n] = true; }); return o; }
-  Shell.flow.saveReservation('c');
-  function Page() {
-    var a = React.useState(initialAdded), added = a[0], setAdded = a[1];
-    var claimed = R.claimedBase + Object.keys(added).length;
-    var openSpots = TOTAL - claimed;
-    function onAdd(names) {
-      var nx = Object.assign({}, added); names.forEach(function (n) { nx[n] = true; }); setAdded(nx);
-      Shell.flow.saveReservation('c', { added: Object.keys(nx) });
-    }
-    return h(Shell, { path: 'c', step: 4, summary: false },
-      h(UI.Confirmation, { labelledBy: 'sc-confirm-title',
-          summary: { spotsValue: claimed + ' of ' + TOTAL + ' claimed', showGroup: true, groupValue: R.group } },
-        h('div', { id: 'sc-confirm-title' },
-          h(UI.ConfirmTitle, { title: (TOTAL === 1 ? 'Your spot is reserved for ' : 'Your spots are reserved for ') + R.dateLabel,
-            body: 'We sent the details to ' + window.FMSCData.profile.primaryEmail() + '. Arrive at ' + R.arrive })),
-        h(UI.Rule),
-        h(FillSpots, { claimed: claimed, added: added, onAdd: onAdd }),
-        h(UI.Rule),
-        h('div', { className: 'sc-head' },
-          h('h3', { className: 'sc-head__title label-large' }, 'Invite everyone else'),
-          h('p', { className: 'sc-head__body body-base' }, 'Send your link, share the code, or email them an invitation.')),
-        h(F.Invite, {
-          breakpoint: 'auto', guestTab: false, defaultTab: 'link',
-          linkLabel: 'Link for this shift', linkUrl: R.linkUrl, showLinkNote: true,
-          linkNote: Shell.flow.linkNote(R, openSpots),
-          codeIntro: 'Joining on fmsc.org? Use this shift’s code:', code: R.code, showSettingsLink: false,
-          emailDescription: 'They get an email invitation to join ' + R.group + ' on this shift.'
-        }),
-        h(UI.Rule),
-        h(UI.ConfirmLinks, { line: 'Track waivers, add guests or change your spots from your reservation.',
-          links: [{ label: 'See your reservation', href: Shell.flow.reservationHref() }, { label: 'Add to calendar', href: '#' }] })));
-  }
-  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+  var UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement, D = window.FMSCData;
+  /* Path C · confirmation (Figma "Sign up — C4 Confirmation"): spots reserved for the Whitfield Household; fill them from
+     the four people on Sarah's account.
+     Figma (Oct. 27, 2026): checking a person claims a spot (Added toast), unchecking frees it (Removed toast); "Add someone"
+     adds a person by name; "Share a link" sits under the reservation summary. "See your reservation" opens the event page. */
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(Shell, { path: 'c', step: 4, summary: false },
+      h(UI.ConfirmPeople, { path: 'c', people: D.people.account, fromLabel: 'From people on your account',
+        searchLabel: 'Find someone on your account', addTitle: 'Someone else coming? Add them' })));
 </script>
 </body>
 </html>

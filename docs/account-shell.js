@@ -1,15 +1,15 @@
-/* Account shell — shared by the five account pages (Figma: Desktop/Account/* and Mobile/Account/*).
+/* Account shell — shared by the six account pages (Figma: Desktop/Account/* and Mobile/Account/*).
    Load after ds/bundle.js and site-nav.js. Usage (see build/ACCOUNT_BRIEF.md):
 
      h(window.AccountShell, { current: 'dashboard' }, ...contentChildren)
 
-   current: 'dashboard' | 'people' | 'volunteering' | 'giving' | 'profile'.
+   current: 'dashboard' | 'people' | 'volunteering' | 'giving' | 'profile' | 'marketplace'.
    Renders the signed-in SiteNav, the account layout (subnav + content), the children, and the Footer.
 
    Bands
    - >= 940px: desktop. DS AccountSubnav rail (180px) + content column (Figma "Account shell": section-y × margin-x
      padding, content column padded card-pad on the left, sections section-gap apart).
-   - < 940px (600–939 and mobile): the 48px account menu button sits above the content and opens the five-item
+   - < 940px (600–939 and mobile): the 48px account menu button sits above the content and opens the six-item
      account menu (Figma "Account menu · <page>"). Same switch point as the nav's hamburger.
    - < 600px: responsive tokens switch to mobile values (margin-x 16, section-y 32, section-gap 24, card-pad 16).
 
@@ -23,7 +23,9 @@
     { key: 'people', label: 'People & groups', href: 'account-people.html' },
     { key: 'volunteering', label: 'Volunteering', href: 'account-volunteering.html' },
     { key: 'giving', label: 'Giving', href: 'account-giving.html' },
-    { key: 'profile', label: 'Profile & settings', href: 'account-profile.html' }
+    { key: 'profile', label: 'Profile & settings', href: 'account-profile.html' },
+    /* Figma Account subnav (Oct. 27, 2026): sixth item, MarketPlace purchases. */
+    { key: 'marketplace', label: 'MarketPlace purchases', href: 'account-marketplace.html' }
   ];
   var NARROW = '(max-width: 939.98px)';
 

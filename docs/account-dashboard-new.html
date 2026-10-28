@@ -89,7 +89,12 @@
         h(UI.Card, { icon: 'world', title: 'Where your meals have gone' },
           h(Empty, { icon: 'globe', headline: 'No meals to trace yet' })),
         h(UI.Card, { mask: img('donations-recurring.svg'), title: 'Your giving this year' },
-          h(Empty, { illustration: img('donations-recurring.svg'), headline: 'No gifts in 2026' }))));
+          h(Empty, { illustration: img('donations-recurring.svg'), headline: 'No gifts in 2026' }))),
+
+      /* 6 · Your recent MarketPlace purchases (Figma, Oct. 27, 2026) */
+      h(UI.Card, { icon: 'shopping-bag', title: 'Your recent MarketPlace purchases' },
+        h(Empty, { icon: 'shopping-bag', headline: 'No purchases yet',
+          text: 'Handmade gifts from FMSC MarketPlace support artisans and help feed kids around the world.', action: 'Shop FMSC MarketPlace', href: 'marketplace.html' })));
   }
 
   ReactDOM.createRoot(document.getElementById('root')).render(h(Dashboard));

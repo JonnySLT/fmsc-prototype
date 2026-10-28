@@ -23,6 +23,7 @@ To open any page in a given state, add `?auth=out`, `?auth=sarah` or `?auth=new`
 | `docs/site-nav.js` | Shared nav, sign-in state and link rules |
 | `docs/account-shell.js` | Shared layout for the account pages |
 | `docs/signup-shell.js`, `docs/flow-data.js` | Volunteer sign-up flow and sample data |
+| `docs/people-picker.js` | People list, Add someone and Share a link (sign-up confirmations and event details) |
 
 No build step: the files are served as they are.
 

@@ -143,6 +143,7 @@
 <script src="site-nav.js"></script>
 <script src="account-shell.js"></script>
 <script src="flow-data.js"></script>
+<script src="people-picker.js"></script>
 <script>
   var F = window.FMSC, UI = window.AccountUI, h = React.createElement;
   document.body.classList.add('ev-page');
@@ -188,15 +189,17 @@
     });
   }
 
+  /* "From Grace Church Youth Group" (Figma, Oct. 27, 2026: Select · Name · Email, first 5 of 9). base = the line without
+     "· has a spot". */
   var group = [
-    [{ name: 'Dana Reyes', desc: 'Admin · next shift Nov. 14', base: 'Admin', open: true },
-     { name: 'Priya Nair', desc: 'Member · has a spot' },
-     { name: 'Sarah Whitfield', desc: 'Admin · you · has a spot' },
-     { name: 'Tom Whitfield', desc: 'Member · has a spot' }],
-    [{ name: 'Ben Ortiz', desc: 'Member · has a spot' },
-     { name: 'Jake Sorensen', desc: 'Member · has a spot' },
-     { name: 'Carol Whitfield', desc: 'Guest · no FMSC account · has a spot' },
-     { name: 'Maya Whitfield', desc: 'Under 18 · your child · has a spot' }]
+    [{ name: 'Dana Reyes', desc: 'Admin · next shift Nov. 14', base: 'Admin', open: true, email: 'd.reyes@gracechurch.org' },
+     { name: 'Priya Nair', desc: 'Member · has a spot', base: 'Member', email: 'priya.nair@gmail.com' },
+     { name: 'Sarah Whitfield', desc: 'Admin · you · has a spot', base: 'Admin · you', email: D0.profile.primaryEmail() },
+     { name: 'Tom Whitfield', desc: 'Member · has a spot', base: 'Member', email: 'tom.whitfield@gmail.com' }],
+    [{ name: 'Ben Ortiz', desc: 'Member · has a spot', base: 'Member', email: 'ben.ortiz@gmail.com' },
+     { name: 'Jake Sorensen', desc: 'Member · has a spot', base: 'Member', email: 'jake.sorensen@gmail.com' },
+     { name: 'Carol Whitfield', desc: 'Guest · no FMSC account · has a spot', base: 'Guest · no FMSC account', email: '' },
+     { name: 'Maya Whitfield', desc: 'Under 18 · your child · has a spot', base: 'Under 18 · your child', email: '' }]
   ];
   var steps = [
     ['Check in', 'Check in on this page or at the front desk, then stow your things in a locker and find your table. Say hello to your team and members of our staff.'],
@@ -245,7 +248,7 @@
         spots: 12, claimed: 8, group: 'Grace Church Youth Group', added: [],
         change: 'signup-1.html?path=b&site=coon-rapids',
         linkUrl: 'fmsc.org/join/grace-4821/oct-3', code: 'GRACE-1003',
-        listTitle: 'From Grace Church Youth Group', listCount: ['1–8 of 9 people', '1–5 of 9 people'], people: group[0].concat(group[1]),
+        listTitle: 'From Grace Church Youth Group', listTotal: 9, people: group[0].concat(group[1]),
         where: 'FMSC Coon Rapids', street: '401 93rd Ave. NW', cityLine: 'Coon Rapids, MN 55433', directions: true, arrival: arrival
       };
     }
@@ -254,7 +257,7 @@
     var claimedSet = {}; (RES.added || []).forEach(function (n) { claimedSet[n] = true; }); if (you) claimedSet['Sarah Whitfield'] = true;
     var list = isGroup ? pool(path).map(function (x) {
       var has = !!claimedSet[x.name];
-      return { name: x.name, desc: x.desc + (has ? ' · has a spot' : ''), base: x.desc, open: !has };
+      return { name: x.name, desc: x.desc + (has ? ' · has a spot' : ''), base: x.desc, open: !has, email: x.you ? D0.profile.primaryEmail() : x.email };
     }) : [];
     var coon = st.slug === 'coon-rapids';
     var facts = [['Doors', 'Doors open ' + d.arrive + ' for a ' + d.start + ' start. Come 10 or 15 minutes early to check in and find your table.']];
@@ -269,7 +272,7 @@
       change: 'signup-1.html?path=' + path + '&site=' + st.slug + '&resume=' + encodeURIComponent(RES.id),
       linkUrl: RES.linkUrl, code: RES.code,
       listTitle: path === 'b' ? 'From ' + RES.group : 'From people on your account',
-      listCount: path === 'b' ? ['1–8 of 9 people', '1–5 of 9 people'] : ['1–4 of 4 people', '1–4 of 4 people'], people: list,
+      listTotal: path === 'b' ? D.people.graceCount : list.length, people: list,
       where: st.where, street: st.street, cityLine: st.cityLine, directions: st.directions, arrival: facts
     };
   })();
@@ -280,40 +283,13 @@
     if (m) m.setAttribute('content', 'Your upcoming FMSC packing shift on ' + model.title.replace('Event details for ', '') + ', at ' + model.where + ': who’s coming' + (model.path === 'a' ? '' : ', inviting your group') + ', what to expect and how to get there.');
   })();
 
-  function Person(p) {
-    if (!p.open) return h(F.Checkbox, { label: D0.profile.display(p.name), description: p.desc, checked: true, disabled: true });
-    return h(F.Checkbox, { label: D0.profile.display(p.name), description: p.desc, checked: !!p.picked, disabled: !p.picked && p.full ? true : undefined,
-      onChange: function (e) { p.onToggle(p.name, e.target.checked); } });
-  }
-
-  /* Group list: search filters it; "Add selected" moves the checked people into Who's coming (up to the open spots). */
+  /* Group list (Figma "From your group"): collapsible; search, then the people (PeoplePicker.List). Checking someone
+     claims a spot for them on this shift and unchecking frees it, with the Added / Removed toast. */
   function GroupList(p) {
-    var mobile = p.mobile;
     var o = React.useState(true), open = o[0], setOpen = o[1];
-    var pk = React.useState({}), picked = pk[0], setPicked = pk[1];
-    var q = React.useState(''), query = q[0], setQuery = q[1];
-    var everyone = p.people.map(function (x) { return p.addedNow[x.name] ? Object.assign({}, x, { open: false, desc: (x.base || x.desc) + ' · has a spot' }) : x; });
-    var listed = mobile ? everyone.slice(0, 5) : everyone;
-    var openPeople = listed.filter(function (x) { return x.open; });
-    var room = Math.max(0, p.room);
-    var nPicked = openPeople.filter(function (x) { return picked[x.name]; }).length;
-    var all = openPeople.length > 0 && openPeople.every(function (x) { return picked[x.name]; });
-    var needle = query.trim().toLowerCase();
-    function hit(x) { return !needle || D0.profile.display(x.name).toLowerCase().indexOf(needle) >= 0; }
-    function toggle(name, v) { var n = Object.assign({}, picked); n[name] = v; setPicked(n); }
-    function toggleAll(v) { var n = {}; openPeople.forEach(function (x, i) { n[x.name] = v && i < room; }); setPicked(n); }
-    function add() {
-      var names = openPeople.filter(function (x) { return picked[x.name]; }).slice(0, room).map(function (x) { return x.name; });
-      if (names.length) { p.onAdd(names); setPicked({}); }
-    }
-    var waiting = everyone.filter(function (x) { return x.open; }).length;
+    var waiting = p.people.filter(function (x) { return !p.checked[x.name]; }).length;
     var status = waiting === 1 ? '1 person doesn’t have a spot yet.' : waiting ? waiting + ' people don’t have a spot yet.' : 'Everyone in this list has a spot.';
-    var count = mobile ? p.count[1] : p.count[0];
     var bodyId = 'ev-group-body';
-    function person(x) { return h(Person, Object.assign({ key: x.name, picked: picked[x.name], full: nPicked >= room, onToggle: toggle }, x)); }
-    var half = Math.ceil(everyone.length / 2);
-    var cols = [everyone.slice(0, half), everyone.slice(half)].map(function (c) { return c.filter(hit); });
-    var none = !listed.filter(hit).length;
     return h('div', { className: 'ev-group' + (open ? '' : ' ev-group--closed') },
       h('div', { className: 'ev-group__head' },
         h('div', { className: 'ev-group__titles' },
@@ -322,34 +298,9 @@
         h('button', { type: 'button', className: 'ev-toggle fm-focusable', 'aria-expanded': open ? 'true' : 'false', 'aria-controls': bodyId,
           'aria-label': (open ? 'Collapse' : 'Expand') + ' group list', onClick: function () { setOpen(!open); } },
           h(F.Icon, { name: open ? 'chevron-up' : 'chevron-down', size: 24 }))),
-      open ? h('div', { className: 'ev-group__body', id: bodyId, role: 'group', 'aria-labelledby': 'ev-group-title' },
-        h('div', { className: 'ev-search' }, h(F.Search, { label: p.searchLabel, placeholder: p.searchLabel, value: query,
-          onChange: function (e) { setQuery(e.target.value); }, onClear: function () { setQuery(''); } })),
-        mobile
-          ? h('div', { className: 'ev-people__col ev-select-all' },
-              h(F.Checkbox, { label: 'Select all', description: 'Only people who can still join', checked: all, onChange: function (e) { toggleAll(e.target.checked); } }),
-              listed.filter(hit).map(person))
-          : h(React.Fragment, null,
-              h('div', { className: 'ev-select-all' }, h(F.Checkbox, { label: 'Select all', description: 'Only people who can still join', checked: all, onChange: function (e) { toggleAll(e.target.checked); } })),
-              none ? null : h('div', { className: 'ev-people' }, cols.map(function (col, i) {
-                return h('div', { key: i, className: 'ev-people__col' }, col.map(person));
-              }))),
-        none ? h('p', { className: 'body-small ev-muted', role: 'status' }, 'No one in this list matches “' + query.trim() + '”.') : null,
-        h(F.Pagination, { count: count, ariaLabel: 'Group member pages', previousLabel: 'Previous people', nextLabel: 'Next people' }),
-        h(F.Button, { variant: 'secondary', size: 'medium', type: 'button', onClick: add }, 'Add selected')) : null);
-  }
-
-  /* "Link for this shift" opens the public event page (Jonny, Oct. 27, 2026). The field stays the DS Invite's
-     read-only input; a click or Enter on it navigates. */
-  function linkToSummary(e) {
-    var t = e.target;
-    if (!t || !t.classList || !t.classList.contains('fm-invite__url')) return;
-    if (e.type === 'keydown' && e.key !== 'Enter') return;
-    location.href = 'event-summary.html';
-  }
-  function markLink(el) {
-    var f = el && el.querySelector('.fm-invite__url');
-    if (f) { f.setAttribute('title', 'Open the event page'); f.setAttribute('aria-description', 'Press Enter to open the event page'); }
+      open ? h('div', { className: 'ev-group__body', id: bodyId },
+        h(window.PeoplePicker.List, { people: p.people, checked: p.checked, room: p.room, mobile: p.mobile, roomy: true, searchLabel: p.searchLabel,
+          count: p.count, labelledBy: 'ev-group-title', caption: p.title, onToggle: p.onToggle, onToggleAll: p.onToggleAll })) : null);
   }
 
   function Upcoming() {
@@ -360,33 +311,61 @@
     var h4 = mobile ? 'heading-h4-mobile' : 'heading-h4';
     var h3 = mobile ? 'heading-h3-mobile' : 'heading-h3';
     var M = model;
-    /* People added on this page (saved reservations keep them in the reservations store). */
+    /* Spots claimed or freed on this page (Figma, Oct. 27, 2026: the group list's checkboxes add and remove people).
+       addedNow: people who had no spot; removedNow: people who had one; guests: added with "Add someone". */
     var ad = React.useState([]), addedNow = ad[0], setAddedNow = ad[1];
-    var addedMap = {}; addedNow.forEach(function (n) { addedMap[n] = true; });
-    var claimed = M.claimed + addedNow.length;
-    function onAdd(names) {
-      var next = addedNow.concat(names.filter(function (n) { return !addedMap[n]; }));
-      setAddedNow(next);
-      if (!M.sample) RS.update(M.id, { added: M.added.concat(next), claimed: M.claimed + next.length });
-    }
+    var rm = React.useState([]), removedNow = rm[0], setRemovedNow = rm[1];
+    var gs = React.useState([]), guests = gs[0], setGuests = gs[1];
+    var claimed = M.claimed + addedNow.length - removedNow.length;
     var isGroup = M.path !== 'a';
     var openSpots = M.spots - claimed;
+    var people = M.people.concat(guests);
+    var had = {}; M.people.forEach(function (x) { had[x.name] = !x.open; });
+    var checked = {}; people.forEach(function (x) { checked[x.name] = had[x.name] ? removedNow.indexOf(x.name) < 0 : addedNow.indexOf(x.name) >= 0; });
+    var listed = M.people.slice(0, 5).concat(guests);
+    listed = listed.map(function (x) {
+      var base = x.base || x.desc.replace(/ · has a spot$/, '');
+      return Object.assign({}, x, { desc: checked[x.name] ? base + ' · has a spot' : (had[x.name] ? base : x.desc) });
+    });
+    function save(nextAdded, nextRemoved) {
+      if (M.sample) return;
+      var keep = M.added.filter(function (n) { return nextRemoved.indexOf(n) < 0; }).concat(nextAdded);
+      RS.update(M.id, { added: keep, claimed: M.claimed + nextAdded.length - nextRemoved.length });
+    }
+    function toggle(names, on) {
+      var na = addedNow.slice(), nr = removedNow.slice();
+      names.forEach(function (n) {
+        if (had[n]) { if (on) nr = nr.filter(function (x) { return x !== n; }); else if (nr.indexOf(n) < 0) nr.push(n); }
+        else if (on) { if (na.indexOf(n) < 0) na.push(n); } else na = na.filter(function (x) { return x !== n; });
+      });
+      setAddedNow(na); setRemovedNow(nr); save(na, nr);
+    }
+    function addGuest(x) {
+      if (people.some(function (p) { return p.name === x.name; })) return;
+      setGuests(guests.concat([{ name: x.name, desc: x.desc, base: x.desc, email: x.email, open: true }]));
+      if (openSpots > 0) { var na = addedNow.concat([x.name]); setAddedNow(na); save(na, removedNow); }
+    }
     var status = openSpots > 0 ? 'Anyone you invite joins ' + M.group + ' and takes one of the open spots.'
       : (M.spots === 1 ? 'Your 1 spot is claimed.' : 'All ' + M.spots + ' spots are claimed.') + ' Add spots from your reservation to invite more people.';
-    /* Who's coming: the sample roster (first page of 8) or Sarah plus the people added, then anyone added here. */
+    var guestDesc = {}; guests.forEach(function (g) { guestDesc[g.name] = g.desc; });
+    function personOf(n, path) { return personFor(n, guestDesc[n] || descOf(path, n)); }
+    /* Who's coming: the sample roster (first page of 8) or Sarah plus the people added, then anyone added here,
+       without anyone whose spot was freed here. */
     var list, count;
     if (M.sample) {
-      list = roster.concat(addedNow.map(function (n) { return personFor(n, descOf('b', n)); }));
-      count = '1–' + list.length + ' of ' + (8 + addedNow.length) + ' people';
+      list = roster.concat(addedNow.map(function (n) { return personOf(n, 'b'); })).filter(function (r) { return removedNow.indexOf(r.name) < 0; });
+      count = '1–' + list.length + ' of ' + (8 + addedNow.length - removedNow.length) + ' people';
     } else {
-      var names = (M.you ? ['Sarah Whitfield'] : []).concat(M.added, addedNow);
+      var names = (M.you ? ['Sarah Whitfield'] : []).concat(M.added, addedNow).filter(function (n) { return removedNow.indexOf(n) < 0; });
       list = names.map(function (n) {
         if (n === 'Sarah Whitfield') return Object.assign({}, roster[0], { role: M.path === 'a' ? 'You' : 'Admin · you' });
-        return personFor(n, descOf(M.path, n));
+        return personOf(n, M.path);
       });
       var n = list.length;
       count = n ? '1–' + n + ' of ' + n + (n === 1 ? ' person' : ' people') : '0 people';
     }
+    var listTotal = M.listTotal + guests.length;
+    var listCount = '1–' + listed.length + ' of ' + listTotal + (listTotal === 1 ? ' person' : ' people');
     return h(window.AccountShell, { current: 'volunteering' },
 
       /* Account page header */
@@ -421,25 +400,25 @@
         })),
 
       /* 2b · Invite people to this shift (groups only; "Just me" has no one to invite) */
-      isGroup ? h('section', { className: 'ac-card ev-invite', 'aria-labelledby': 'ev-invite-title', onClick: linkToSummary, onKeyDown: linkToSummary, ref: markLink },
+      isGroup ? h('section', { className: 'ac-card ev-invite', 'aria-labelledby': 'ev-invite-title' },
         h('div', { className: 'ac-card__header' },
           h(UI.Badge, { icon: 'user-plus' }),
           h('div', { className: 'ev-head' },
             h('h2', { className: 'ac-card__title ' + h4, id: 'ev-invite-title' }, 'Invite people to this shift'),
             h('p', { className: 'body-small ev-muted' }, status))),
-        h(GroupList, { mobile: mobile, searchLabel: M.path === 'b' ? 'Find someone in your group' : 'Find someone on your account', title: M.listTitle, count: M.listCount, people: M.people, addedNow: addedMap, room: openSpots, onAdd: onAdd }),
-        /* Figma mobile repeats the status line under the group list. */
-        mobile ? h('p', { className: 'body-small ev-muted' }, status) : null,
-        h('div', { className: 'ev-invite-head' },
-          h('h3', { className: 'label-large' }, 'Invite everyone else'),
-          h('p', { className: 'body-base ev-muted' }, 'Send your link, share the code, or email them an invitation.')),
-        h(F.Invite, {
-          breakpoint: 'auto', guestTab: true, defaultTab: 'link',
-          linkLabel: 'Link for this shift', linkUrl: M.linkUrl, showLinkNote: false,
-          codeIntro: 'Joining on fmsc.org? Use this shift’s code:', code: M.code, showSettingsLink: false,
-          emailDescription: 'They get an email invitation to join ' + M.group + ' on this shift.',
-          guestWhy: 'For someone without an email address. You claim the spot for them.'
-        })) : null,
+        h(GroupList, { mobile: mobile, searchLabel: M.path === 'b' ? 'Find someone in your group' : 'Find someone on your account', title: M.listTitle,
+          count: listCount, people: listed, checked: checked, room: openSpots,
+          onToggle: function (n, on) { toggle([n], on); }, onToggleAll: function (names, on) { toggle(names, on); } }),
+        h(window.PeoplePicker.AddSomeone, { title: M.path === 'b' ? 'Not in your group? Add them' : 'Someone else coming? Add them', titleClass: 'label-large', onAdd: addGuest })) : null,
+
+      /* 2c · Share a link (Figma, Oct. 27, 2026: its own card) */
+      isGroup ? h('section', { className: 'ac-card ev-invite', 'aria-labelledby': 'ev-share-title' },
+        h('div', { className: 'ac-card__header' },
+          h(UI.Badge, { icon: 'link' }),
+          h('div', { className: 'ev-head' },
+            h('h2', { className: 'ac-card__title ' + h4, id: 'ev-share-title' }, 'Share a link'),
+            h('p', { className: 'body-small ev-muted' }, openSpots > 0 ? 'Anyone with this link joins ' + M.group + ' and takes one of the open spots. Send it in a group text or email.' : status))),
+        h(window.PeoplePicker.ShareLink, { url: M.linkUrl, code: M.code, row: true, href: 'event-summary.html' })) : null,
 
       /* 3 · What to expect */
       h(UI.Card, { icon: 'list-check', title: 'What to expect', id: 'ev-expect', className: 'ev-expect' },

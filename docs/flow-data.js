@@ -186,15 +186,17 @@
      page's "Who's coming" and invite list. grace: Grace Church Youth Group (9 people, first 8 listed); account: the
      people on Sarah's account (paths c and d). */
   var PEOPLE = {
+    /* email: the Figma Email column (Oct. 27, 2026); Sarah's is the profile's primary email (set by the pages), '' = "No email". */
     grace: [
-      { name: 'Sarah Whitfield', desc: 'Admin · you', you: true }, { name: 'Dana Reyes', desc: 'Admin' }, { name: 'Tom Whitfield', desc: 'Member' },
-      { name: 'Ben Ortiz', desc: 'Member' }, { name: 'Jake Sorensen', desc: 'Member' }, { name: 'Priya Nair', desc: 'Member' },
-      { name: 'Carol Whitfield', desc: 'Guest · no FMSC account' }, { name: 'Maya Whitfield', desc: 'Under 18 · your child', minor: true }
+      { name: 'Sarah Whitfield', desc: 'Admin · you', you: true, email: null }, { name: 'Dana Reyes', desc: 'Admin', email: 'd.reyes@gracechurch.org' },
+      { name: 'Tom Whitfield', desc: 'Member', email: 'tom.whitfield@gmail.com' }, { name: 'Ben Ortiz', desc: 'Member', email: 'ben.ortiz@gmail.com' },
+      { name: 'Jake Sorensen', desc: 'Member', email: 'jake.sorensen@gmail.com' }, { name: 'Priya Nair', desc: 'Member', email: 'priya.nair@gmail.com' },
+      { name: 'Carol Whitfield', desc: 'Guest · no FMSC account', email: '' }, { name: 'Maya Whitfield', desc: 'Under 18 · your child', minor: true, email: '' }
     ],
     graceCount: 9,
     account: [
-      { name: 'Sarah Whitfield', desc: 'You', you: true }, { name: 'Maya Whitfield', desc: 'Your child · 14', minor: true },
-      { name: 'Lily Whitfield', desc: 'Your child · 9', minor: true }, { name: 'Carol Whitfield', desc: 'No FMSC account' }
+      { name: 'Sarah Whitfield', desc: 'You', you: true, email: null }, { name: 'Maya Whitfield', desc: 'Your child · 14', minor: true, email: '' },
+      { name: 'Lily Whitfield', desc: 'Your child · 9', minor: true, email: '' }, { name: 'Carol Whitfield', desc: 'No FMSC account', email: '' }
     ]
   };
 

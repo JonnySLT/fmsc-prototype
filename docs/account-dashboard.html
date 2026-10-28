@@ -144,6 +144,12 @@
     { shift: '2026-06-07', top: true, src: 'ad-shift-eagan-full.jpg', alt: 'Two boys in hairnets smiling beside a box of MannaPack® meals, one holding a sealed meal bag', count: '11 photos', eyebrow: 'June 7 · Hope Church MobilePack™ event, Eagan, MN', headline: '62,784 meals packed', outcome: 'Arrived in the Philippines on July 19', support: 'Will feed 172 children for a year' },
     { shift: '2026-02-22', src: 'ad-shift-chanhassen-full.jpg', alt: 'A smiling girl in a hairnet leaning on a packing table', count: '38 photos', eyebrow: 'Feb. 22 · FMSC Chanhassen', headline: '25,920 meals packed', outcome: 'Arrived in Nicaragua on April 9', support: 'Will feed 71 children for a year' }
   ];
+  /* 6 · Your recent MarketPlace purchases (Figma, Oct. 27, 2026): product photos from fmscmarketplace.org. */
+  var purchases = [
+    { src: 'mp-order-bernide-mug.jpg', alt: 'Bernide Mug – Peace, a ceramic mug made in Haiti', eyebrow: 'Oct. 18 · Made in Haiti', headline: 'Bernide Mug – Peace', outcome: '$32', support: 'Provides 49 meals' },
+    { src: 'mp-order-beaded-serving-set.jpg', alt: 'Christmas Beaded Serving Set, beaded serving utensils made in Eswatini', eyebrow: 'Sept. 26 · Made in Eswatini', headline: 'Christmas Beaded Serving Set', outcome: '$34', support: 'Provides 52 meals' },
+    { src: 'mp-order-horn-catch-all.jpg', alt: 'Horn Catch All, a small horn dish made in Haiti', eyebrow: 'Aug. 30 · Made in Haiti', headline: 'Horn Catch All', outcome: '$24', support: 'Provides 33 meals' }
+  ];
 
   function statRows(rows) {
     return h('div', { className: 'ac-rows' }, rows.map(function (r) { return h(UI.Row, { key: r[0], label: r[0], value: r[1], valueClass: 'label-base' }); }));
@@ -153,10 +159,10 @@
     return h(window.AccountShell, { current: 'dashboard' },
 
       /* 1 · Your impact so far */
-      h(UI.Panel, { className: 'ad-impact', title: window.FMSCData.profile.firstName() + ', here’s what you\'ve made possible' },
+      h(UI.Panel, { className: 'ad-impact', title: window.FMSCData.profile.firstName() + ', here’s what you’ve made possible' },
         h('div', { className: 'ad-pair ad-pair--impact' },
-          h(UI.Card, { tone: 'brand', icon: 'salad', title: 'What you\'ve packed' }, statRows(packed)),
-          h(UI.Card, { tone: 'brand', icon: 'currency-dollar', title: 'What you\'ve given', className: 'ad-impact__given' }, statRows(given)))),
+          h(UI.Card, { tone: 'brand', icon: 'salad', title: 'What you’ve packed' }, statRows(packed)),
+          h(UI.Card, { tone: 'brand', icon: 'currency-dollar', title: 'What you’ve given', className: 'ad-impact__given' }, statRows(given)))),
 
       /* 3 · Your next shift + 2 · Needs your attention */
       h('div', { className: 'ad-pair' },
@@ -200,6 +206,23 @@
             h('div', { className: 'ad-statement' },
               h(F.Button, { variant: 'secondary', size: 'medium', href: '#' }, 'Download your 2025 statement'),
               h('p', { className: 'caption' }, 'Your 2025 year-end statement is ready.'))))),
+
+      /* 6 · Your recent MarketPlace purchases ("View order" opens the order on fmscmarketplace.org: Figma External link,
+         wired in the prototype to MarketPlace purchases) */
+      h(UI.Card, { icon: 'shopping-bag', className: 'ad-past', title: 'Your recent MarketPlace purchases' },
+        h('ul', { className: 'ad-shifts', role: 'list', style: { listStyle: 'none', margin: 0, paddingLeft: 0 } },
+          purchases.map(function (p) {
+            return h('li', { key: p.src, className: 'ad-shift' },
+              h('div', { className: 'ad-shot' }, h('img', { src: img(p.src), alt: p.alt })),
+              h('div', { className: 'ad-copy' },
+                h('p', { className: 'overline ad-muted' }, p.eyebrow),
+                h('div', { className: 'ad-facts' },
+                  h('p', { className: 'body-base' }, p.headline),
+                  h('p', { className: 'body-base ad-muted' }, p.outcome),
+                  h('p', { className: 'body-base ad-muted' }, p.support))),
+              h(F.ArrowLink, { type: 'external', label: 'View order', href: 'account-marketplace.html', 'aria-label': 'View order: ' + p.headline }));
+          })),
+        h(F.ArrowLink, { label: 'See all your purchases', href: 'account-marketplace.html' })),
 
       /* 4 · Past shifts and where your meals ended up */
       h(UI.Card, { icon: 'package', className: 'ad-past', title: 'Recent events you packed at, and where the food went' },
