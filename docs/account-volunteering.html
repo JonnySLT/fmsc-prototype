@@ -238,7 +238,7 @@
               columns: columns, rows: rows(records, shown), count: count,
               pagination: { ariaLabel: 'Shift pages', previousLabel: 'Previous shifts', nextLabel: 'Next shifts' }
             })
-          : h('p', { className: 'body-base av-muted', role: 'status' }, 'No shifts match these filters. Try another year or group.')),
+          : null),
 
       /* 5 · Download an hours record */
       h('section', { className: 'ac-card av-hours', 'aria-labelledby': 'av-hours-title' },

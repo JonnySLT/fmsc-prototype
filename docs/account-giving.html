@@ -265,7 +265,7 @@
       h('div', { className: 'ag-table' },
         rows.length ? h(F.DataTable, { breakpoint: records ? 'mobile' : 'desktop', caption: 'Your gifts', columns: columns, rows: data, count: count,
           pagination: { previousLabel: 'Previous gifts', nextLabel: 'Next gifts' } })
-          : h('p', { className: 'ag-empty body-base' }, 'No gifts match these filters.')));
+          : null));
   }
 
   function Giving() {

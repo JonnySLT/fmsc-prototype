@@ -82,7 +82,7 @@
     var full = p.room <= 0;
     var search = h('div', { className: 'pp-search' }, h(F.Search, { label: p.searchLabel, placeholder: p.searchLabel, value: query,
       onChange: function (e) { setQuery(e.target.value); }, onClear: function () { setQuery(''); } }));
-    var empty = shown.length ? null : h('p', { className: 'pp-empty body-small', role: 'status' }, 'No one in this list matches “' + query.trim() + '”.');
+    var empty = null; /* No message when the search finds no one: Figma has none (Jonny, Oct. 27, 2026). */
     var pager = h(F.Pagination, { count: p.count, ariaLabel: 'People pages', previousLabel: 'Previous people', nextLabel: 'Next people' });
     if (p.mobile) {
       return h('div', { className: 'pp-list', role: 'group', 'aria-labelledby': p.labelledBy },

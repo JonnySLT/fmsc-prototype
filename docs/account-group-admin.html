@@ -167,7 +167,7 @@
     var q = React.useState(''), query = q[0], setQuery = q[1];
     var needle = query.trim().toLowerCase();
     var people = roster.filter(function (r) { return !needle || r.name.toLowerCase().indexOf(needle) >= 0; });
-    var noMatch = needle && !people.length ? h('p', { className: 'body-small gp-muted gp-none', role: 'status' }, 'No one in this group matches “' + query.trim() + '”.') : null;
+    var noMatch = null; /* No no-match message: Figma has none. */
 
     var shiftsTable = shiftsStacked
       ? h(Records, { caption: 'Your group’s upcoming shifts', labels: ['Date', 'Time and site', 'Spots', 'Your role', 'Action'], count: '1–3 of 3 shifts', pagerLabel: 'Shift pages',

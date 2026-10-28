@@ -278,7 +278,6 @@
               none ? null : h('div', { className: 'ev-people' }, cols.map(function (col, i) {
                 return h('div', { key: i, className: 'ev-people__col' }, col.map(person));
               }))),
-        none ? h('p', { className: 'body-small ev-muted', role: 'status' }, 'No one in this list matches “' + query.trim() + '”.') : null,
         h(F.Pagination, { count: mobile ? '1–5 of 9 people' : '1–8 of 9 people', ariaLabel: 'Group member pages', previousLabel: 'Previous people', nextLabel: 'Next people' }),
         h(F.Button, { variant: 'secondary', size: 'medium', type: 'button', onClick: add }, 'Add selected')) : null);
   }
