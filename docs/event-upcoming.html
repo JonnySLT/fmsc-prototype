@@ -325,7 +325,7 @@
     var listed = M.people.slice(0, 5).concat(guests);
     listed = listed.map(function (x) {
       var base = x.base || x.desc.replace(/ · has a spot$/, '');
-      return Object.assign({}, x, { desc: checked[x.name] ? base + ' · has a spot' : (had[x.name] ? base : x.desc) });
+      return Object.assign({}, x, { desc: checked[x.name] ? [base, 'has a spot'].filter(Boolean).join(' · ') : (had[x.name] ? base : x.desc) });
     });
     function save(nextAdded, nextRemoved) {
       if (M.sample) return;

@@ -456,7 +456,7 @@
     var me = window.FMSCData.profile.primaryEmail();
     var base = c.people.map(function (x) { return Object.assign({}, x, { email: x.you ? me : x.email }); }).concat(guests);
     var isOn = function (x) { return x.you ? youOn : !!added[x.name]; };
-    var people = base.map(function (x) { return Object.assign({}, x, { desc: x.desc + (isOn(x) ? ' · has a spot' : '') }); });
+    var people = base.map(function (x) { return Object.assign({}, x, { desc: [x.desc, isOn(x) ? 'has a spot' : ''].filter(Boolean).join(' · ') }); });
     var checked = {}; base.forEach(function (x) { checked[x.name] = isOn(x); });
     React.useEffect(function () { saveReservation(path, { added: Object.keys(added) }); }, [added, youOn]);
     function apply(names, on) {

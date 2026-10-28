@@ -91,7 +91,7 @@
           onChange: function (e) { setAll(e.target.checked); } }) : null,
         shown.length ? h('ul', { className: 'pp-people' + (p.roomy ? ' pp-people--roomy' : '') }, shown.map(function (x) {
           var on = !!p.checked[x.name];
-          return h('li', { key: x.name }, h(F.Checkbox, { label: display(x.name), description: x.desc + (x.email ? ' · ' + x.email : ''), checked: on,
+          return h('li', { key: x.name }, h(F.Checkbox, { label: display(x.name), description: [x.desc, x.email].filter(Boolean).join(' · '), checked: on,
             disabled: !on && full ? true : undefined, onChange: function (e) { set(x.name, e.target.checked); } }));
         })) : empty,
         pager);
@@ -127,8 +127,8 @@
       var name = (v.first.trim() + ' ' + v.last.trim()).trim();
       if (!name) return;
       var minor = v.age === 'minor', email = v.email.trim();
-      /* INVENTED COPY (prototype): the line under a person added here. */
-      p.onAdd({ name: name, email: email, minor: minor, desc: minor ? 'Under 18 · guest' : email ? 'Invitation sent' : 'Guest · no FMSC account' });
+      /* No line under a person added here: Figma has none (Jonny, Oct. 27, 2026). */
+      p.onAdd({ name: name, email: email, minor: minor, desc: '' });
       toast(true);
       setV({ age: v.age, first: '', last: '', email: '' });
     }

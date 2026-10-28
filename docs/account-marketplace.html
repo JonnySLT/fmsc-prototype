@@ -80,7 +80,7 @@
     { date: 'Sept. 26, 2026', item: 'Christmas Beaded Serving Set', order: '47906', made: 'Eswatini', total: '$39.00', meals: '52 meals', status: 'Delivered' },
     { date: 'Aug. 30, 2026', item: 'Horn Catch All', order: '47511', made: 'Haiti', total: '$29.00', meals: '33 meals', status: 'Delivered' }
   ];
-  var YEARS = ['2026', '2025'];
+  var YEARS = ['2026'];
   var faqs = [
     ['Where’s my tracking number?', 'When your order ships, we email you a confirmation with a tracking number. Can’t find it? Email marketplace@fmsc.org or call 763-267-6313.'],
     ['How do I return or exchange an item?', 'Email marketplace@fmsc.org or call 763-267-6313, and our team will set up the return or exchange with you.'],
@@ -119,8 +119,7 @@
       h('div', { className: 'am-table' },
         rows.length
           ? h(F.DataTable, { breakpoint: records ? 'mobile' : 'desktop', caption: 'Your orders', columns: columns, rows: data, showPagination: false })
-          /* INVENTED COPY (prototype): Figma shows 2026 only. */
-          : h('p', { className: 'am-empty body-base' }, 'No orders in ' + year + '.')),
+          : null),
       h(F.ArrowLink, { type: 'external', label: 'Shop FMSC MarketPlace', href: 'marketplace.html' }));
   }
 

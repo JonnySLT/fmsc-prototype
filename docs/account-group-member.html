@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Whitfield Thanksgiving Crew · FMSC</title>
-<meta name="description" content="Whitfield Thanksgiving Crew on FMSC: the group’s upcoming packing shifts, your spot on each, who’s in the group and what the group has packed.">
+<title>Grace Church Youth Group · FMSC</title>
+<meta name="description" content="Grace Church Youth Group on FMSC: the group’s upcoming packing shifts, your spot on each, who’s in the group and what the group has packed.">
 <link rel="stylesheet" href="ds/tokens.css">
 <link rel="stylesheet" href="ds/bundle.css">
 <style>
@@ -85,22 +85,22 @@
   var F = window.FMSC, UI = window.AccountUI, h = React.createElement, D = window.FMSCData;
 
 
-  /* SAMPLE DATA (Figma, Oct. 27, 2026): the Whitfield Thanksgiving Crew as Sarah (a member) sees it; Tom Whitfield runs it. */
-  var GROUP = 'Whitfield Thanksgiving Crew';
+  /* SAMPLE DATA (Figma "Group - Member view", Oct. 27, 2026): Grace Church Youth Group, drawn exactly as the frame shows it. */
+  var GROUP = 'Grace Church Youth Group';
   var shifts = [
-    { date: 'Nov. 27, 2026', day: 'Friday, 9:30 a.m.', long: 'Friday, Nov. 27, 2026', time: '9:30 a.m.', site: 'FMSC Eagan', city: 'Eagan, MN', open: '3 open', of: 'of 10', you: 'You have a spot', action: 'Give up my spot' },
-    { date: 'Dec. 26, 2026', day: 'Saturday, 10 a.m.', long: 'Saturday, Dec. 26, 2026', time: '10 a.m.', site: 'FMSC Coon Rapids', city: 'Coon Rapids, MN', open: '6 open', of: 'of 10', you: 'You have a spot', action: 'Give up my spot' },
-    { date: 'Nov. 26, 2027', day: 'Friday, 9:30 a.m.', long: 'Friday, Nov. 26, 2027', time: '9:30 a.m.', site: 'FMSC Eagan', city: 'Eagan, MN', open: '9 open', of: 'of 10', you: 'No spot yet', claim: true }
+    { date: 'Oct. 3, 2026', day: 'Saturday, 9 a.m.', long: 'Saturday, Oct. 3, 2026', time: '9 a.m.', site: 'FMSC Coon Rapids', city: 'Coon Rapids, MN', open: '4 open', of: 'of 12', you: 'You have a spot', action: 'Give up my spot' },
+    { date: 'Nov. 14, 2026', day: 'Saturday, 1 p.m.', long: 'Saturday, Nov. 14, 2026', time: '1 p.m.', site: 'FMSC Chanhassen', city: 'Chanhassen, MN', open: '8 open', of: 'of 10', you: 'You have a spot', action: 'Give up my spot' },
+    { date: 'Jan. 9, 2027', day: 'Saturday, 9 a.m.', long: 'Saturday, Jan. 9, 2027', time: '9 a.m.', site: 'Hope Church MobilePack™ event', city: 'Eagan, MN', open: '19 open', of: 'of 20', you: 'No spot yet', claim: true }
   ];
   var roster = [
-    { name: 'Tom Whitfield', role: 'Admin', next: 'Nov. 27' },
-    { name: D.profile.display('Sarah Whitfield'), role: 'Member · you', next: 'Nov. 27' },
-    { name: 'Maya Whitfield', role: 'Member', next: 'Nov. 27' },
-    { name: 'Luis M.', role: 'Member', next: 'Dec. 26' },
-    { name: 'Carol Whitfield', role: 'Guest', next: 'Nov. 27' }
+    { name: 'Dana Reyes', role: 'Admin', next: 'Nov. 14' },
+    { name: D.profile.display('Sarah Whitfield'), role: 'Admin', next: 'Oct. 3' },
+    { name: 'Ben Ortiz', role: 'Member · you', next: 'Oct. 3' },
+    { name: 'Caleb O.', role: 'Guest', next: 'Oct. 3' },
+    { name: 'Carol Whitfield', role: 'Guest', next: 'Oct. 3' }
   ];
-  var totals = [['Meals packed together', '15,120'], ['Hours on the line', '6'], ['Shifts since 2023', '3'], ['Countries the food reached', '4']];
-  var where = [['Haiti', '5,400 meals'], ['Philippines', '4,320 meals'], ['Nicaragua', '3,240 meals'], ['Guatemala', '2,160 meals']];
+  var totals = [['Meals packed together', '48,600'], ['Hours on the line', '24'], ['Shifts since 2024', '12'], ['Countries the food reached', '4']];
+  var where = [['Haiti', '18,200 meals'], ['Philippines', '14,900 meals'], ['Nicaragua', '9,700 meals'], ['Guatemala', '5,800 meals']];
 
   /* True when the element is narrower than px: the tables switch to stacked records rather than squeezing columns. */
   function useNarrow(ref, px) {
@@ -174,10 +174,10 @@
         });
 
     var rosterTable = rosterStacked
-      ? h(Records, { caption: 'Who’s in your group', labels: ['Name', 'Role', 'Next shift'], count: '1–5 of 7 people', pagerLabel: 'Group member pages',
+      ? h(Records, { caption: 'Who’s in your group', labels: ['Name', 'Role', 'Next shift'], count: '1–5 of 9 people', pagerLabel: 'Group member pages',
           records: roster.map(function (r) { return { lines: [r.name, r.role, 'Next shift ' + r.next] }; }) })
       : h(F.DataTable, {
-          breakpoint: 'desktop', caption: 'Who’s in your group', count: '1–5 of 7 people', pagination: { ariaLabel: 'Group member pages' },
+          breakpoint: 'desktop', caption: 'Who’s in your group', count: '1–5 of 9 people', pagination: { ariaLabel: 'Group member pages' },
           /* Figma column widths 300/644 of the 944px table, as shares. */
           columns: [
             { key: 'name', label: 'Name', cells: 'stacked', width: '31.78%', sort: 'unsorted', onSort: function () {} },
@@ -192,7 +192,7 @@
         breakpoint: 'auto', title: GROUP, showBreadcrumb: true,
         breadcrumb: [{ label: 'My account', href: 'account-dashboard.html' }, { label: 'People & groups', href: 'account-people.html' }, { label: GROUP }],
         backTo: { label: 'People & groups', href: 'account-people.html' },
-        showDescription: true, description: 'Family: All ages · 7 people · Run by Tom Whitfield'
+        showDescription: true, description: 'Church: Youth Over 12 · 9 people · Run by ' + D.profile.display('Sarah Whitfield') + ' and Dana Reyes'
       }),
 
       /* 1 · Your group's upcoming shifts */

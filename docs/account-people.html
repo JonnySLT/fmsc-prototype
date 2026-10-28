@@ -219,7 +219,6 @@
       h(Section, { className: 'ap-card--groups', icon: 'users-group', title: 'Your groups', id: 'ap-groups-title',
           action: h('div', { className: 'ap-group-search' }, h(F.Search, { label: 'Group or leader name', placeholder: 'Group or leader name', value: groupQuery,
             onChange: function (e) { setGroupQuery(e.target.value); }, onClear: function () { setGroupQuery(''); } })) },
-        gNeedle && !shownGroups.length ? h('p', { className: 'body-small ap-note', role: 'status' }, 'No groups match “' + groupQuery.trim() + '”.') : null,
         h('div', { className: 'ap-groups' },
           shownGroups.map(function (g) {
             return h(F.GroupCard, Object.assign({ key: g.groupName, breakpoint: 'auto', shift: 'upcoming', headingLevel: 3 }, g));
