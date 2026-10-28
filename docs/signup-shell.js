@@ -218,7 +218,7 @@
     return D.reservations.save({
       id: id, path: r.path, site: r.site.slug, year: r.year, month: r.monthIndex, day: r.day, date: dp.iso, time: r.time, arrive: r.arrive,
       group: r.group, groupType: r.groupType, under18: r.path === 'c' || r.path === 'd' ? r.under18 : null, packing: r.packing,
-      spots: r.spots, claimed: r.claimedBase + added.length, added: added.slice(), linkUrl: r.path === 'a' ? null : r.linkUrl, code: r.path === 'a' ? null : r.code
+      spots: (patch && patch.spots) || r.spots, claimed: r.claimedBase + added.length, added: added.slice(), linkUrl: r.path === 'a' ? null : r.linkUrl, code: r.path === 'a' ? null : r.code
     });
   }
   /* Names added on this reservation so far (kept in the flow store, so a reload or a resumed reservation keeps them). */
@@ -283,6 +283,8 @@
     '@media (max-width: 599.98px) { .su-links { flex-direction: column; align-items: flex-start; gap: var(--space-sm); } }',
     /* Disabled primary (Reserve until the waiver is accepted): the DS disabled-control fill and text. */
     '.su-actions .fm-btn:disabled, .su-actions .fm-btn:disabled:hover { background: var(--background-subtle); color: var(--content-muted); box-shadow: none; }',
+    '.su-extra { display: flex; align-items: flex-start; gap: var(--space-xs); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md); background: var(--feedback-info-subtle); color: var(--content-primary); }',
+    '.su-extra__icon { flex: none; margin-top: 2px; color: var(--content-primary); }',
     '.su-waiver { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); }',
 
     /* Confirmation (step 4): card + 384 summary card grid-gap apart; mobile bar above the card. Stacks under 840 content. */
@@ -454,13 +456,16 @@
     var g = React.useState(Array.isArray(f0.guests) ? f0.guests : []), guests = g[0], setGuests = g[1];
     var R = resolve(path);
     var claimed = (youOn ? 1 : 0) + Object.keys(added).length;
-    var room = R.spots - claimed;
+    /* Checking people past the reserved count adds spots (Jonny, Oct. 27, 2026): the reservation grows to fit. */
+    var spots = Math.max(R.spots, claimed), extra = spots - R.spots;
+    var spotsLabel = spots + (spots === 1 ? ' spot' : ' spots');
     var me = window.FMSCData.profile.primaryEmail();
     var base = c.people.map(function (x) { return Object.assign({}, x, { email: x.you ? me : x.email }); }).concat(guests);
     var isOn = function (x) { return x.you ? youOn : !!added[x.name]; };
-    var people = base.map(function (x) { return Object.assign({}, x, { desc: [x.desc, isOn(x) ? 'has a spot' : ''].filter(Boolean).join(' · ') }); });
+    /* Descriptor lines stay as they are when a person is checked (Jonny, Oct. 27, 2026). */
+    var people = base;
     var checked = {}; base.forEach(function (x) { checked[x.name] = isOn(x); });
-    React.useEffect(function () { saveReservation(path, { added: Object.keys(added) }); }, [added, youOn]);
+    React.useEffect(function () { saveReservation(path, { added: Object.keys(added), spots: spots }); }, [added, youOn]);
     function apply(names, on) {
       var nx = Object.assign({}, added), you = youOn;
       names.forEach(function (n) { var x = base.filter(function (b) { return b.name === n; })[0]; if (x && x.you) you = on; else if (on) nx[n] = true; else delete nx[n]; });
@@ -471,17 +476,18 @@
       if (base.some(function (b) { return b.name === x.name; })) return;
       var ng = guests.concat([{ name: x.name, desc: x.desc, email: x.email, minor: x.minor }]);
       setGuests(ng); writeFlow({ guests: ng });
-      if (room > 0) { var nx = Object.assign({}, added); nx[x.name] = true; setAdded(nx); }
+      var nx = Object.assign({}, added); nx[x.name] = true; setAdded(nx);
     }
     var shown = people.length;
     var total = (c.total || c.people.length) + guests.length;
     var count = '1–' + shown + ' of ' + total + (total === 1 ? ' person' : ' people');
     var share = h('section', { className: 'su-card su-share', 'aria-labelledby': 'su-share-title' },
       h('h2', { className: 'label-large su-share__title', id: 'su-share-title' }, 'Share a link'),
-      h('p', { className: 'body-small su-note' }, linkNote(R, room)),
+      /* Fixed note (two lines in the card); it doesn't change as people are checked (Jonny, Oct. 27, 2026). */
+      h('p', { className: 'body-small su-note su-share__note' }, 'Anyone with this link joins ' + R.group + ' and takes one of the open spots.'),
       h(PP.ShareLink, { url: R.linkUrl, code: R.code, href: 'event-summary.html' }));
     return h(Confirmation, { path: path, labelledBy: 'su-confirm-title', side: share,
-        summary: { spotsValue: claimed + ' of ' + R.spots + ' claimed', showGroup: true, groupValue: R.group } },
+        summary: { spotsValue: claimed + ' of ' + spots + ' claimed', showGroup: true, groupValue: R.group } },
       h('div', { id: 'su-confirm-title' },
         h(ConfirmTitle, { title: (R.spots === 1 ? 'Your spot is reserved for ' : 'Your spots are reserved for ') + R.dateLabel,
           body: 'We sent the details to ' + me + '. Arrive at ' + R.arrive })),
@@ -489,9 +495,15 @@
       h('div', { className: 'su-who' },
         h('div', { className: 'su-who__head' },
           h('h3', { className: 'label-large su-who__title', id: 'su-fill-title' }, 'Next: fill your spots'),
-          h('p', { className: 'body-base su-note su-measure', 'aria-live': 'polite' }, claimed + ' of ' + R.spotsText + ' claimed so far. Add people now, or later from your reservation.')),
+          h('p', { className: 'body-base su-note su-measure', 'aria-live': 'polite' }, claimed + ' of ' + spotsLabel + ' claimed so far. Add people now, or later from your reservation.')),
+        /* Indicator once every reserved spot is claimed: anyone else checked adds a spot. */
+        claimed >= R.spots ? h('div', { className: 'su-extra', role: 'status' },
+          h(F.Icon, { name: 'info-circle', size: 20, className: 'su-extra__icon' }),
+          h('p', { className: 'body-small' }, extra > 0
+            ? 'You’re adding ' + extra + (extra === 1 ? ' spot' : ' spots') + '. Your reservation now has ' + spotsLabel + ', ' + extra + ' more than you reserved.'
+            : 'All ' + R.spotsText + ' are claimed. Anyone else you check adds a spot to your reservation.')) : null,
         h('p', { className: 'label-base su-who__from', id: 'su-from' }, c.fromLabel),
-        h(PP.List, { people: people, checked: checked, room: room, mobile: mobile, searchLabel: c.searchLabel, count: count, labelledBy: 'su-from', caption: c.fromLabel,
+        h(PP.List, { people: people, checked: checked, room: Infinity, mobile: mobile, searchLabel: c.searchLabel, count: count, labelledBy: 'su-from', caption: c.fromLabel,
           onToggle: function (n, on) { apply([n], on); }, onToggleAll: function (names, on) { apply(names, on); } }),
         h(PP.AddSomeone, { title: c.addTitle, titleClass: 'label-base', onAdd: addGuest })),
       h(Rule),
