@@ -31,8 +31,7 @@
 <script>
   var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
   /* Path C · step 3 (Figma "Sign up — C3 Guidelines and waiver", 4454:34826 / mobile 4454:41826). Same as A3 plus the
-     group waiver note inside the waiver block. The waiver box starts checked, as the frame shows (nothing stored yet); unchecking it blocks Reserve: without it the checkbox shows its
-     error state and takes focus. */
+     group waiver note inside the waiver block. The waiver box starts unchecked and Reserve stays disabled until it is checked (Jonny, Oct. 27, 2026). */
   function Waiver(p) {
     /* SignupUI.Waiver markup (su-waiver, name su-waiver) with the Figma group note as its third row. */
     return h('div', { className: 'su-waiver' },
@@ -43,7 +42,7 @@
   }
   function Page() {
     /* Spots, group and date come from the flow store; the waiver box is kept there too. */
-    var flow = Shell.useFlow(), accepted = flow[0].waiver !== false, r = Shell.flow.resolve('c');
+    var flow = Shell.useFlow(), accepted = flow[0].waiver === true, r = Shell.flow.resolve('c');
     function setAccepted(v) { flow[1]({ waiver: v }); }
     var e = React.useState(false), error = e[0], setError = e[1];
     function reserve() {
@@ -55,7 +54,7 @@
       h(UI.Guidelines),
       h(UI.Rule),
       h(Waiver, { dateShort: r.dateShort, checked: accepted, error: error, onChange: function (v) { setAccepted(v); if (v) setError(false); } }),
-      h(UI.Actions, { label: 'Reserve ' + r.spotsText, onClick: reserve }));
+      h(UI.Actions, { label: 'Reserve ' + r.spotsText, onClick: reserve, disabled: !accepted }));
   }
   ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
 </script>

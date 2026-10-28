@@ -32,12 +32,10 @@
 <script src="signup-shell.js"></script>
 <script>
   var F = window.FMSC, UI = window.SignupUI, Shell = window.SignupShell, h = React.createElement;
-  /* Path B · step 3 (Figma "Sign up — B3 Guidelines and waiver"). The waiver box starts checked, as the frame shows (nothing stored yet);
-     unchecking it blocks Reserve:
-     without it the checkbox shows its error state and takes focus (same as A3). */
+  /* Path B · step 3 (Figma "Sign up — B3 Guidelines and waiver"). The waiver box starts unchecked and Reserve stays disabled until it is checked (Jonny, Oct. 27, 2026). */
   function Page() {
     /* Spots, group and date come from the flow store; the waiver box is kept there too. */
-    var flow = Shell.useFlow(), accepted = flow[0].waiver !== false, r = Shell.flow.resolve('b');
+    var flow = Shell.useFlow(), accepted = flow[0].waiver === true, r = Shell.flow.resolve('b');
     function setAccepted(v) { flow[1]({ waiver: v }); }
     var e = React.useState(false), error = e[0], setError = e[1];
     function reserve() {
@@ -51,7 +49,7 @@
       h('div', { className: 'sb-waiver' },
         h(UI.Waiver, { checked: accepted, error: error, onChange: function (v) { setAccepted(v); if (v) setError(false); } }),
         h(UI.Note, { className: 'sb-waiver__note' }, 'You accept the waiver for yourself. Everyone you add gets it by email and needs to sign before ' + r.dateShort + ' to check in. Anyone under 18 also needs a guardian’s consent.')),
-      h(UI.Actions, { label: 'Reserve ' + r.spotsText, onClick: reserve }));
+      h(UI.Actions, { label: 'Reserve ' + r.spotsText, onClick: reserve, disabled: !accepted }));
   }
   ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
 </script>

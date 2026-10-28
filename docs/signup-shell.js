@@ -281,6 +281,8 @@
     '.su-guideline__text { min-width: 0; max-width: 607px; color: var(--content-primary); }',
     '.su-links { display: flex; flex-wrap: wrap; gap: var(--space-lg); }',
     '@media (max-width: 599.98px) { .su-links { flex-direction: column; align-items: flex-start; gap: var(--space-sm); } }',
+    /* Disabled primary (Reserve until the waiver is accepted): the DS disabled-control fill and text. */
+    '.su-actions .fm-btn:disabled, .su-actions .fm-btn:disabled:hover { background: var(--background-subtle); color: var(--content-muted); box-shadow: none; }',
     '.su-waiver { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); }',
 
     /* Confirmation (step 4): card + 384 summary card grid-gap apart; mobile bar above the card. Stacks under 840 content. */
@@ -355,7 +357,7 @@
      Pass href to navigate, or onClick to run checks first. */
   function Actions(p) {
     return h('div', { className: cls('su-actions', p.className) },
-      h(F.Button, { variant: 'primary', size: 'large', href: p.href, onClick: p.onClick, type: p.href ? undefined : 'button' }, p.label),
+      h(F.Button, { variant: 'primary', size: 'large', href: p.href, onClick: p.onClick, type: p.href ? undefined : 'button', disabled: p.disabled }, p.label),
       p.backLabel ? h(F.Button, { variant: 'ghost', size: 'large', href: p.backHref }, p.backLabel) : null);
   }
   /* WhoChoice: the step 2 radios. value 'me' | 'group'. Choosing the other answer moves to that path's step 2
