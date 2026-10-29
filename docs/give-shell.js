@@ -114,12 +114,12 @@
   }
   /* An event gift needs an event picked: the box alone adds nothing to the summary or the routing (Jonny, Oct. 29, 2026). */
   function hasEvent(g) { return !!(g.event && g.eventId); }
-  function monthlyNow(g) { return g.freq === 'monthly' || (hasEvent(g) && g.monthly) || (g.flow === 'c' && g.monthly); }
+  function monthlyNow(g) { return g.freq === 'monthly' || !!g.monthly; } /* Give monthly on step 1, or "Make this a monthly gift" on payment */
   /* summary(g, opts): Gift summary props. opts: step (1–4), heading, totalLabel, eventSuffix. */
   function summary(g, o) {
     o = o || {};
     var step = o.step || 1;
-    var monthly = step >= 4 ? monthlyNow(g) : g.freq === 'monthly';
+    var monthly = step >= 3 ? monthlyNow(g) : g.freq === 'monthly'; /* payment's "Make this a monthly gift" counts from step 3 (Jonny, Oct. 29, 2026) */
     var withFee = step >= 3 && g.fee;
     var f = withFee ? fee(g.amount) : 0, total = g.amount + f;
     var m = meals(g.amount).toLocaleString('en-US');
