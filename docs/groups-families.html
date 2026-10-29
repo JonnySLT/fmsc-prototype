@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Families · FMSC</title>
+<meta name="description" content="Your family packs MannaPack® meals side by side in a two-hour shift with Feed My Starving Children. Kids 5 and up can pack.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="groups-page.js"></script>
+<script>
+  /* Figma: Desktop|Mobile/How to Help/Groups — Families. Layout and page styles: groups-page.js. */
+  window.renderGroupsPage({
+    slug: 'families',
+    hero: {
+      eyebrow: 'FAMILIES',
+      h1: 'Pack meals as a family',
+      body: 'Feed My Starving Children (FMSC) is a Christian nonprofit. Your family packs MannaPack® meals side by side in a two-hour shift.',
+      primaryLabel: 'Reserve for your family',
+      image: 'groups-families-hero.jpg',
+      imageAlt: 'A smiling mother and daughter in hairnets pack meals together at an FMSC packing site'
+    },
+    why: {
+      heading: 'Bring the whole family',
+      cards: [
+        { title: 'Kids 5 and up', description: 'Everyone under 18 packs alongside an adult who packs too.',
+          image: 'groups-families-card-1.jpg', alt: 'Two parents and their daughter in hairnets smile at an FMSC packing site' },
+        { title: 'A number your kids will remember', description: 'Your family learns how many meals it packed before you head home.',
+          image: 'groups-families-card-2.jpg', alt: 'Two volunteers in hairnets cheer among stacks of meal boxes' },
+        { title: 'Bring grandparents and friends', description: 'Grandparents, cousins and friends join with the same link you send your family.',
+          image: 'groups-families-card-3.jpg', alt: 'An older couple in hairnets holds up bags of MannaPack® Rice' }
+      ]
+    },
+    scripture: null,
+    book: {
+      heading: 'Book your family in three steps',
+      supporting: 'One person books for the family. Everyone else joins with a link.',
+      steps: [
+        ['Reserve your spots', 'Book the number of family members and friends you expect.'],
+        ['Send the join link', 'Text it to your family group chat.'],
+        ['See who’s attending', 'Each person creates an account and signs up. You’ll see who’s coming.']
+      ],
+      finderTitle: 'Find a time for your family'
+    },
+    more: {
+      heading: 'More ways your family can help',
+      cards: [
+        { title: 'Fundraise for an occasion', body: 'Turn a birthday or holiday into meals. Friends and family give toward your goal.',
+          illustration: 'hm-donations-growth-chart.svg', linkLabel: 'Start a fundraiser', href: 'fundraiser.html' },
+        { title: 'Give every month', body: 'Monthly givers join FMSC Table Builders, FMSC’s monthly giving community.',
+          illustration: 'donations-recurring.svg', linkLabel: 'Give monthly', href: 'give.html' },
+        { title: 'Give a year of meals', body: '$106 feeds a child a daily meal for a full year.',
+          illustration: 'donations-cash-gift.svg', linkLabel: 'Give $106', href: 'give.html' }
+      ]
+    },
+    faq: {
+      heading: 'Questions parents ask',
+      items: [
+        { question: 'How old do you have to be?', answer: 'The minimum age is 5, and there are no exceptions. Everyone under 18 packs alongside an adult who packs too.' },
+        { question: 'What happens during a shift?', answer: 'A shift lasts two hours, including orientation. Arrive 10–15 minutes early to check in. You’ll wear a hairnet, scoop rice, soy, dried vegetables and a vitamin blend into bags, then seal and box them.' },
+        { question: 'What should we wear?', answer: 'Clean, comfortable clothes, and closed-toed shoes if you’re working in the warehouse. Leave jewelry at home; wedding bands and medical alert bracelets are fine. FMSC hands out the hairnets.' },
+        { question: 'Do we have to donate to pack?', answer: 'No. The one exception is a session marked Pack and Pledge, which is labeled in the search results before you reserve.' },
+        { question: 'Are the sites accessible?', answer: 'All eight permanent sites are accessible. Anyone who needs to sit can label the bags before they’re filled.' }
+      ]
+    },
+    cta: { headline: 'Bring your family to pack meals', secondaryLabel: 'Give as a family' }
+  });
+</script>
+</body>
+</html>

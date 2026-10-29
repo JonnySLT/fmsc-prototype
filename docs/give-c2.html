@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your details · Give meals · FMSC</title>
+<meta name="description" content="Enter the name, email and address for your gift receipt.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (gv-) come from give-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="give-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.GiveUI, Shell = window.GiveShell, h = React.createElement;
+  /* Flow C · step 2 (Figma "Give — C2 Your details · Signed out"). */
+  function Page() {
+    var st = Shell.useGift('c'), g = st[0];
+    return h(Shell, { summary: Shell.summary(g, { step: 2 }), faq: true },
+      h(UI.Steps, null,
+        h(UI.DoneStep, { number: 1, title: 'Your gift', answer: Shell.giftAnswer(g), href: 'give-c1.html' }),
+        h(UI.StepCard, { number: 2, title: 'Your details' },
+          h(UI.Details, { who: 'daniel', updates: true, signInLine: 'Have an FMSC account? Sign in to save this gift to it.', signInLabel: 'Sign in', signInHref: 'sign-in.html' }),
+          h(UI.Continue, { label: 'Continue to payment', href: 'give-c3.html' })),
+        h(UI.UpcomingStep, { number: 3, title: 'Payment' })));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

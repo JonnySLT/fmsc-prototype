@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Churches · FMSC</title>
+<meta name="description" content="Your church packs MannaPack® meals side by side in a two-hour shift, and FMSC sends them to faith-based and humanitarian partners around the world.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="groups-page.js"></script>
+<script>
+  /* Figma: Desktop|Mobile/How to Help/Groups — Churches. Layout and page styles: groups-page.js. */
+  window.renderGroupsPage({
+    slug: 'churches',
+    hero: {
+      eyebrow: 'CHURCHES',
+      h1: 'Pack meals as a congregation',
+      body: 'Feed My Starving Children (FMSC) is a Christian nonprofit. Your church packs MannaPack® meals side by side in a two-hour shift, and FMSC sends them to faith-based and humanitarian partners around the world.',
+      primaryLabel: 'Reserve for your church',
+      image: 'groups-churches-hero.jpg',
+      imageAlt: 'A church group in matching T-shirts and hairnets smiles while packing MannaPack® meals'
+    },
+    why: {
+      heading: 'Serve together as a church',
+      cards: [
+        { title: 'Feed kids in body and spirit', description: 'FMSC\'s mission is “Feeding God\'s children hungry in body and spirit.” We work in Jesus\' name, and the meals you pack go to faith-based and humanitarian partners.',
+          image: 'groups-churches-card-1.jpg', alt: 'Volunteers bow their heads in prayer over packed meals at an FMSC MobilePack™ event' },
+        { title: 'Every age at one table', description: 'Sunday school and confirmation classes, mission teams and small groups pack side by side. Kids 5 and up come with an adult who packs too.',
+          image: 'groups-churches-card-2.jpg', alt: 'A group of all ages in matching red shirts packs meals at an FMSC MobilePack™ event' },
+        { title: 'Pack for your mission field', description: 'Some churches designate the meals they pack for a country or mission program they already support.',
+          image: 'groups-churches-card-3.jpg', alt: 'Hundreds of volunteers in orange shirts gather for an FMSC MobilePack™ event' }
+      ]
+    },
+    scripture: { quote: '“For I was hungry and you gave me something to eat”', attribution: '— Matthew 25:35 (NIV)' },
+    book: {
+      heading: 'Book your church in three steps',
+      supporting: 'One person books for the whole church. Everyone else joins with a link.',
+      steps: [
+        ['Reserve your spots', 'Book the number of people you expect from your church.'],
+        ['Send the join link', 'Share it in your church email or a group chat you already use.'],
+        ['See who’s attending', 'Each person creates an account and signs up. You’ll see who’s coming.']
+      ],
+      finderTitle: 'Find a time for your church'
+    },
+    more: {
+      heading: 'More ways your church can help',
+      cards: [
+        { title: 'Host an FMSC MobilePack™ event', body: 'Bring the packing line to your church. You bring the venue, volunteers and funding for 100,000 meals, and FMSC brings the food, equipment and staff.',
+          illustration: 'in-country-church.svg', linkLabel: 'Host an event', href: 'host-mobilepack.html' },
+        { title: 'Fundraise before your shift', body: 'FMSC sends meals as funding comes in, so many groups raise money before they pack.',
+          illustration: 'hm-donations-growth-chart.svg', linkLabel: 'Start a fundraiser', href: 'fundraiser.html' },
+        { title: 'Give as a church', body: 'Give once or monthly under your church’s name. $106 feeds a child a daily meal for a full year.',
+          illustration: 'donations-cash-gift.svg', linkLabel: 'Give as a church', href: 'give.html' }
+      ]
+    },
+    faq: {
+      heading: 'Questions church leaders ask',
+      items: [
+        { question: 'How old do you have to be?', answer: 'The minimum age is 5, and there are no exceptions. Everyone under 18 packs alongside an adult who packs too.' },
+        { question: 'How many adults do we need?', answer: 'Students per adult: K–2, 1 · grades 3–6, 3 · grades 7–12, 4.\nFMSC recommends third grade and up for youth groups. High school groups need at least half their chaperones to be non-student adults, such as teachers, advisers or parents.' },
+        { question: 'What happens during a shift?', answer: 'A shift lasts two hours, including orientation. Arrive 10–15 minutes early to check in. You’ll wear a hairnet, scoop rice, soy, dried vegetables and a vitamin blend into bags, then seal and box them.' },
+        { question: 'Does everyone need an account?', answer: 'Yes. Whoever books needs an FMSC account, and each person creates one when they sign up through the join link.' },
+        { question: 'Do we have to donate to pack?', answer: 'No. The one exception is a session marked Pack and Pledge, which is labeled in the search results before you reserve.' },
+        { question: 'Are the sites accessible?', answer: 'All eight permanent sites are accessible. Anyone who needs to sit can label the bags before they’re filled.' }
+      ]
+    },
+    cta: { headline: 'Bring your church to pack meals', secondaryLabel: 'Give as a church' }
+  });
+</script>
+</body>
+</html>

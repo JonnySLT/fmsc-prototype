@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your gift · Give meals · FMSC</title>
+<meta name="description" content="Give to an FMSC MobilePack™ event and dedicate your gift.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (gv-) come from give-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="give-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.GiveUI, Shell = window.GiveShell, h = React.createElement;
+  /* Flow B · step 1 (Figma "Give — B1 Your gift · MobilePack event"): one-time gift to an event, dedicated.
+     Continue → payment (or your details when signed out); the wallet buttons give with one tap → confirmation. */
+  function Page() {
+    var st = Shell.useGift('b'), g = st[0], set = st[1];
+    return h(Shell, { summary: Shell.summary(g, { step: 1 }), faq: true },
+      h(UI.Steps, null,
+        h(UI.StepCard, { number: 1, title: 'Your gift' },
+          h(UI.DonateCheckout, { gift: g, onChange: set }),
+          h(UI.GiftOptions, { gift: g, onChange: set }),
+          h(UI.Continue, { label: 'Continue to payment', href: Shell.paymentHref(g) }),
+          h(UI.Wallets, { label: 'Or give with one tap', href: Shell.confirmHref(g) })),
+        h(UI.DoneStep, { number: 2, title: 'Your details', answer: Shell.detailsAnswer('sarah'), answerMobile: Shell.detailsAnswer('sarah', true), href: 'give-a2.html' }),
+        h(UI.UpcomingStep, { number: 3, title: 'Payment' })));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

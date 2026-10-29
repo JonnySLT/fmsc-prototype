@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Give meals · FMSC</title>
+<meta name="description" content="Give meals to FMSC once or monthly.">
+<link rel="stylesheet" href="ds/tokens.css">
+<style>html, body { margin: 0; background: var(--background-canvas); }</style>
+</head>
+<body>
+<!-- Give flow entry. Signed in (window.FMSCAuth) → give-a1.html (Sarah, monthly gift); signed out → give-c1.html.
+     site-nav.js applies ?auth=out|sarah|new first; the query string is passed on. -->
+<script src="lib/react.production.min.js"></script>
+<script src="site-nav.js"></script>
+<script>
+  location.replace((window.FMSCAuth && window.FMSCAuth.signedIn() ? 'give-a1.html' : 'give-c1.html') + location.search + location.hash);
+</script>
+</body>
+</html>

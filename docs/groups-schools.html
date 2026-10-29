@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schools · FMSC</title>
+<meta name="description" content="Your class packs MannaPack® meals in a two-hour shift with Feed My Starving Children, with teachers and chaperones packing right beside them.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="groups-page.js"></script>
+<script>
+  /* Figma: Desktop|Mobile/How to Help/Groups — Schools. Layout and page styles: groups-page.js. */
+  window.renderGroupsPage({
+    slug: 'schools',
+    hero: {
+      eyebrow: 'SCHOOLS',
+      h1: 'Pack meals with your class',
+      body: 'Feed My Starving Children (FMSC) is a Christian nonprofit. Your class packs MannaPack® meals in a two-hour shift, with teachers and chaperones packing right beside them.',
+      primaryLabel: 'Reserve for your school',
+      image: 'groups-schools-hero.jpg',
+      imageAlt: 'Smiling kids in hairnets pack MannaPack® meals at an FMSC packing site'
+    },
+    why: {
+      heading: 'Give students a hands-on way to help',
+      cards: [
+        { title: 'A lesson they can count', description: 'Students see exactly how many meals their group packed by the end of the shift.',
+          image: 'groups-schools-card-1.jpg', alt: 'Students in blue T-shirts and hairnets pack meals together' },
+        { title: 'Elementary through high school', description: 'Kids 5 and up can pack. FMSC recommends third grade and up for youth groups.',
+          image: 'groups-schools-card-2.jpg', alt: 'Two teens in hairnets scoop ingredients into meal bags' },
+        { title: 'Hours on record', description: 'Each student’s volunteer hours are kept in their FMSC account.',
+          image: 'groups-schools-card-3.jpg', alt: 'A smiling young volunteer carries a box of MannaPack® meals' }
+      ]
+    },
+    scripture: null,
+    book: {
+      heading: 'Book your school in three steps',
+      supporting: 'One teacher or leader books for the whole class. Students and chaperones join with a link.',
+      steps: [
+        ['Reserve your spots', 'Book the number of students and adults you expect.'],
+        ['Send the join link', 'Share it in your class email to parents.'],
+        ['See who’s attending', 'Each person creates an account and signs up. You’ll see who’s coming.']
+      ],
+      finderTitle: 'Find a time for your class'
+    },
+    more: {
+      heading: 'More ways your school can help',
+      cards: [
+        { title: 'Fundraise as a class', body: 'FMSC sends meals as funding comes in, so many groups raise money before they pack. Set a class goal and track it together.',
+          illustration: 'hm-donations-growth-chart.svg', linkLabel: 'Start a fundraiser', href: 'fundraiser.html' },
+        { title: 'Host an FMSC MobilePack™ event', body: 'Bring the packing line to your school. You bring the venue, volunteers and funding for 100,000 meals, and FMSC brings the food, equipment and staff.',
+          illustration: 'groups-in-country-community.svg', linkLabel: 'Host an event', href: 'host-mobilepack.html' },
+        { title: 'Give as a school', body: 'Give under your school’s name. Each meal costs 29 cents.',
+          illustration: 'donations-cash-gift.svg', linkLabel: 'Give as a school', href: 'give.html' }
+      ]
+    },
+    faq: {
+      heading: 'Questions teachers ask',
+      items: [
+        { question: 'How many adults do we need?', answer: 'Students per adult: K–2, 1 · grades 3–6, 3 · grades 7–12, 4.\nFMSC recommends third grade and up for youth groups. High school groups need at least half their chaperones to be non-student adults, such as teachers, advisers or parents.' },
+        { question: 'How old do you have to be?', answer: 'The minimum age is 5, and there are no exceptions. Everyone under 18 packs alongside an adult who packs too.' },
+        { question: 'What happens during a shift?', answer: 'A shift lasts two hours, including orientation. Arrive 10–15 minutes early to check in. You’ll wear a hairnet, scoop rice, soy, dried vegetables and a vitamin blend into bags, then seal and box them.' },
+        { question: 'Do we have to donate to pack?', answer: 'No. The one exception is a session marked Pack and Pledge, which is labeled in the search results before you reserve.' },
+        { question: 'Are the sites accessible?', answer: 'All eight permanent sites are accessible. Anyone who needs to sit can label the bags before they’re filled.' }
+      ]
+    },
+    cta: { headline: 'Bring your class to pack meals', secondaryLabel: 'Give as a school' }
+  });
+</script>
+</body>
+</html>

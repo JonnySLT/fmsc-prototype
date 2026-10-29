@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thank you · Give meals · FMSC</title>
+<meta name="description" content="Your monthly gift to FMSC is set up, starting with Hope Lutheran’s FMSC MobilePack™ event.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* Page layout only. Every value is an FMSC DS token; the flow shell and shared blocks (gv-) come from give-shell.js. */
+  html, body { margin: 0; background: var(--background-canvas); color: var(--content-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, h4, p, ul, ol { margin: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="flow-data.js"></script>
+<script src="give-shell.js"></script>
+<script>
+  var F = window.FMSC, UI = window.GiveUI, Shell = window.GiveShell, h = React.createElement;
+  /* Figma "Give — B4 Confirmation · MobilePack event, monthly": first gift to the event, then monthly to FMSC. */
+  function Page() {
+    var g = Shell.useGift('b', { monthly: true })[0], m = Shell.fmt.meals(g.amount).toLocaleString('en-US'), d = g.dedInfo || {};
+    var emailed = g.ded && d.notify ? 'We emailed ' + d.name + ' that you gave in her honor, charged' : 'We charged';
+    return h(Shell, { confirm: true, summary: Shell.summary(g, { step: 4, totalLabel: 'Charged today', eventSuffix: ' (first gift)' }),
+        head: h(UI.Impact, { eyebrow: 'Your monthly gift', headline: 'You’re providing ' + m + ' meals every month.' }) },
+      h(UI.Confirmation, { title: 'Thanks, Sarah. Your monthly gift is set up.',
+          body: 'Today’s gift goes to ' + Shell.fmt.goesTo(g) + ', and each monthly gift after that goes to Feed My Starving Children. ' + emailed + ' your Visa ending in 4242 and sent your receipt to sarah.whitfield@gmail.com.' },
+        h(F.Divider, { showLabel: false }),
+        h(UI.AccountBlock, { line: 'Your receipts and monthly gift live in your FMSC account. Change or stop the gift there anytime.',
+          links: [{ label: 'See your giving', href: 'account-giving.html' }, { label: 'See the event', href: '#' }] })),
+      h(UI.NextSteps, { tableBuilder: false }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
+</script>
+</body>
+</html>

@@ -178,10 +178,10 @@
             columns: 4,
             header: { align: 'left', heading: 'Bringing a group', showEyebrow: false, showSupporting: false },
             items: [
-              { title: 'Churches', body: 'Serve together as a congregation or host an FMSC MobilePack™ event.', illustration: img('in-country-church.svg'), linkLabel: 'Start with your church', href: 'signup-1.html?path=d' },
-              { title: 'Schools', body: 'Give students a hands-on way to help kids their own age.', illustration: img('volunteers-team-raise.svg'), linkLabel: 'Start with your school', href: 'signup-1.html?path=d' },
-              { title: 'Workplaces', body: 'Spend a team day packing meals instead of sitting in a conference room.', illustration: img('careers-team.svg'), linkLabel: 'Start with your team', href: 'corporate-partnerships.html#team' },
-              { title: 'Families with kids', body: 'Kids 5 and up can pack alongside adults, so the whole family can come.', illustration: img('in-country-home-heart.svg'), linkLabel: 'Bring your family', href: 'signup-1.html?path=c' }
+              { title: 'Churches', body: 'Serve together as a congregation or host an FMSC MobilePack™ event.', illustration: img('in-country-church.svg'), linkLabel: 'Start with your church', href: 'groups-churches.html' },
+              { title: 'Schools', body: 'Give students a hands-on way to help kids their own age.', illustration: img('volunteers-team-raise.svg'), linkLabel: 'Start with your school', href: 'groups-schools.html' },
+              { title: 'Workplaces', body: 'Spend a team day packing meals instead of sitting in a conference room.', illustration: img('careers-team.svg'), linkLabel: 'Start with your team', href: 'groups-workplaces.html' },
+              { title: 'Families with kids', body: 'Kids 5 and up can pack alongside adults, so the whole family can come.', illustration: img('in-country-home-heart.svg'), linkLabel: 'Bring your family', href: 'groups-families.html' }
             ]
           })),
 
@@ -197,7 +197,7 @@
             h('div', { className: 'hh-give__module' },
               h(F.DonateModule, { breakpoint: bp, showModeTabs: false, onceLabel: 'Give once', onceSublabel: 'A single gift today', monthlyLabel: 'Give monthly', monthlySublabel: 'Join Table Builders', linkHref: 'impact.html',
                 /* Hand the chosen gift to the donate page, which presets its own module. */
-                onDonate: function (g) { window.location.href = 'donate.html?amount=' + encodeURIComponent(g.amount) + '&freq=' + encodeURIComponent(g.frequency) + '#do-give'; } })),
+                onDonate: function () { window.location.href = 'give.html'; } })),
             h('img', { className: 'hh-give__photo', src: img('how-to-help-child.jpg'), alt: 'A young boy eats a spoonful of a MannaPack® meal from a bowl at an outdoor table.' }))),
 
         /* 4 · Fundraise or shop */

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workplaces · FMSC</title>
+<meta name="description" content="Your team packs MannaPack® meals in a two-hour shift with Feed My Starving Children, and one person books it for everyone.">
+<link rel="stylesheet" href="ds/tokens.css">
+<link rel="stylesheet" href="ds/bundle.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="lib/react.production.min.js"></script>
+<script src="lib/react-dom.production.min.js"></script>
+<script src="ds/bundle.js"></script>
+<script src="site-nav.js"></script>
+<script src="groups-page.js"></script>
+<script>
+  /* Figma: Desktop|Mobile/How to Help/Groups — Workplaces. Layout and page styles: groups-page.js. */
+  window.renderGroupsPage({
+    slug: 'workplaces',
+    hero: {
+      eyebrow: 'WORKPLACES',
+      h1: 'Pack meals with your team',
+      body: 'Feed My Starving Children (FMSC) is a Christian nonprofit. Your team packs MannaPack® meals in a two-hour shift, and one person books it for everyone.',
+      primaryLabel: 'Reserve for your team',
+      image: 'groups-workplaces-hero.jpg',
+      /* Alt text from the Figma layer name. */
+      imageAlt: 'A FedEx employee team in hairnets packs MannaPack® meals together at an FMSC site'
+    },
+    why: {
+      heading: 'Team building with something to show for it',
+      cards: [
+        { title: 'A count at the end', description: 'Your team leaves knowing exactly how many meals it packed.',
+          image: 'groups-workplaces-card-1.jpg', alt: 'Coworkers in hairnets fill meal bags at an FMSC MobilePack™ event' },
+        { title: 'Out of the conference room', description: 'Spend a team day packing meals instead of sitting in a conference room. Small teams and whole companies both fit.',
+          image: 'groups-workplaces-card-2.jpg', alt: 'A volunteer in a shirt and tie hands over a scoop at a packing table' },
+        { title: 'Everyone’s welcome', description: 'FMSC is a Christian nonprofit, and everyone is welcome to pack, whatever they believe.',
+          image: 'groups-workplaces-card-3.jpg', alt: 'UL Solutions employees and a soccer team pack meals together at an FMSC event' }
+      ]
+    },
+    scripture: null,
+    book: {
+      heading: 'Book your team in three steps',
+      supporting: 'One person books for the whole team. Everyone else joins with a link.',
+      steps: [
+        ['Reserve your spots', 'Book the number of coworkers you expect.'],
+        ['Send the join link', 'Share it in your team’s email or chat.'],
+        ['See who’s attending', 'Each person creates an account and signs up. You’ll see who’s coming.']
+      ],
+      finderTitle: 'Find a time for your team'
+    },
+    matching: true,
+    more: {
+      heading: 'More ways your company can help',
+      cards: [
+        { title: 'Volunteer grants', body: 'Volunteer grants are company donations based on the hours employees volunteer, including time packing meals at FMSC.',
+          illustration: 'volunteers-hands-up.svg', linkLabel: 'Check for volunteer grants', href: 'corporate-partnerships.html' },
+        { title: 'Partner with FMSC', body: 'Companies also sponsor FMSC fundraising events and host FMSC MobilePack™ events.',
+          illustration: 'fr-volunteers-group-hands.svg', linkLabel: 'See corporate partnerships', href: 'corporate-partnerships.html' }
+      ]
+    },
+    faq: {
+      heading: 'Questions team leads ask',
+      items: [
+        { question: 'What happens during a shift?', answer: 'A shift lasts two hours, including orientation. Arrive 10–15 minutes early to check in. You’ll wear a hairnet, scoop rice, soy, dried vegetables and a vitamin blend into bags, then seal and box them.' },
+        { question: 'Does everyone need an account?', answer: 'Yes. Whoever books needs an FMSC account, and each person creates one when they sign up through the join link.' },
+        { question: 'Does everyone have to share FMSC’s faith?', answer: 'No. FMSC is a Christian nonprofit, and everyone is welcome to pack, whatever they believe.' },
+        { question: 'Do we have to donate to pack?', answer: 'No. The one exception is a session marked Pack and Pledge, which is labeled in the search results before you reserve.' },
+        { question: 'Are the sites accessible?', answer: 'All eight permanent sites are accessible. Anyone who needs to sit can label the bags before they’re filled.' }
+      ]
+    },
+    cta: { headline: 'Bring your team to pack meals', secondaryLabel: 'Give as a company' }
+  });
+</script>
+</body>
+</html>

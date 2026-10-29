@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Event details · Oct. 3 · FMSC</title>
+<title>Manage reservation · Oct. 3 · FMSC</title>
 <meta name="description" content="Your upcoming FMSC packing shift on Saturday, Oct. 3, at FMSC Coon Rapids: who’s coming, inviting your group, what to expect and how to get there.">
 <link rel="stylesheet" href="ds/tokens.css">
 <link rel="stylesheet" href="ds/bundle.css">
@@ -242,7 +242,7 @@
   var model = (function () {
     if (!RES) {
       return {
-        sample: true, path: 'b', title: 'Event details for Saturday, Oct. 3', tag: '6 days away',
+        sample: true, path: 'b', title: 'Manage reservation for Saturday, Oct. 3', tag: '6 days away',
         description: 'FMSC Coon Rapids · 9–11 a.m. · with Grace Church Youth Group',
         dateShort: 'Oct. 3', city: 'Coon Rapids, MN', when: 'Arrive 8:45 a.m. · packing 9–11 a.m.',
         spots: 12, claimed: 8, group: 'Grace Church Youth Group', added: [],
@@ -265,7 +265,7 @@
     if (coon) facts = [arrival[0], arrival[1], facts[0], arrival[3]];
     facts.push([st.kind === 'permanent' ? 'Site phone' : 'Phone', st.phone]);
     return {
-      sample: false, id: RES.id, path: path, title: 'Event details for ' + d.dateLabel, tag: d.daysAway,
+      sample: false, id: RES.id, path: path, title: 'Manage reservation for ' + d.dateLabel, tag: d.daysAway,
       description: st.where + ' · ' + RES.time + (isGroup && RES.group ? ' · with ' + RES.group : ''),
       dateShort: d.dateShort, city: st.city, when: 'Arrive ' + d.arrive + ' · packing ' + RES.time,
       spots: RES.spots, claimed: RES.claimed, group: RES.group, added: (RES.added || []).slice(), you: you,
@@ -278,9 +278,9 @@
   })();
   (function meta() {
     if (model.sample) return;
-    document.title = 'Event details · ' + model.dateShort + ' · FMSC';
+    document.title = 'Manage reservation · ' + model.dateShort + ' · FMSC';
     var m = document.querySelector('meta[name="description"]');
-    if (m) m.setAttribute('content', 'Your upcoming FMSC packing shift on ' + model.title.replace('Event details for ', '') + ', at ' + model.where + ': who’s coming' + (model.path === 'a' ? '' : ', inviting your group') + ', what to expect and how to get there.');
+    if (m) m.setAttribute('content', 'Your upcoming FMSC packing shift on ' + model.title.replace('Manage reservation for ', '') + ', at ' + model.where + ': who’s coming' + (model.path === 'a' ? '' : ', inviting your group') + ', what to expect and how to get there.');
   })();
 
   /* Group list (Figma "From your group"): collapsible; search, then the people (PeoplePicker.List). Checking someone
@@ -371,7 +371,7 @@
       /* Account page header */
       h(F.AccountPageHeader, {
         breakpoint: 'auto', title: M.title, showBreadcrumb: true,
-        breadcrumb: [{ label: 'My account', href: 'account-dashboard.html' }, { label: 'Volunteering', href: 'account-volunteering.html' }, { label: 'Event details' }],
+        breadcrumb: [{ label: 'My account', href: 'account-dashboard.html' }, { label: 'Volunteering', href: 'account-volunteering.html' }, { label: 'Manage reservation' }],
         backTo: { label: 'Volunteering', href: 'account-volunteering.html' },
         showTag: true, tagLabel: M.tag,
         showDescription: true, description: M.description

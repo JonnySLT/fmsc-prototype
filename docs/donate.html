@@ -184,7 +184,7 @@
                 body: 'A recurring gift keeps the food coming and gives partners a stable food source. Table Builders get early access to new stories, updates and events. You can change or stop your gift anytime.' }),
               h(Way, { illustration: img('donations-cash-gift.svg'), title: 'Give once',
                 body: 'A one-time gift goes directly to buying food, which volunteers pack for hungry children around the world.' })),
-            h(F.DonateModule, Object.assign({ breakpoint: 'auto', showModeTabs: false, linkHref: 'impact.html' }, gift))))),
+            h(F.DonateModule, Object.assign({ breakpoint: 'auto', showModeTabs: false, linkHref: 'impact.html', onDonate: function () { location.href = 'give.html'; } }, gift))))),
 
         /* Employer matching */
         h('section', { className: 'do-match', id: 'matching', 'aria-labelledby': 'do-match-h' },
@@ -234,7 +234,7 @@
             h(F.ActionCard, { breakpoint: 'auto',
               heading: 'Become an FMSC Table Builder',
               body: 'Your first monthly gift makes you a Table Builder. You can change, pause or stop your monthly gift at any time.',
-              buttonLabel: 'Join and give monthly', buttonHref: '#do-give',
+              buttonLabel: 'Join and give monthly', buttonHref: 'give.html',
               showLink: true, linkLabel: 'Manage my monthly gift', linkHref: '#'
             }))),
 

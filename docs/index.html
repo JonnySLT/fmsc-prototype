@@ -253,7 +253,7 @@
           h('div', { className: 'hp-inner' }, h(F.LayoutSplit, null,
             h(F.DonateModule, { breakpoint: 'auto', showModeTabs: false, linkHref: 'impact.html',
               /* Donate $<amount>: carry the chosen gift to the Donate page, which presets its module from ?amount=&freq= */
-              onDonate: function (g) { location.href = 'donate.html?amount=' + Math.round(g.amount) + '&freq=' + g.frequency + '#do-give'; } }),
+              onDonate: function () { location.href = 'give.html'; } }),
             h('div', { className: 'hp-photo hp-photo--gift' }, h('img', { src: img('gift.jpg'), alt: 'Smiling children hold green bowls of MannaPack® rice at a school table.' }))))),
 
         /* One story — Samuel */
@@ -272,7 +272,7 @@
           columns: 4, breakpoint: 'auto',
           header: { align: 'center', eyebrow: 'More Ways to Help', heading: 'Four ways to feed a child', showSupporting: false },
           items: [
-            { title: 'Give', body: 'A one-time or monthly gift funds meals. 29¢ feeds a child one meal.', illustration: img('donations-cash-gift.svg'), linkLabel: 'Give now', href: 'donate.html' },
+            { title: 'Give', body: 'A one-time or monthly gift funds meals. 29¢ feeds a child one meal.', illustration: img('donations-cash-gift.svg'), linkLabel: 'Give now', href: 'give.html' },
             { title: 'Volunteer', body: 'Hand-pack MannaPack® meals at a site near you, or host a MobilePack™ event.', illustration: img('volunteers-hands-up.svg'), linkLabel: 'Find a shift', href: 'volunteer.html' },
             { title: 'Shop', body: 'FMSC MarketPlace™ artisans earn a fair wage. Profits fund more meals.', illustration: img('marketplace-gift.svg'), linkLabel: 'Shop goods', href: 'marketplace.html' },
             { title: 'Fundraise', body: 'Rally your church, school or team around a goal, and watch the meals add up.', illustration: img('extras-handshake.svg'), linkLabel: 'Start a fundraiser', href: 'fundraiser.html' }
@@ -288,7 +288,7 @@
               h('div', { className: 'hp-tile__copy' },
                 h('h3', { className: ts('heading-h4') }, g[0]),
                 h('p', { className: 'body-small' }, g[1])),
-              h(F.ArrowLink, { label: g[2], href: g[0] === 'Families with kids' ? 'signup-1.html?path=c' : g[0] === 'Workplaces' ? 'corporate-partnerships.html#team' : 'signup-1.html?path=d' }));
+              h(F.ArrowLink, { label: g[2], href: { 'Churches': 'groups-churches.html', 'Schools': 'groups-schools.html', 'Workplaces': 'groups-workplaces.html', 'Families with kids': 'groups-families.html' }[g[0]] }));
           })))),
 
         /* MarketPlace teaser */
