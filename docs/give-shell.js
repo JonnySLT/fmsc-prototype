@@ -98,7 +98,7 @@
   function money(n) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   /* $106 for whole dollars, $108.69 otherwise (buttons, short summaries, done answers). */
   function amt(n) { return Math.round(n * 100) % 100 === 0 ? '$' + Math.round(n).toLocaleString('en-US') : money(n); }
-  function fee(amount) { return Math.round(amount * 269 / 106) / 100; } /* Figma: $2.69 on $106 */
+  function fee() { return 2.69; } /* Static, as in Figma ($2.69): the prototype doesn't calculate the fee from the amount (Jonny, Oct. 29, 2026). */
   function eventOf(g) { return EVENTS.filter(function (e) { return e.id === g.eventId; })[0] || EVENTS[0]; }
   function goesTo(g) { return eventOf(g).short + '’s FMSC MobilePack™ event'; }
   function dedicated(g) { var d = g.dedInfo || DED; return (d.kind === 'memory' ? 'In memory of ' : 'In honor of ') + (d.name || '').trim(); }
