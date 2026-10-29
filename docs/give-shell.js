@@ -350,7 +350,7 @@
       var on = g.freq === value;
       return h('label', { key: value, className: cls('fm-donate__seg', on ? 'fm-donate__seg--on' : '') },
         h('input', { type: 'radio', name: id + '-freq', value: value, checked: on, className: 'fm-visually-hidden',
-          onChange: function () { set({ freq: value }); } }),
+          onChange: function () { set({ freq: value, monthly: value === 'monthly' }); } }),
         h('span', { className: 'fm-donate__seg-label label-base' }, label),
         h('span', { className: 'fm-donate__seg-sub caption' }, sub));
     }
@@ -500,10 +500,15 @@
           h(F.Radio, { name: 'gv-method', value: 'bank', label: 'Bank account', checked: !card, onChange: function () { set({ method: 'bank' }); } }),
           !card ? h('p', { className: 'gv-secondary body-small' }, 'You’ll sign in to your bank to connect the account.') : null)),
       h('p', { className: 'gv-secondary caption' }, 'Payments are processed securely by Stripe.'),
-      monthlyGift
+      /* Event gifts (B3) always show "Make this a monthly gift", checked when Give monthly was picked on step 1 and
+         unchecked for Give once; ticking it switches the gift's frequency (Jonny, Oct. 29, 2026). */
+      g.event
+        ? h(Check, { name: 'gv-monthly', label: 'Make this a monthly gift', checked: monthlyGift, onChange: function (v) { set({ freq: v ? 'monthly' : 'once', monthly: v }); },
+            description: 'Your first gift goes to ' + goesTo(g) + '. Later gifts go to FMSC.' })
+        : monthlyGift
         ? h('p', { className: 'gv-secondary body-small' }, 'Charged today, then monthly on the same date. You can change or stop your monthly gift anytime.')
         : h(Check, { name: 'gv-monthly', label: 'Make this a monthly gift', checked: g.monthly, onChange: function (v) { set({ monthly: v }); },
-            description: g.event ? 'Your first gift goes to ' + goesTo(g) + '. Later gifts go to FMSC.' : 'Give this amount each month instead. You can change or stop it anytime.' }),
+            description: 'Give this amount each month instead. You can change or stop it anytime.' }),
       h(Continue, { variant: 'gold', label: label, href: p.giveHref }),
       h(Wallets, { label: 'Or pay with', href: p.giveHref }));
   }
