@@ -167,6 +167,8 @@
           body: 'One meal costs 29¢, and $106 feeds a child a daily meal for a full year.',
           primaryLabel: 'Volunteer', primaryHref: 'volunteer.html',
           secondaryLabel: 'Donate', secondaryHref: '#do-give',
+          /* Mobile hides the hero buttons: Volunteer and Donate are already in the nav bar (Jonny, Oct. 29, 2026). */
+          showActions: !mobile,
           image: img('donate-hero.jpg'),
           imageAlt: 'Schoolchildren in blue uniforms give a thumbs-up as they eat bowls of rice at their classroom desks.'
         }),

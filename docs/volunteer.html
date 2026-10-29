@@ -365,6 +365,8 @@
           body: 'Volunteers hand-pack MannaPack® meals at eight permanent sites and at FMSC MobilePack™ events across the country. A shift runs two hours. Reserve on your own or bring a group — either way, you need a reservation before you come.',
           primaryLabel: 'Volunteer', primaryHref: '#vo-find',
           secondaryLabel: 'Donate', secondaryHref: 'donate.html',
+          /* Mobile hides the hero buttons: Volunteer and Donate are already in the nav bar (Jonny, Oct. 29, 2026). */
+          showActions: !mobile,
           image: img(mobile ? 'volunteer-m-hero.jpg' : 'volunteer-hero.jpg'),
           imageAlt: 'Volunteers in hairnets carry boxes and pack meals at long tables in a warehouse.'
         }),
