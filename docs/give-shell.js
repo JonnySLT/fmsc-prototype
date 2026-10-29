@@ -94,7 +94,12 @@
   /* Done-step answer for "Your gift": "$106 monthly · 365 meals a month" / "$106 once · 365 meals". */
   function giftAnswer(g) {
     var m = meals(g.amount).toLocaleString('en-US');
-    return g.freq === 'monthly' ? amt(g.amount) + ' monthly · ' + m + ' meals a month' : amt(g.amount) + ' once · ' + m + ' meals';
+    var line = g.freq === 'monthly' ? amt(g.amount) + ' monthly · ' + m + ' meals a month' : amt(g.amount) + ' once · ' + m + ' meals';
+    /* Plus what was picked under the amount, one line each (Jonny, Oct. 29, 2026): the event and the dedication. */
+    var extra = [];
+    if (g.event && g.eventId) extra.push('Goes to ' + goesTo(g));
+    if (g.ded && (g.dedInfo || {}).name && g.dedInfo.name.trim()) extra.push(dedicated(g));
+    return [line].concat(extra).join('\n');
   }
   function monthlyNow(g) { return g.freq === 'monthly' || (g.event && g.monthly) || (g.flow === 'c' && g.monthly); }
   /* summary(g, opts): Gift summary props. opts: step (1–4), heading, totalLabel, eventSuffix. */
