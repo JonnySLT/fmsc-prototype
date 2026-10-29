@@ -30,7 +30,7 @@
   /* Flow C · step 3 (Figma "Give — C3 Payment · Signed out").
      Give and the wallet buttons → confirmation. */
   function Page() {
-    var st = Shell.useGift('c'), g = st[0], set = st[1];
+    var st = Shell.useGift('c', { details_daniel: Shell.people.daniel }), g = st[0], set = st[1];
     /* Desktop: the monthly note repeats under the summary card (Figma A3 Aside). */
     var note = g.freq === 'monthly' ? 'Charged today, then monthly on the same date. You can change or stop your monthly gift anytime.' : null;
     return h(Shell, { summary: Shell.summary(g, { step: 3 }), asideNote: note, faq: true },

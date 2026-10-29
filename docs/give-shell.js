@@ -136,14 +136,17 @@
   /* "Your details" done answer: one line + address on desktop, four lines on mobile (Figma). */
   /* What was typed on "Your details" (kept in the gift store as details_<who>), over the Figma sample person, so Change
      reopens the step with the user's entries and the done rows and confirmation repeat them (Jonny, Oct. 29, 2026). */
-  function personOf(who) { return Object.assign({ apt: '', company: false, updates: false }, PEOPLE[who], read()['details_' + who] || {}); }
+  /* Signed out (Daniel), "Your details" starts blank until typed (Jonny, Oct. 29, 2026); pages opened straight from the index
+     (C3, C4) seed the Figma sample person. Signed in (Sarah) is prefilled from the account. */
+  var BLANK = { first: '', last: '', email: '', street: '', city: '', state: '', zip: '' };
+  function personOf(who) { return Object.assign({ apt: '', company: false, updates: false }, who === 'daniel' ? BLANK : PEOPLE[who], read()['details_' + who] || {}); }
   function savePerson(who, patch) { var all = read(), key = 'details_' + who; all[key] = Object.assign({}, all[key] || {}, patch); write(all); }
   function detailsAnswer(who, mobile) {
     var p = personOf(who);
-    var street = p.street + (p.apt ? ', ' + p.apt : '');
-    return mobile
-      ? p.first + ' ' + p.last + '\n' + p.email + '\n' + street + '\n' + p.city + ', ' + p.state + ' ' + p.zip
-      : p.first + ' ' + p.last + ' · ' + p.email + '\n' + street + ', ' + p.city + ', ' + p.state + ' ' + p.zip;
+    /* Only what was entered: empty parts are left out. */
+    function join(parts, sep) { return parts.filter(function (x) { return x && String(x).trim(); }).join(sep); }
+    var name = join([p.first, p.last], ' '), street = join([p.street, p.apt], ', '), place = join([p.city, join([p.state, p.zip], ' ')], ', ');
+    return mobile ? join([name, p.email, street, place], '\n') : join([join([name, p.email], ' · '), join([street, place], ', ')], '\n');
   }
   var STATES = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
 
@@ -468,13 +471,14 @@
   /* Details: Figma "Step 2 · Your details" fields. who: 'sarah' | 'daniel'; signIn: the line + arrow link above the fields. */
   function Details(p) {
     var mobile = F.useIsMobile();
-    var st = React.useState(function () { return personOf(p.who); }), who = st[0], setWho = st[1];
+    /* Opening the step records the (possibly blank) entries, so later steps show what was typed, not the sample. */
+    var st = React.useState(function () { if (!read()['details_' + p.who]) savePerson(p.who, {}); return personOf(p.who); }), who = st[0], setWho = st[1];
     function upd(patch) { savePerson(p.who, patch); setWho(Object.assign({}, who, patch)); }
     function field(key, props) { return Object.assign({ key: key, value: who[key] || '', onChange: function (e) { var o = {}; o[key] = e.target.value; upd(o); } }, props); }
     function chk(key, name, label) {
       return h(Check, { key: name, name: name, label: label, checked: !!who[key], onChange: function (v) { var o = {}; o[key] = v; upd(o); } });
     }
-    var stateField = h(F.Dropdown, { key: 'st', label: 'State', showLabel: true, options: STATES, value: who.state, onChange: function (v) { upd({ state: v }); } });
+    var stateField = h(F.Dropdown, { key: 'st', label: 'State', showLabel: true, placeholder: '', options: STATES, value: who.state || null, onChange: function (v) { upd({ state: v }); } });
     var zip = h(F.Input, field('zip', { label: 'ZIP code', autoComplete: 'postal-code' }));
     var city = h(F.Input, field('city', { label: 'City', autoComplete: 'address-level2' }));
     return h(Fragment, null,
@@ -563,7 +567,7 @@
     return h('section', { className: 'gv-create', 'aria-labelledby': 'gv-create-title' },
       h('div', { className: 'gv-create__text' },
         h('h3', { className: mobile ? 'heading-h4-mobile' : 'heading-h4', id: 'gv-create-title' }, 'Save this gift to an FMSC account'),
-        h('p', { className: 'gv-secondary body-base' }, 'Keep your receipts and giving history in one place, and give next time without retyping your details. Your account uses ' + p.email + '.')),
+        h('p', { className: 'gv-secondary body-base' }, 'Keep your receipts and giving history in one place, and give next time without retyping your details.' + (p.email ? ' Your account uses ' + p.email + '.' : ''))),
       mobile ? h(Fragment, null, input, btn)
         : h('div', { className: 'gv-create__password' },
           h('div', { className: 'gv-create__row' }, input, btn),
