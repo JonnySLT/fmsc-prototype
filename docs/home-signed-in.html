@@ -310,7 +310,7 @@
               h('div', { className: 'hp-tile__copy' },
                 h('h3', { className: ts('heading-h4') }, g[0]),
                 h('p', { className: 'body-small' }, g[1])),
-              h(F.ArrowLink, { label: g[2], href: 'volunteer.html' }));
+              h(F.ArrowLink, { label: g[2], href: { 'Churches': 'groups-churches.html', 'Schools': 'groups-schools.html', 'Workplaces': 'groups-workplaces.html', 'Families with kids': 'groups-families.html' }[g[0]] }));
           })))),
 
         /* MarketPlace teaser */
