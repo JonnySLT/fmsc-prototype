@@ -114,7 +114,7 @@
     var m = meals(g.amount).toLocaleString('en-US');
     var rows = [['Gift', money(g.amount)], ['How often', monthly ? 'Monthly' : 'Once'], ['Meals provided', monthly ? m + '/month' : m]];
     if (hasEvent(g)) rows.push(['Goes to', goesTo(g) + (o.eventSuffix || '')]);
-    if (g.ded && (g.dedInfo || {}).name && g.dedInfo.name.trim()) rows.push(['Dedicated', dedicated(g)]);
+    if (g.ded && (g.dedInfo || {}).name && g.dedInfo.name.trim()) rows.push([(g.dedInfo || {}).kind === 'memory' ? 'In memory of' : 'In honor of', g.dedInfo.name.trim()]); /* label carries the kind, value the name (Jonny, Oct. 29, 2026) */
     if (withFee) rows.push(['Processing fee', money(f)]);
     return {
       heading: o.heading || (step >= 4 ? 'Your gift' : 'Review your gift'),
