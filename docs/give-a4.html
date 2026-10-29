@@ -32,7 +32,7 @@
     var g = Shell.useGift('a')[0], m = Shell.fmt.meals(g.amount).toLocaleString('en-US');
     return h(Shell, { confirm: true, summary: Shell.summary(g, { step: 4, totalLabel: 'Charged today' }),
         head: h(UI.Impact, { eyebrow: 'Your monthly gift', headline: 'You’re providing ' + m + ' meals every month.', link: true }) },
-      h(UI.Confirmation, { title: 'Thanks, Sarah. Your monthly gift is set up.', body: 'We charged your Visa ending in 4242 today and sent your receipt to sarah.whitfield@gmail.com.' },
+      h(UI.Confirmation, { title: 'Thanks, ' + Shell.person('sarah').first + '. Your monthly gift is set up.', body: 'We charged your Visa ending in 4242 today and sent your receipt to ' + Shell.person('sarah').email + '.' },
         h(F.Divider, { showLabel: false }),
         h(UI.AccountBlock, { line: 'Your receipts and monthly gift live in your FMSC account. Change or stop the gift there anytime.',
           links: [{ label: 'See your giving', href: 'account-giving.html' }] })),

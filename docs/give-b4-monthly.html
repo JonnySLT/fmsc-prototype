@@ -33,8 +33,8 @@
     var emailed = g.ded && d.notify ? 'We emailed ' + d.name + ' that you gave in her honor, charged' : 'We charged';
     return h(Shell, { confirm: true, summary: Shell.summary(g, { step: 4, totalLabel: 'Charged today', eventSuffix: ' (first gift)' }),
         head: h(UI.Impact, { eyebrow: 'Your monthly gift', headline: 'You’re providing ' + m + ' meals every month.' }) },
-      h(UI.Confirmation, { title: 'Thanks, Sarah. Your monthly gift is set up.',
-          body: 'Today’s gift goes to ' + Shell.fmt.goesTo(g) + ', and each monthly gift after that goes to Feed My Starving Children. ' + emailed + ' your Visa ending in 4242 and sent your receipt to sarah.whitfield@gmail.com.' },
+      h(UI.Confirmation, { title: 'Thanks, ' + Shell.person('sarah').first + '. Your monthly gift is set up.',
+          body: 'Today’s gift goes to ' + Shell.fmt.goesTo(g) + ', and each monthly gift after that goes to Feed My Starving Children. ' + emailed + ' your Visa ending in 4242 and sent your receipt to ' + Shell.person('sarah').email + '.' },
         h(F.Divider, { showLabel: false }),
         h(UI.AccountBlock, { line: 'Your receipts and monthly gift live in your FMSC account. Change or stop the gift there anytime.',
           links: [{ label: 'See your giving', href: 'account-giving.html' }, { label: 'See the event', href: '#' }] })),

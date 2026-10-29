@@ -35,7 +35,7 @@
         h(UI.DoneStep, { number: 1, title: 'Your gift', answer: Shell.giftAnswer(g), href: Shell.giftHref(g) }),
         h(UI.StepCard, { number: 2, title: 'Your details' },
           h(UI.Details, { who: 'sarah', signInLine: 'Giving as Sarah Whitfield · sarah.whitfield@gmail.com', signInLabel: 'Not you? Sign out', signInHref: 'give-c2.html',
-            onSignInClick: function (e) { e.preventDefault(); window.FMSCAuth.signOut(); window.location.href = 'give-c2.html'; } }),
+            onSignInClick: function (e) { e.preventDefault(); window.FMSCAuth.signOut(); Shell.markNav(); window.location.href = 'give-c2.html'; } }),
           h(UI.Continue, { label: 'Continue to payment', href: Shell.paymentHref(g) })),
         h(UI.UpcomingStep, { number: 3, title: 'Payment' })));
   }

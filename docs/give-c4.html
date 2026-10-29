@@ -34,7 +34,7 @@
     return h(Shell, { confirm: true, summary: Shell.summary(g, { step: 4, totalLabel: 'Total charged' }),
         head: h(UI.Impact, { eyebrow: 'Your gift today', headline: 'You’re providing ' + m + ' meals.', link: true }) },
       h(UI.Confirmation, { title: 'Thanks, ' + Shell.person('daniel').first + '. Your ' + Shell.fmt.amt(total) + ' gift went through.',
-          body: 'It feeds a child a daily meal for a full year. We sent your receipt to ' + Shell.person('daniel').email + ' for your tax records.' },
+          body: (g.amount === 106 ? 'It feeds a child a daily meal for a full year. ' : '') + 'We sent your receipt to ' + Shell.person('daniel').email + ' for your tax records.' },
         h(UI.CreateAccount, { email: Shell.person('daniel').email })),
       h(UI.NextSteps, { tableBuilder: true }));
   }

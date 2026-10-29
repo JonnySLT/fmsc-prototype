@@ -19,7 +19,7 @@
   var h = React.createElement, Fragment = React.Fragment, F = window.FMSC;
 
   /* ---- gift store ---- */
-  var KEY = 'fmsc-give';
+  var KEY = 'fmsc-give', NAV_KEY = 'fmsc-give-nav';
   var mem = {};
   function read() { try { var o = JSON.parse(sessionStorage.getItem(KEY) || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return Object.assign({}, mem); } }
   function write(next) { mem = next; try { sessionStorage.setItem(KEY, JSON.stringify(next)); } catch (e) { /* storage blocked: memory only */ } return next; }
@@ -32,8 +32,16 @@
     var keep = false;
     try { var nav = performance.getEntriesByType('navigation')[0]; if (nav && (nav.type === 'reload' || nav.type === 'back_forward')) keep = true; } catch (e) { /* no timing API */ }
     if (document.referrer && isGive(document.referrer)) keep = true;
+    /* The hosted prototype can strip the referrer, so moves between give pages also leave a short-lived flag. */
+    try { var t = parseInt(sessionStorage.getItem(NAV_KEY) || '0', 10); if (t && Date.now() - t < 60000) keep = true; sessionStorage.removeItem(NAV_KEY); } catch (e) { /* storage blocked */ }
     return !keep;
   })();
+  function markNav() { try { sessionStorage.setItem(NAV_KEY, String(Date.now())); } catch (e) { /* storage blocked */ } }
+  /* Any link to another give page (Continue, Change, wallets, Give) marks the move before the page unloads. */
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest && e.target.closest('a[href]');
+    if (a && isGive(a.getAttribute('href'))) markNav();
+  }, true);
   /* Flow defaults: the Figma sample gift of each flow. */
   var DEFAULTS = {
     a: { amount: 106, freq: 'monthly', fee: true, ded: false, event: false, monthly: false, method: 'card' },
@@ -281,7 +289,7 @@
 
   /* ---- blocks ---- */
   function cls(a, b) { return b ? a + ' ' + b : a; }
-  function go(href) { window.location.href = href; }
+  function go(href) { if (isGive(href)) markNav(); window.location.href = href; }
 
   /* Header: DS Account page header, title only. */
   function Header() { return h(F.AccountPageHeader, { breakpoint: 'auto', title: 'Give meals', showBreadcrumb: false, showTag: false, showDescription: false, showStats: false, showAction: false }); }
@@ -625,6 +633,7 @@
   GiveShell.giftAnswer = giftAnswer;
   GiveShell.detailsAnswer = detailsAnswer;
   GiveShell.person = personOf;
+  GiveShell.markNav = markNav;
   GiveShell.confirmHref = confirmHref;
   GiveShell.paymentHref = paymentHref;
   GiveShell.giftHref = giftHref;
@@ -662,7 +671,7 @@
         if (p.returnFocus) p.returnFocus();
       };
     }, []);
-    function go(e) { if (e) e.preventDefault(); window.FMSCAuth.signIn(); window.location.href = p.next || 'give-c3.html'; }
+    function go(e) { if (e) e.preventDefault(); window.FMSCAuth.signIn(); markNav(); window.location.href = p.next || 'give-c3.html'; }
     function inert(e) { e.preventDefault(); }
     var body = h('form', { className: 'gv-auth__fields', noValidate: true, onSubmit: go },
       h('p', { className: 'gv-auth__intro body-small' }, 'We’ll fill in your details and add this gift to your giving history. Your gift stays the same.'),
