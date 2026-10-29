@@ -97,11 +97,13 @@
     var line = g.freq === 'monthly' ? amt(g.amount) + ' monthly · ' + m + ' meals a month' : amt(g.amount) + ' once · ' + m + ' meals';
     /* Plus what was picked under the amount, one line each (Jonny, Oct. 29, 2026): the event and the dedication. */
     var extra = [];
-    if (g.event && g.eventId) extra.push('Goes to ' + goesTo(g));
+    if (hasEvent(g)) extra.push('Goes to ' + goesTo(g));
     if (g.ded && (g.dedInfo || {}).name && g.dedInfo.name.trim()) extra.push(dedicated(g));
     return [line].concat(extra).join('\n');
   }
-  function monthlyNow(g) { return g.freq === 'monthly' || (g.event && g.monthly) || (g.flow === 'c' && g.monthly); }
+  /* An event gift needs an event picked: the box alone adds nothing to the summary or the routing (Jonny, Oct. 29, 2026). */
+  function hasEvent(g) { return !!(g.event && g.eventId); }
+  function monthlyNow(g) { return g.freq === 'monthly' || (hasEvent(g) && g.monthly) || (g.flow === 'c' && g.monthly); }
   /* summary(g, opts): Gift summary props. opts: step (1–4), heading, totalLabel, eventSuffix. */
   function summary(g, o) {
     o = o || {};
@@ -111,8 +113,8 @@
     var f = withFee ? fee(g.amount) : 0, total = g.amount + f;
     var m = meals(g.amount).toLocaleString('en-US');
     var rows = [['Gift', money(g.amount)], ['How often', monthly ? 'Monthly' : 'Once'], ['Meals provided', monthly ? m + '/month' : m]];
-    if (g.event) rows.push(['Goes to', goesTo(g) + (o.eventSuffix || '')]);
-    if (g.ded) rows.push(['Dedicated', dedicated(g)]);
+    if (hasEvent(g)) rows.push(['Goes to', goesTo(g) + (o.eventSuffix || '')]);
+    if (g.ded && (g.dedInfo || {}).name && g.dedInfo.name.trim()) rows.push(['Dedicated', dedicated(g)]);
     if (withFee) rows.push(['Processing fee', money(f)]);
     return {
       heading: o.heading || (step >= 4 ? 'Your gift' : 'Review your gift'),
@@ -524,7 +526,7 @@
       h('p', { className: 'gv-secondary caption' }, 'Payments are processed securely by Stripe.'),
       /* Event gifts (B3) always show "Make this a monthly gift", checked when Give monthly was picked on step 1 and
          unchecked for Give once; ticking it switches the gift's frequency (Jonny, Oct. 29, 2026). */
-      g.event
+      hasEvent(g)
         ? h(Check, { name: 'gv-monthly', label: 'Make this a monthly gift', checked: monthlyGift, onChange: function (v) { set({ freq: v ? 'monthly' : 'once', monthly: v }); },
             description: 'Your first gift goes to ' + goesTo(g) + '. Later gifts go to FMSC.' })
         : monthlyGift
@@ -630,11 +632,11 @@
   /* Routing (Figma prototype reactions). Signed-in confirmation: event gift → b4 (b4-monthly when made monthly), else a4. */
   function confirmHref(g) {
     if (g.flow === 'c') return 'give-c4.html';
-    if (g.event) return g.monthly || g.freq === 'monthly' ? 'give-b4-monthly.html' : 'give-b4.html';
+    if (hasEvent(g)) return g.monthly || g.freq === 'monthly' ? 'give-b4-monthly.html' : 'give-b4.html';
     return 'give-a4.html';
   }
-  function paymentHref(g) { return g.event ? 'give-b3.html' : 'give-a3.html'; }
-  function giftHref(g) { return g.event ? 'give-b1.html' : 'give-a1.html'; }
+  function paymentHref(g) { return hasEvent(g) ? 'give-b3.html' : 'give-a3.html'; }
+  function giftHref(g) { return hasEvent(g) ? 'give-b1.html' : 'give-a1.html'; }
 
   GiveShell.useGift = useGift;
   GiveShell.store = { get: read, set: function (p) { return write(Object.assign(read(), p)); } };
