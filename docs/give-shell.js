@@ -350,7 +350,7 @@
       var on = g.freq === value;
       return h('label', { key: value, className: cls('fm-donate__seg', on ? 'fm-donate__seg--on' : '') },
         h('input', { type: 'radio', name: id + '-freq', value: value, checked: on, className: 'fm-visually-hidden',
-          onChange: function () { var patch = { freq: value }; if (value === 'monthly' && g.event) patch.event = false; set(patch); } }),
+          onChange: function () { set({ freq: value }); } }),
         h('span', { className: 'fm-donate__seg-label label-base' }, label),
         h('span', { className: 'fm-donate__seg-sub caption' }, sub));
     }
@@ -411,8 +411,8 @@
             h(F.Input, { label: 'Their email (optional)', type: 'email', value: ded.email, onChange: function (e) { setDed({ email: e.target.value }); } })),
           h(Check, { name: 'gv-ded-notify', label: 'Email them that you gave in their honor', checked: ded.notify, onChange: function (v) { setDed({ notify: v }); } })) : null),
       h('div', { className: 'gv-option' },
-        /* Figma: checking this makes the gift one-time ("Gifts to an event are one-time gifts", hidden description). */
-        h(Check, { name: 'gv-event', label: 'Give to an FMSC MobilePack™ event', checked: g.event, onChange: function (v) { set(v ? { event: true, freq: 'once' } : { event: false }); } }),
+        /* Checking this keeps the Give once / Give monthly choice above (Jonny, Oct. 29, 2026). */
+        h(Check, { name: 'gv-event', label: 'Give to an FMSC MobilePack™ event', checked: g.event, onChange: function (v) { set({ event: v }); } }),
         g.event ? h('div', { className: 'gv-sub' },
           h(F.Input, { label: 'Event name', icon: 'search', value: g.query, onChange: function (e) { set({ query: e.target.value }); } }),
           /* Blank search (A1, C1): no results and nothing picked until something is typed (Jonny, Oct. 29, 2026). */
@@ -603,7 +603,7 @@
   /* Routing (Figma prototype reactions). Signed-in confirmation: event gift → b4 (b4-monthly when made monthly), else a4. */
   function confirmHref(g) {
     if (g.flow === 'c') return 'give-c4.html';
-    if (g.event) return g.monthly ? 'give-b4-monthly.html' : 'give-b4.html';
+    if (g.event) return g.monthly || g.freq === 'monthly' ? 'give-b4-monthly.html' : 'give-b4.html';
     return 'give-a4.html';
   }
   function paymentHref(g) { return g.event ? 'give-b3.html' : 'give-a3.html'; }
