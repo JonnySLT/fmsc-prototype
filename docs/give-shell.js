@@ -660,6 +660,28 @@
   GiveShell.confirmHref = confirmHref;
   GiveShell.paymentHref = paymentHref;
   GiveShell.giftHref = giftHref;
+  /* thanks(g, o): confirmation copy from what was picked in the flow (Jonny, Oct. 29, 2026). o.first, o.receipt (sentence),
+     o.figmaMonthlyTitle (A4: Figma's "Your monthly gift is set up." without the amount). Returns head + Confirmation props. */
+  function thanks(g, o) {
+    o = o || {};
+    var monthly = monthlyNow(g), total = g.amount + (g.fee ? fee(g.amount) : 0), m = meals(g.amount).toLocaleString('en-US');
+    var d = g.dedInfo || {}, name = g.ded && d.name ? d.name.trim() : '';
+    var title = 'Thanks' + (o.first ? ', ' + o.first : '') + '. ' +
+      (monthly ? (o.figmaMonthlyTitle ? 'Your monthly gift is set up.' : 'Your ' + amt(total) + ' monthly gift is set up.') : 'Your ' + amt(total) + ' gift went through.');
+    var body = [];
+    if (!monthly && g.amount === 106) body.push('It feeds a child a daily meal for a full year.');
+    if (hasEvent(g)) body.push('It goes to ' + goesTo(g) + '.');
+    if (name) body.push('You gave it ' + (d.kind === 'memory' ? 'in memory of ' : 'in honor of ') + name + '.' + (d.notify && d.email && d.email.trim() ? ' We let ' + name + ' know by email.' : ''));
+    if (monthly && !o.noMonthlyNote) body.push('We’ll charge ' + amt(total) + ' on the same date each month. You can change or stop your monthly gift anytime.');
+    if (o.receipt) body.push(o.receipt);
+    return {
+      eyebrow: monthly ? 'Your monthly gift' : 'Your gift today',
+      headline: 'You’re providing ' + m + ' meals' + (monthly ? ' every month.' : '.'),
+      title: title,
+      body: body.join(' ')
+    };
+  }
+  GiveShell.thanks = thanks;
   GiveShell.fmt = { meals: meals, money: money, amt: amt, fee: fee, goesTo: goesTo, dedicated: dedicated, monthlyNow: monthlyNow };
   GiveShell.people = PEOPLE;
   window.GiveShell = GiveShell;

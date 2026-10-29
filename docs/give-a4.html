@@ -30,11 +30,13 @@
   /* Figma "Give — A4 Confirmation": monthly gift set up. */
   function Page() {
     var g = Shell.useGift('a')[0], m = Shell.fmt.meals(g.amount).toLocaleString('en-US');
+    var t = Shell.thanks(g, { first: Shell.person('sarah').first, figmaMonthlyTitle: true, noMonthlyNote: true, /* the account line below covers change/stop */
+      receipt: 'We charged your Visa ending in 4242 today and sent your receipt to ' + Shell.person('sarah').email + '.' });
     return h(Shell, { confirm: true, summary: Shell.summary(g, { step: 4, totalLabel: 'Charged today' }),
-        head: h(UI.Impact, { eyebrow: 'Your monthly gift', headline: 'You’re providing ' + m + ' meals every month.', link: true }) },
-      h(UI.Confirmation, { title: 'Thanks, ' + Shell.person('sarah').first + '. Your monthly gift is set up.', body: 'We charged your Visa ending in 4242 today and sent your receipt to ' + Shell.person('sarah').email + '.' },
+        head: h(UI.Impact, { eyebrow: t.eyebrow, headline: t.headline, link: true }) },
+      h(UI.Confirmation, { title: t.title, body: t.body },
         h(F.Divider, { showLabel: false }),
-        h(UI.AccountBlock, { line: 'Your receipts and monthly gift live in your FMSC account. Change or stop the gift there anytime.',
+        h(UI.AccountBlock, { line: Shell.fmt.monthlyNow(g) ? 'Your receipts and monthly gift live in your FMSC account. Change or stop the gift there anytime.' : 'Your receipt is in your FMSC account.',
           links: [{ label: 'See your giving', href: 'account-giving.html' }] })),
       h(UI.NextSteps, { tableBuilder: !Shell.fmt.monthlyNow(g) }) /* Table Builder card only after a one-time gift (Jonny, Oct. 29, 2026) */);
   }

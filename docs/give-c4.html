@@ -30,11 +30,10 @@
   /* Figma "Give — C4 Confirmation · Signed out": gift went through; offer to save it to a new account. */
   function Page() {
     var g = Shell.useGift('c', { details_daniel: Shell.people.daniel })[0], who = Shell.person('daniel'), m = Shell.fmt.meals(g.amount).toLocaleString('en-US');
-    var total = g.amount + (g.fee ? Shell.fmt.fee(g.amount) : 0);
+    var t = Shell.thanks(g, { first: who.first, receipt: who.email ? 'We sent your receipt to ' + who.email + ' for your tax records.' : '' });
     return h(Shell, { confirm: true, summary: Shell.summary(g, { step: 4, totalLabel: 'Total charged' }),
-        head: h(UI.Impact, { eyebrow: 'Your gift today', headline: 'You’re providing ' + m + ' meals.', link: true }) },
-      h(UI.Confirmation, { title: 'Thanks' + (who.first ? ', ' + who.first : '') + '. Your ' + Shell.fmt.amt(total) + ' gift went through.',
-          body: (g.amount === 106 ? 'It feeds a child a daily meal for a full year. ' : '') + (who.email ? 'We sent your receipt to ' + who.email + ' for your tax records.' : '') },
+        head: h(UI.Impact, { eyebrow: t.eyebrow, headline: t.headline, link: true }) },
+      h(UI.Confirmation, { title: t.title, body: t.body },
         /* "Save this gift to an FMSC account" only while still signed out: signing in from C2's dialog already saved it (Jonny, Oct. 29, 2026). */
         window.FMSCAuth && window.FMSCAuth.signedIn() ? null : h(UI.CreateAccount, { email: who.email })),
       h(UI.NextSteps, { tableBuilder: !Shell.fmt.monthlyNow(g) }) /* Table Builder card only after a one-time gift (Jonny, Oct. 29, 2026) */);
