@@ -37,7 +37,7 @@
           body: (g.amount === 106 ? 'It feeds a child a daily meal for a full year. ' : '') + (who.email ? 'We sent your receipt to ' + who.email + ' for your tax records.' : '') },
         /* "Save this gift to an FMSC account" only while still signed out: signing in from C2's dialog already saved it (Jonny, Oct. 29, 2026). */
         window.FMSCAuth && window.FMSCAuth.signedIn() ? null : h(UI.CreateAccount, { email: who.email })),
-      h(UI.NextSteps, { tableBuilder: true }));
+      h(UI.NextSteps, { tableBuilder: !Shell.fmt.monthlyNow(g) }) /* Table Builder card only after a one-time gift (Jonny, Oct. 29, 2026) */);
   }
   ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
 </script>

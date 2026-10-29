@@ -38,7 +38,7 @@
         h(F.Divider, { showLabel: false }),
         h(UI.AccountBlock, { line: 'Your receipt is in your FMSC account.',
           links: [{ label: 'See your giving', href: 'account-giving.html' }, { label: 'See the event', href: '#' }] })),
-      h(UI.NextSteps, { tableBuilder: true }));
+      h(UI.NextSteps, { tableBuilder: !Shell.fmt.monthlyNow(g) }) /* Table Builder card only after a one-time gift (Jonny, Oct. 29, 2026) */);
   }
   ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
 </script>
