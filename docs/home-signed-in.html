@@ -274,8 +274,8 @@
             body: 'Every meal is a MannaPack® formula built by food scientists to reverse malnutrition. Move the slider to see how far a gift goes.' }),
           h('div', { className: 'hp-inner' }, h(F.LayoutSplit, null,
             h(F.DonateModule, { breakpoint: 'auto', showModeTabs: false, linkHref: 'impact.html',
-              /* Donate $<amount>: carry the chosen gift to the Donate page, which presets its module from ?amount=&freq= */
-              onDonate: function () { location.href = 'give.html'; } }),
+              /* Donate $<amount>: carry the chosen gift into the Give flow (give.html passes ?amount=&freq= on to step 1) */
+              onDonate: function (g) { location.href = 'give.html?amount=' + Math.round(g.amount) + '&freq=' + g.frequency; } }),
             h('div', { className: 'hp-photo hp-photo--gift' }, h('img', { src: img('gift.jpg'), alt: 'Smiling children hold green bowls of MannaPack® rice at a school table.' }))))),
 
         /* One story — Samuel */

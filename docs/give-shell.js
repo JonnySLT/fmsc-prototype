@@ -49,7 +49,17 @@
   ];
   function seed(flow, over) {
     var base = Object.assign({ flow: flow }, DEFAULTS[flow], { dedInfo: Object.assign({}, DED), eventId: 'lutheran', query: 'Hope' }, over || {});
-    if (fresh) { fresh = false; return write(base); }
+    /* Fresh entry from another page: ?amount=<dollars>&freq=<once|monthly> carry over what was picked there (the Donate
+       module on Homepage, How to Help and Donate, "Join and give monthly", Groups links). give.html passes the query on. */
+    if (fresh) {
+      fresh = false;
+      try {
+        var q = new URLSearchParams(location.search), qa = q.get('amount'), qf = q.get('freq');
+        if (qa && /^\d{1,7}(\.\d{1,2})?$/.test(qa) && parseFloat(qa) >= 1) base.amount = parseFloat(qa);
+        if (qf === 'once' || qf === 'monthly') base.freq = qf;
+      } catch (e) { /* no URL API: keep the defaults */ }
+      return write(base);
+    }
     return write(Object.assign(base, read(), { flow: flow }));
   }
   /* useGift(flow, over): [gift, update(patch)] — update writes the store and re-renders. over: page defaults on top of the

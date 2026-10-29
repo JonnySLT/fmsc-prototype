@@ -197,7 +197,7 @@
             h('div', { className: 'hh-give__module' },
               h(F.DonateModule, { breakpoint: bp, showModeTabs: false, onceLabel: 'Give once', onceSublabel: 'A single gift today', monthlyLabel: 'Give monthly', monthlySublabel: 'Join Table Builders', linkHref: 'impact.html',
                 /* Hand the chosen gift to the donate page, which presets its own module. */
-                onDonate: function () { window.location.href = 'give.html'; } })),
+                onDonate: function (g) { window.location.href = 'give.html?amount=' + Math.round(g.amount) + '&freq=' + g.frequency; } })),
             h('img', { className: 'hh-give__photo', src: img('how-to-help-child.jpg'), alt: 'A young boy eats a spoonful of a MannaPack® meal from a bowl at an outdoor table.' }))),
 
         /* 4 · Fundraise or shop */
