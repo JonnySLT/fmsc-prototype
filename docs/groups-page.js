@@ -41,7 +41,8 @@
     /* Three steps or one column — never a 2 + 1 row with step 3 stranded. */
     '@container (max-width: 720px) { .gp-steps { grid-template-columns: minmax(0, 1fr); gap: var(--space-md); } }',
     '.gp-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md) var(--space-lg); color: var(--content-secondary); }',
-    '.gp-facts.gp-facts { width: auto; }',
+    /* Centred under the steps panel on every Groups page (Jonny, Oct. 29, 2026). */
+    '.gp-facts.gp-facts { width: auto; align-self: center; justify-content: center; }',
     '.gp-fact { display: flex; align-items: center; gap: var(--space-xs); }',
     '.gp-fact .fm-icon { flex: none; color: var(--content-secondary); }',
     '.gp-account { color: var(--content-secondary); max-width: 607px; }',
@@ -83,8 +84,8 @@
     '@media (max-width: 599.98px) {',
     '  .gp-steps-panel { padding: var(--card-pad); }',
     '  .gp-steps { gap: var(--space-md); }',
-    '  .gp-facts { flex-direction: column; align-items: stretch; gap: var(--space-md); }',
-    '  .gp-facts.gp-facts { width: 100%; }',
+    '  .gp-facts { flex-direction: column; align-items: flex-start; gap: var(--space-md); }',
+    '  .gp-facts.gp-facts { width: auto; align-self: center; }',
     '  .gp-account { max-width: none; }',
     '  .gp-finder__fields { flex-direction: column; align-items: stretch; gap: var(--space-md); }',
     '  .gp-finder__search, .gp-finder__select, .gp-finder__submit { flex: none; }',
