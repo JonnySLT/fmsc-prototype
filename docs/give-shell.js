@@ -313,7 +313,8 @@
   function DoneStep(p) {
     var mobile = F.useIsMobile();
     return h(F.FlowStep, { breakpoint: 'auto', state: 'done', number: String(p.number), title: p.title,
-      answer: mobile && p.answerMobile ? p.answerMobile : p.answer, changeLabel: 'Change ' + p.title.toLowerCase(), onReopen: function () { go(p.href); } });
+      /* An empty answer would show the DS placeholder ("The answer they gave"): keep the row blank instead. */
+      answer: (mobile && p.answerMobile ? p.answerMobile : p.answer) || '\u00a0', changeLabel: 'Change ' + p.title.toLowerCase(), onReopen: function () { go(p.href); } });
   }
   function UpcomingStep(p) { return h(F.FlowStep, { breakpoint: 'auto', state: 'upcoming', number: String(p.number), title: p.title }); }
   function Steps(p) { return h('div', { className: 'gv-steps' }, p.children); }
@@ -682,7 +683,14 @@
         if (p.returnFocus) p.returnFocus();
       };
     }, []);
-    function go(e) { if (e) e.preventDefault(); window.FMSCAuth.signIn(); markNav(); window.location.href = p.next || 'give-c3.html'; }
+    /* Signing in fills "Your details" with the account: Sarah Whitfield (the signed-in persona), with the email typed in the
+       dialog if there is one (Jonny, Oct. 29, 2026). */
+    function go(e) {
+      if (e) e.preventDefault();
+      var typed = ((document.getElementById('gv-si-email') || {}).value || '').trim();
+      var all = read(); all.details_daniel = Object.assign({}, PEOPLE.sarah, typed ? { email: typed } : {}); write(all);
+      window.FMSCAuth.signIn(); markNav(); window.location.href = p.next || 'give-c3.html';
+    }
     function inert(e) { e.preventDefault(); }
     var body = h('form', { className: 'gv-auth__fields', noValidate: true, onSubmit: go },
       h('p', { className: 'gv-auth__intro body-small' }, 'We’ll fill in your details and add this gift to your giving history. Your gift stays the same.'),
