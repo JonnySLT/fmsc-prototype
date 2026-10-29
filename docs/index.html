@@ -122,6 +122,19 @@
 <script src="lib/react-dom.production.min.js"></script>
 <script src="ds/bundle.js"></script>
 <script src="site-nav.js"></script>
+<script>
+  /* The signed-out homepage is the prototype's starting point: opening it (not a reload or back/forward) starts signed
+     out, so sign-in state left over from earlier testing in the tab can't send the Give flow to the signed-in steps.
+     Signed in, every link to index.html already goes to home-signed-in.html, and ?auth= still sets the state. */
+  (function startSignedOut() {
+    try {
+      var nav = performance.getEntriesByType('navigation')[0];
+      if (nav && nav.type !== 'navigate') return;
+      if (/[?&]auth=/.test(location.search)) return;
+      if (window.FMSCAuth && window.FMSCAuth.signedIn()) window.FMSCAuth.signOut();
+    } catch (e) { /* no timing API: leave the state as it is */ }
+  })();
+</script>
 <script src="flow-data.js"></script>
 <script>
   var F = window.FMSC, h = React.createElement, Fragment = React.Fragment;
