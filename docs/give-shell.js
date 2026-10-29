@@ -37,6 +37,17 @@
     return !keep;
   })();
   function markNav() { try { sessionStorage.setItem(NAV_KEY, String(Date.now())); } catch (e) { /* storage blocked */ } }
+  /* Signed-in flows (A, and B for event gifts) need a signed-in supporter: signed out, send the page to the matching
+     signed-out step (C) with the gift kept, so "Your details" and payment never show Sarah's account. */
+  (function signedOutGuard() {
+    var m = /\/give-([ab])(\d)(-monthly)?\.html$/.exec(location.pathname);
+    if (!m || !window.FMSCAuth || window.FMSCAuth.signedIn()) return;
+    var to = { 1: 'give-c1.html', 2: 'give-c2.html', 3: 'give-c3.html', 4: 'give-c4.html' }[m[2]];
+    if (!to) return;
+    if (!fresh) markNav();
+    document.documentElement.style.visibility = 'hidden';
+    location.replace(to + location.search + location.hash);
+  })();
   /* Any link to another give page (Continue, Change, wallets, Give) marks the move before the page unloads. */
   document.addEventListener('click', function (e) {
     var a = e.target && e.target.closest && e.target.closest('a[href]');
@@ -590,7 +601,7 @@
     if (!p.tableBuilder) return h(NextCard, { title: SHOP.title, body: SHOP.body, link: shopLink(), className: 'gv-next-one' });
     return h('div', { className: 'gv-next' },
       h(NextCard, { title: 'Become a Table Builder', body: 'Choose any amount to give each month. Every 29 cents provides a meal, and you can change or stop your gift anytime.',
-        link: h(F.ArrowLink, { href: 'give-a1.html', label: 'Give monthly' }) }),
+        link: h(F.ArrowLink, { href: 'give.html?freq=monthly', label: 'Give monthly' }) }),
       h(NextCard, { title: SHOP.title, body: SHOP.body, link: shopLink() }));
   }
 
