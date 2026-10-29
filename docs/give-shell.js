@@ -49,9 +49,9 @@
   ];
   function seed(flow, over) {
     /* B1's Figma frame shows the dedication and event search filled in (sample values); on A1 and C1 those fields open
-       blank when the box is checked, with no event picked (Jonny, Oct. 29, 2026). */
+       blank when the box is checked, "Email them" unchecked and no event picked (Jonny, Oct. 29, 2026). */
     var sample = flow === 'b';
-    var base = Object.assign({ flow: flow }, DEFAULTS[flow], { dedInfo: sample ? Object.assign({}, DED) : { kind: 'honor', name: '', email: '', notify: DED.notify },
+    var base = Object.assign({ flow: flow }, DEFAULTS[flow], { dedInfo: sample ? Object.assign({}, DED) : { kind: 'honor', name: '', email: '', notify: false },
       eventId: sample ? 'lutheran' : '', query: sample ? 'Hope' : '' }, over || {});
     /* Fresh entry from another page: ?amount=<dollars>&freq=<once|monthly> carry over what was picked there (the Donate
        module on Homepage, How to Help and Donate, "Join and give monthly", Groups links). give.html passes the query on. */
