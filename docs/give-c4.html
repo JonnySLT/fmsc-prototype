@@ -35,7 +35,8 @@
         head: h(UI.Impact, { eyebrow: 'Your gift today', headline: 'You’re providing ' + m + ' meals.', link: true }) },
       h(UI.Confirmation, { title: 'Thanks' + (who.first ? ', ' + who.first : '') + '. Your ' + Shell.fmt.amt(total) + ' gift went through.',
           body: (g.amount === 106 ? 'It feeds a child a daily meal for a full year. ' : '') + (who.email ? 'We sent your receipt to ' + who.email + ' for your tax records.' : '') },
-        h(UI.CreateAccount, { email: who.email })),
+        /* "Save this gift to an FMSC account" only while still signed out: signing in from C2's dialog already saved it (Jonny, Oct. 29, 2026). */
+        window.FMSCAuth && window.FMSCAuth.signedIn() ? null : h(UI.CreateAccount, { email: who.email })),
       h(UI.NextSteps, { tableBuilder: true }));
   }
   ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
