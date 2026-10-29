@@ -48,7 +48,11 @@
     { id: 'academy', label: 'Hope Academy', short: 'Hope Academy', description: 'FMSC MobilePack™ event · Jan. 22–23, 2027 · Minneapolis, MN' }
   ];
   function seed(flow, over) {
-    var base = Object.assign({ flow: flow }, DEFAULTS[flow], { dedInfo: Object.assign({}, DED), eventId: 'lutheran', query: 'Hope' }, over || {});
+    /* B1's Figma frame shows the dedication and event search filled in (sample values); on A1 and C1 those fields open
+       blank when the box is checked (Jonny, Oct. 29, 2026). */
+    var sample = flow === 'b';
+    var base = Object.assign({ flow: flow }, DEFAULTS[flow], { dedInfo: sample ? Object.assign({}, DED) : { kind: 'honor', name: '', email: '', notify: DED.notify },
+      eventId: 'lutheran', query: sample ? 'Hope' : '' }, over || {});
     /* Fresh entry from another page: ?amount=<dollars>&freq=<once|monthly> carry over what was picked there (the Donate
        module on Homepage, How to Help and Donate, "Join and give monthly", Groups links). give.html passes the query on. */
     if (fresh) {
@@ -78,7 +82,7 @@
   function fee(amount) { return Math.round(amount * 269 / 106) / 100; } /* Figma: $2.69 on $106 */
   function eventOf(g) { return EVENTS.filter(function (e) { return e.id === g.eventId; })[0] || EVENTS[0]; }
   function goesTo(g) { return eventOf(g).short + '’s FMSC MobilePack™ event'; }
-  function dedicated(g) { var d = g.dedInfo || DED; return (d.kind === 'memory' ? 'In memory of ' : 'In honor of ') + (d.name || DED.name); }
+  function dedicated(g) { var d = g.dedInfo || DED; return (d.kind === 'memory' ? 'In memory of ' : 'In honor of ') + (d.name || '').trim(); }
   /* Done-step answer for "Your gift": "$106 monthly · 365 meals a month" / "$106 once · 365 meals". */
   function giftAnswer(g) {
     var m = meals(g.amount).toLocaleString('en-US');
