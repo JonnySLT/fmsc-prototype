@@ -247,6 +247,26 @@
     /* FAQ: inside the content column on desktop (no section padding); full-width section on mobile. */
     '.gv-grid__main .fm-section-faq { padding: 0; align-items: flex-start; }',
 
+    /* Sign in to give dialog (Figma "Dialog · Sign in to give — Sign in"), same build as the sign-up "Sign in to reserve" dialog. */
+    'html.gv-lock { overflow: hidden; }',
+    '.gv-layer { position: fixed; inset: 0; z-index: 100; display: flex; padding: var(--space-md) var(--margin-x); background: var(--scrim-strong); overflow-y: auto; overscroll-behavior: contain; }',
+    '.gv-auth.fm-dialog { width: 528px; max-width: 100%; margin: auto; outline: none; }',
+    '.gv-auth.fm-dialog.fm-mobile { width: 361px; }',
+    '.gv-auth .fm-dialog__close { color: var(--graphic-ink); }',
+    '.gv-auth__intro { color: var(--content-secondary); }',
+    '.gv-auth__fields { display: flex; flex-direction: column; gap: var(--space-md); width: 100%; }',
+    '.gv-auth__remember { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-sm); width: 100%; min-height: 44px; }',
+    '.gv-auth__social { display: flex; gap: var(--space-sm); width: 100%; }',
+    '.gv-auth__social > * { flex: 1 1 0; min-width: 0; }',
+    '.gv-auth.fm-mobile .gv-auth__social { flex-direction: column; }',
+    '.gv-auth.fm-mobile .gv-auth__social > * { flex: none; }',
+    '.gv-auth.fm-mobile .gv-auth__submit { width: 100%; }',
+    '.gv-auth__line { margin: 0; color: var(--content-secondary); }',
+    '.gv-auth__link { color: var(--content-link); text-decoration: none; cursor: pointer; }',
+    'button.gv-auth__link { padding: 0; margin: 0; border: 0; background: none; font: inherit; }',
+    '.gv-auth__link:hover { text-decoration: underline; }',
+    '.gv-auth__line .gv-auth__link, .gv-auth__remember > .gv-auth__link { position: relative; }',
+    ".gv-auth__line .gv-auth__link::after, .gv-auth__remember > .gv-auth__link::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }",
     /* DS fix (as on the sign-up and account pages): Footer Mobile keeps the desktop flex-basis on its stacked columns. */
     '@media (max-width: 599.98px) { .fm-footer--mobile .fm-footer__col, .fm-footer--mobile .fm-footer__brand { flex: none; min-width: 0; } }'
   ].join('\n');
@@ -515,7 +535,7 @@
   }
   function CreateAccount(p) {
     var mobile = F.useIsMobile();
-    var input = h(F.Input, { label: 'Create a password', type: 'password', autoComplete: 'new-password', description: mobile ? 'At least 8 characters.' : undefined });
+    var input = h(F.Input, { label: 'Create a password', type: 'password', autoComplete: 'new-password', description: mobile ? 'Use at least 8 characters, with a capital letter, a number and a special character.' : undefined });
     var btn = h(F.Button, { variant: 'primary', size: 'large', href: 'create-account.html', fullWidth: mobile }, 'Create an account');
     return h('section', { className: 'gv-create', 'aria-labelledby': 'gv-create-title' },
       h('div', { className: 'gv-create__text' },
@@ -524,7 +544,7 @@
       mobile ? h(Fragment, null, input, btn)
         : h('div', { className: 'gv-create__password' },
           h('div', { className: 'gv-create__row' }, input, btn),
-          h('p', { className: 'gv-secondary body-small' }, 'At least 8 characters.')));
+          h('p', { className: 'gv-secondary body-small' }, 'Use at least 8 characters, with a capital letter, a number and a special character.')));
   }
   function NextCard(p) {
     var mobile = F.useIsMobile();
@@ -600,7 +620,64 @@
   GiveShell.fmt = { meals: meals, money: money, amt: amt, fee: fee, goesTo: goesTo, dedicated: dedicated, monthlyNow: monthlyNow };
   GiveShell.people = PEOPLE;
   window.GiveShell = GiveShell;
+  /* ---- Sign in to give (Figma "Dialog · Sign in to give — Sign in", Oct. 29, 2026) ----
+     C2 "Sign in →" opens it. Sign in and continue, Google and Facebook sign in (FMSCAuth.signIn()) and go to payment
+     (Figma "C3 Payment · Signed in": give-c3.html, now signed in). "Keep giving as a guest", Close, Escape and the scrim
+     close it; focus returns to the link. Fields start empty and nothing is validated. */
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  var GOOGLE_MARK = h('svg', { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', 'aria-hidden': 'true' },
+    h('path', { d: 'M20.945 11a9 9 0 1 1 -3.284 -5.997l-2.655 2.392a5.5 5.5 0 1 0 2.119 6.605h-4.125v-3h7.945z', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }));
+  function SignInToGive(p) {
+    var mobile = F.useIsMobile();
+    var ref = React.useRef(null), closeRef = React.useRef(p.onClose);
+    closeRef.current = p.onClose;
+    React.useLayoutEffect(function () {
+      var el = ref.current, root = document.getElementById('root');
+      root.inert = true; document.documentElement.classList.add('gv-lock');
+      var d = el.querySelector('[role="dialog"]'); if (d) { d.setAttribute('tabindex', '-1'); d.focus(); }
+      function onKey(e) {
+        if (e.key === 'Escape') { e.preventDefault(); closeRef.current(); return; }
+        if (e.key !== 'Tab') return;
+        var list = Array.prototype.filter.call(el.querySelectorAll(FOCUSABLE), function (n) { return n.offsetParent !== null; });
+        if (!list.length) return;
+        var a = list[0], b = list[list.length - 1];
+        if (e.shiftKey && (document.activeElement === a || !el.contains(document.activeElement) || document.activeElement.getAttribute('role') === 'dialog')) { e.preventDefault(); b.focus(); }
+        else if (!e.shiftKey && (document.activeElement === b || !el.contains(document.activeElement))) { e.preventDefault(); a.focus(); }
+      }
+      document.addEventListener('keydown', onKey);
+      return function () {
+        document.removeEventListener('keydown', onKey);
+        root.inert = false; document.documentElement.classList.remove('gv-lock');
+        if (p.returnFocus) p.returnFocus();
+      };
+    }, []);
+    function go(e) { if (e) e.preventDefault(); window.FMSCAuth.signIn(); window.location.href = p.next || 'give-c3.html'; }
+    function inert(e) { e.preventDefault(); }
+    var body = h('form', { className: 'gv-auth__fields', noValidate: true, onSubmit: go },
+      h('p', { className: 'gv-auth__intro body-small' }, 'We’ll fill in your details and add this gift to your giving history. Your gift stays the same.'),
+      h('div', { className: 'gv-auth__fields' },
+        h(F.Input, { id: 'gv-si-email', name: 'email', label: 'Email', type: 'email', autoComplete: 'email' }),
+        h(F.Input, { id: 'gv-si-password', name: 'password', label: 'Password', type: 'password', autoComplete: 'current-password' })),
+      h('div', { className: 'gv-auth__remember' },
+        h(F.Checkbox, { name: 'remember', label: 'Keep me signed in' }),
+        h('a', { className: 'gv-auth__link body-small', href: '#', onClick: inert }, 'Forgot password?')),
+      h('div', null, h(F.Button, { variant: 'primary', size: 'large', type: 'submit', className: 'gv-auth__submit', fullWidth: mobile }, 'Sign in and continue')),
+      h(F.Divider, { label: 'or' }),
+      h('div', { className: 'gv-auth__social' },
+        h(F.SocialSignInButton, { provider: 'google', mark: GOOGLE_MARK, fullWidth: true, label: mobile ? 'Continue with Google' : 'Google', onClick: go }),
+        h(F.SocialSignInButton, { provider: 'facebook', fullWidth: true, label: mobile ? 'Continue with Facebook' : 'Facebook', onClick: go })),
+      h('p', { className: 'gv-auth__line body-small' }, 'No account? ',
+        h('button', { type: 'button', className: 'gv-auth__link fm-focusable', onClick: function () { closeRef.current(); } }, 'Keep giving as a guest'),
+        '. You can create one after your gift.'));
+    return ReactDOM.createPortal(
+      h('div', { ref: ref, className: 'gv-layer', onMouseDown: function (e) { if (e.target === e.currentTarget) closeRef.current(); } },
+        h(F.Dialog, { breakpoint: mobile ? 'mobile' : 'desktop', modal: true, className: 'gv-auth', actions: null, closeLabel: 'Close',
+          title: 'Sign in to save this gift to your account', onClose: function () { closeRef.current(); } }, body)),
+      document.body);
+  }
+
   window.GiveUI = {
+    SignInToGive: SignInToGive,
     Header: Header, StepCard: StepCard, DoneStep: DoneStep, UpcomingStep: UpcomingStep, Steps: Steps,
     GiftSummary: GiftSummary, SummaryBar: SummaryBar, DonateCheckout: DonateCheckout, GiftOptions: GiftOptions, Check: Check,
     Continue: Continue, Wallets: Wallets, Details: Details, Payment: Payment,

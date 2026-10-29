@@ -30,13 +30,17 @@
   /* Flow C · step 2 (Figma "Give — C2 Your details · Signed out"). */
   function Page() {
     var st = Shell.useGift('c'), g = st[0];
-    return h(Shell, { summary: Shell.summary(g, { step: 2 }), faq: true },
+    /* "Sign in" opens the Sign in to give dialog (Figma, Oct. 29, 2026). */
+    var o = React.useState(false), open = o[0], setOpen = o[1], trigger = React.useRef(null);
+    return h(React.Fragment, null, h(Shell, { summary: Shell.summary(g, { step: 2 }), faq: true },
       h(UI.Steps, null,
         h(UI.DoneStep, { number: 1, title: 'Your gift', answer: Shell.giftAnswer(g), href: 'give-c1.html' }),
         h(UI.StepCard, { number: 2, title: 'Your details' },
-          h(UI.Details, { who: 'daniel', updates: true, signInLine: 'Have an FMSC account? Sign in to save this gift to it.', signInLabel: 'Sign in', signInHref: 'sign-in.html' }),
+          h(UI.Details, { who: 'daniel', updates: true, signInLine: 'Have an FMSC account? Sign in to save this gift to it.', signInLabel: 'Sign in', signInHref: 'sign-in.html',
+            onSignInClick: function (e) { e.preventDefault(); trigger.current = e.currentTarget; setOpen(true); } }),
           h(UI.Continue, { label: 'Continue to payment', href: 'give-c3.html' })),
-        h(UI.UpcomingStep, { number: 3, title: 'Payment' })));
+        h(UI.UpcomingStep, { number: 3, title: 'Payment' }))),
+      open ? h(UI.SignInToGive, { onClose: function () { setOpen(false); }, returnFocus: function () { if (trigger.current) trigger.current.focus(); } }) : null);
   }
   ReactDOM.createRoot(document.getElementById('root')).render(h(Page));
 </script>
