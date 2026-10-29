@@ -49,10 +49,10 @@
   ];
   function seed(flow, over) {
     /* B1's Figma frame shows the dedication and event search filled in (sample values); on A1 and C1 those fields open
-       blank when the box is checked (Jonny, Oct. 29, 2026). */
+       blank when the box is checked, with no event picked (Jonny, Oct. 29, 2026). */
     var sample = flow === 'b';
     var base = Object.assign({ flow: flow }, DEFAULTS[flow], { dedInfo: sample ? Object.assign({}, DED) : { kind: 'honor', name: '', email: '', notify: DED.notify },
-      eventId: 'lutheran', query: sample ? 'Hope' : '' }, over || {});
+      eventId: sample ? 'lutheran' : '', query: sample ? 'Hope' : '' }, over || {});
     /* Fresh entry from another page: ?amount=<dollars>&freq=<once|monthly> carry over what was picked there (the Donate
        module on Homepage, How to Help and Donate, "Join and give monthly", Groups links). give.html passes the query on. */
     if (fresh) {
@@ -395,7 +395,8 @@
         h(Check, { name: 'gv-event', label: 'Give to an FMSC MobilePack™ event', checked: g.event, onChange: function (v) { set(v ? { event: true, freq: 'once' } : { event: false }); } }),
         g.event ? h('div', { className: 'gv-sub' },
           h(F.Input, { label: 'Event name', icon: 'search', value: g.query, onChange: function (e) { set({ query: e.target.value }); } }),
-          h('fieldset', { className: 'gv-results' },
+          /* Blank search (A1, C1): no results and nothing picked until something is typed (Jonny, Oct. 29, 2026). */
+          !q ? null : h('fieldset', { className: 'gv-results' },
             h('legend', { className: 'fm-visually-hidden' }, 'Events'),
             results.map(function (e) {
               return h(F.Radio, { key: e.id, name: 'gv-event-pick', value: e.id, label: e.label, description: e.description, checked: g.eventId === e.id, onChange: function () { set({ eventId: e.id }); } });
