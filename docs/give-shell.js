@@ -121,11 +121,16 @@
     daniel: { first: 'Daniel', last: 'Okafor', email: 'daniel.okafor@gmail.com', street: '2410 Lyndale Ave. S.', city: 'Minneapolis', state: 'MN', zip: '55405' }
   };
   /* "Your details" done answer: one line + address on desktop, four lines on mobile (Figma). */
+  /* What was typed on "Your details" (kept in the gift store as details_<who>), over the Figma sample person, so Change
+     reopens the step with the user's entries and the done rows and confirmation repeat them (Jonny, Oct. 29, 2026). */
+  function personOf(who) { return Object.assign({ apt: '', company: false, updates: false }, PEOPLE[who], read()['details_' + who] || {}); }
+  function savePerson(who, patch) { var all = read(), key = 'details_' + who; all[key] = Object.assign({}, all[key] || {}, patch); write(all); }
   function detailsAnswer(who, mobile) {
-    var p = PEOPLE[who];
+    var p = personOf(who);
+    var street = p.street + (p.apt ? ', ' + p.apt : '');
     return mobile
-      ? p.first + ' ' + p.last + '\n' + p.email + '\n' + p.street + '\n' + p.city + ', ' + p.state + ' ' + p.zip
-      : p.first + ' ' + p.last + ' · ' + p.email + '\n' + p.street + ', ' + p.city + ', ' + p.state + ' ' + p.zip;
+      ? p.first + ' ' + p.last + '\n' + p.email + '\n' + street + '\n' + p.city + ', ' + p.state + ' ' + p.zip
+      : p.first + ' ' + p.last + ' · ' + p.email + '\n' + street + ', ' + p.city + ', ' + p.state + ' ' + p.zip;
   }
   var STATES = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
 
@@ -450,30 +455,30 @@
   /* Details: Figma "Step 2 · Your details" fields. who: 'sarah' | 'daniel'; signIn: the line + arrow link above the fields. */
   function Details(p) {
     var mobile = F.useIsMobile();
-    var who = PEOPLE[p.who];
-    var s = React.useState(who.state), state = s[0], setState = s[1];
-    var c = React.useState({}), checks = c[0], setChecks = c[1];
-    function chk(name, label) {
-      return h(Check, { key: name, name: name, label: label, checked: !!checks[name], onChange: function (v) { var o = Object.assign({}, checks); o[name] = v; setChecks(o); } });
+    var st = React.useState(function () { return personOf(p.who); }), who = st[0], setWho = st[1];
+    function upd(patch) { savePerson(p.who, patch); setWho(Object.assign({}, who, patch)); }
+    function field(key, props) { return Object.assign({ key: key, value: who[key] || '', onChange: function (e) { var o = {}; o[key] = e.target.value; upd(o); } }, props); }
+    function chk(key, name, label) {
+      return h(Check, { key: name, name: name, label: label, checked: !!who[key], onChange: function (v) { var o = {}; o[key] = v; upd(o); } });
     }
-    var stateField = h(F.Dropdown, { key: 'st', label: 'State', showLabel: true, options: STATES, value: state, onChange: setState });
-    var zip = h(F.Input, { key: 'zip', label: 'ZIP code', defaultValue: who.zip, autoComplete: 'postal-code' });
-    var city = h(F.Input, { key: 'city', label: 'City', defaultValue: who.city, autoComplete: 'address-level2' });
+    var stateField = h(F.Dropdown, { key: 'st', label: 'State', showLabel: true, options: STATES, value: who.state, onChange: function (v) { upd({ state: v }); } });
+    var zip = h(F.Input, field('zip', { label: 'ZIP code', autoComplete: 'postal-code' }));
+    var city = h(F.Input, field('city', { label: 'City', autoComplete: 'address-level2' }));
     return h(Fragment, null,
       h('div', { className: 'gv-signin' },
         h('p', { className: 'gv-secondary body-base' }, p.signInLine),
         h(F.ArrowLink, { href: p.signInHref, label: p.signInLabel, onClick: p.onSignInClick })),
       h('div', { className: 'gv-fields' },
         h('div', { className: 'gv-row gv-row--stack' },
-          h(F.Input, { label: 'First name', defaultValue: who.first, autoComplete: 'given-name' }),
-          h(F.Input, { label: 'Last name', defaultValue: who.last, autoComplete: 'family-name' })),
-        h(F.Input, { label: 'Email', type: 'email', defaultValue: who.email, description: "We'll send your receipt here.", autoComplete: 'email' }),
-        chk('gv-company', 'Give as a company or organization'),
-        h(F.Input, { label: 'Street address', defaultValue: who.street, autoComplete: 'address-line1' }),
-        h(F.Input, { label: 'Apt., suite or floor (optional)', autoComplete: 'address-line2' }),
+          h(F.Input, field('first', { label: 'First name', autoComplete: 'given-name' })),
+          h(F.Input, field('last', { label: 'Last name', autoComplete: 'family-name' }))),
+        h(F.Input, field('email', { label: 'Email', type: 'email', description: "We'll send your receipt here.", autoComplete: 'email' })),
+        chk('company', 'gv-company', 'Give as a company or organization'),
+        h(F.Input, field('street', { label: 'Street address', autoComplete: 'address-line1' })),
+        h(F.Input, field('apt', { label: 'Apt., suite or floor (optional)', autoComplete: 'address-line2' })),
         mobile ? h(Fragment, null, city, h('div', { className: 'gv-row' }, stateField, zip))
           : h('div', { className: 'gv-row gv-row--city' }, city, stateField, zip),
-        p.updates ? chk('gv-updates', 'Send me email updates from FMSC') : null));
+        p.updates ? chk('updates', 'gv-updates', 'Send me email updates from FMSC') : null));
   }
 
   /* Payment: fee checkbox, Card / Bank account options, processor line, monthly note or "Make this a monthly gift",
@@ -619,6 +624,7 @@
   GiveShell.summary = summary;
   GiveShell.giftAnswer = giftAnswer;
   GiveShell.detailsAnswer = detailsAnswer;
+  GiveShell.person = personOf;
   GiveShell.confirmHref = confirmHref;
   GiveShell.paymentHref = paymentHref;
   GiveShell.giftHref = giftHref;
