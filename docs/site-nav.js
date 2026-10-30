@@ -64,7 +64,11 @@
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target && e.target.closest && e.target.closest('a[href]');
     if (!a || a.target === '_blank') return;
-    var raw = a.getAttribute('href'), to = resolveHref(raw);
+    var raw = a.getAttribute('href');
+    /* Dead links: a link with no page in the prototype yet (href "#" or empty) does nothing, instead of reloading or
+       jumping to the top of the current page (Jonny, Oct. 30, 2026). */
+    if (raw === '#' || raw === '') { e.preventDefault(); return; }
+    var to = resolveHref(raw);
     if (to !== raw) { e.preventDefault(); location.href = to; }
   });
   var h = React.createElement;
