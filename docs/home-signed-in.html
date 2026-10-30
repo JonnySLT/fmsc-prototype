@@ -69,7 +69,7 @@
   /* What to expect */
   .hp-expect { display: flex; flex-direction: column; align-items: flex-start; gap: var(--section-gap); }
   .hp-expect__head { display: flex; flex-direction: column; gap: var(--space-md); width: 100%; }
-  .hp-expect__label { color: var(--content-secondary); }
+  .hp-expect__label { margin: 0; color: var(--content-primary); }
   .hp-expect__item { display: flex; flex-direction: column; gap: var(--space-2xs); }
   .hp-expect__item p:last-child { color: var(--content-secondary); }
 
@@ -260,7 +260,7 @@
             h(VolunteerFinder))),
           h('div', { className: 'hp-inner hp-expect' },
             h('div', { className: 'hp-expect__head' },
-              h('h3', { className: 'hp-expect__label overline' }, 'What to expect'),
+              h('h3', { className: 'hp-expect__label ' + ts('heading-h4') }, 'What to expect') /* Heading/H4 (Jonny, Oct. 30, 2026) */,
               h(F.LayoutGrid, { columns: 4 }, expectations.map(function (e) {
                 return h('div', { key: e[0], className: 'hp-expect__item' },
                   h('p', { className: 'label-small' }, e[0]),
