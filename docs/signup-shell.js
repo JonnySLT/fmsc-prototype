@@ -75,11 +75,21 @@
     catch (e) { return false; }
   }
   /* The confirmation (step 4) is a new page: "Reserve my spot" opens it at the top (Jonny, Oct. 27, 2026). */
+  /* Keep the panel in front of the reader (Jonny, Oct. 30, 2026): besides the scroll position, save where the step the
+     reader acted in sat in the window (Continue in the open step, Change on a done step). The next page lines its open
+     step up at that same spot, so the step that just opened is where the one that closed was. */
+  var lastTarget = null;
+  document.addEventListener('click', function (e) { lastTarget = e.target; }, true);
+  function anchorTop() {
+    var el = (lastTarget && lastTarget.closest && lastTarget.closest('.su-steps > *')) || document.querySelector('.su-steps > .su-step');
+    return el ? el.getBoundingClientRect().top : null;
+  }
   function saveScroll(url) {
     if (!isSignup(url)) return;
     var to = new URL(url, location.href).pathname;
-    var y = /\/signup-[a-d]4\.html$/.test(to) ? 0 : window.scrollY;
-    try { sessionStorage.setItem(SCROLL_KEY, JSON.stringify({ y: y, to: to })); } catch (e) { /* storage blocked: opens at top */ }
+    var last = /\/signup-[a-d]4\.html$/.test(to);
+    var y = last ? 0 : window.scrollY, top = last ? null : anchorTop();
+    try { sessionStorage.setItem(SCROLL_KEY, JSON.stringify({ y: y, top: top, to: to })); } catch (e) { /* storage blocked: opens at top */ }
   }
   function go(url) { saveScroll(url); window.location.href = url; }
   document.addEventListener('click', function (e) {
@@ -102,7 +112,7 @@
     var saved = null;
     try { saved = JSON.parse(sessionStorage.getItem(SCROLL_KEY) || 'null'); sessionStorage.removeItem(SCROLL_KEY); } catch (e) { saved = null; }
     if (saved && saved.to === location.pathname) arrivedInFlow = true;
-    if (!saved || saved.to !== location.pathname || !(saved.y > 0)) return;
+    if (!saved || saved.to !== location.pathname || !(saved.y > 0 || typeof saved.top === 'number')) return;
     window.__fmscKeepScroll = true; /* tells site-nav.js not to reset this page to the top */
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     var y = saved.y, start = Date.now(), moved = false;
@@ -111,8 +121,17 @@
     window.addEventListener('touchstart', onUser, { passive: true, once: true });
     window.addEventListener('keydown', onUser, { once: true });
     /* The page renders with React and web fonts, so keep re-applying until it is tall enough (or ~1.5s pass). */
+    /* Target: the open step at the saved window offset (kept between 24px and half the window, so a step whose top had
+       scrolled out of view opens at the top of the window); without a saved offset, the saved scroll position. */
+    function target() {
+      var el = typeof saved.top === 'number' && document.querySelector('.su-steps > .su-step');
+      if (!el) return y;
+      var off = Math.min(Math.max(saved.top, 24), window.innerHeight / 2);
+      return Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY - off));
+    }
     (function tick() {
       if (moved) return;
+      y = target();
       var max = document.documentElement.scrollHeight - window.innerHeight;
       window.scrollTo(0, Math.min(y, Math.max(0, max)));
       if ((max >= y && Math.abs(window.scrollY - y) < 2 && Date.now() - start > 300) || Date.now() - start > 1500) return;
